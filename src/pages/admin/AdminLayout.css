@@ -1,0 +1,33 @@
+/* Transition cho sidebar desktop */
+.sidebar-desktop {
+  transition: all 0.3s ease;
+}
+
+.sidebar-desktop-enter {
+  transform: translateX(-100%);
+}
+
+.sidebar-desktop-enter-active {
+  transform: translateX(0);
+}
+
+/* Hiệu ứng hover */
+.hover-bg-secondary:hover {
+  background-color: #3d4d60 !important;
+}
+
+/* Transition cho main content */
+.main-content {
+  transition: margin-left 0.3s ease;
+}
+
+.mobile__menu-drawer {
+  max-width: calc(100vw - 50px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
