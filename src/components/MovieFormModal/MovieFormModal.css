@@ -1,0 +1,4 @@
+.movie-form-modal__cards {
+  max-height: calc(100vh - 20rem);
+  overflow-y: auto;
+}
