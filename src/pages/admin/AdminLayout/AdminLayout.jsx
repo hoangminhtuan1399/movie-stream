@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -113,7 +113,7 @@ const AdminLayout = () => {
         </Offcanvas>
 
         {/* Nội dung chính */}
-        <div className="flex-grow-1 p-3 main-content">
+        <div className="flex-grow-1 p-3 main-content admin-main-content">
           <Outlet/>
         </div>
       </div>
