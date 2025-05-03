@@ -4,6 +4,7 @@ import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { FaBars, FaBoxOpen, FaChartBar, FaFilm, FaSignOutAlt, FaStar, FaUsers } from 'react-icons/fa'
 import './AdminLayout.css' // Tạo file CSS mới cho transition
+import Footer from '../../../components/Footer/Footer'
 
 const AdminLayout = () => {
   const [activeItem, setActiveItem] = useState('movie')
@@ -117,6 +118,7 @@ const AdminLayout = () => {
           <Outlet/>
         </div>
       </div>
+      <Footer />
     </>
   )
 }
