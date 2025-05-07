@@ -30,3 +30,7 @@
     background-color: var(--bs-gray-200);
   }
 }
+
+.form-label {
+  font-weight: 600;
+}

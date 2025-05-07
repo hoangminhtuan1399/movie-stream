@@ -1,183 +1,214 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, FormCheck, Modal, Row } from 'react-bootstrap';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import './MovieFormModal.css';
+import { createEmptyMovie } from "../../utils/createEmptyMovie.js";
+import { genreOptions } from "../../utils/genreOptions.js";
+import { ageRatings } from "../../utils/ageRatings.js";
+import { generateOptions } from "../../utils/generateOptions.jsx";
+import { countries } from "../../utils/countries.js";
+import { movieTypes } from "../../utils/movieTypes.js";
+import { createEmptySeason } from "../../utils/createEmptySeason.js";
+import { createEmptyEpisode } from "../../utils/createEmptyEpisode.js";
+import SeasonRow from "../SeasonRow/SeasonRow.jsx";
+import CollectionPicker from "../CollectionPicker/CollectionPicker.jsx";
 
-const genreOptions = [
-  'Anime', 'Cổ trang', 'Chương trình truyền hình', 'Cổ tích',
-  'Tâm lý', 'Hoạt hình', 'Hài', 'Viễn tưởng', 'Hành động',
-  'Học đường', 'Kinh dị', 'Lịch sử', 'Marvel', 'Thể thao'
-];
-
-const MovieFormModal = ({show, onHide}) => {
-  const [movies, setMovies] = useState([createEmptyMovie()]);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [movieToDelete, setMovieToDelete] = useState(null);
+const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
+  const [movie, setMovie] = useState(initialMovie);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [errors, setErrors] = useState([]);
-  const [touched, setTouched] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
-  function createEmptyMovie() {
-    return {
-      name: '',
-      type: 'Lẻ',
-      releaseYear: '',
-      views: '',
-      ageRating: 'PG',
-      country: 'Việt Nam',
-      genres: [],
-      thumbnail: null,
-      poster: null
-    };
-  }
 
   useEffect(() => {
     if (show) {
-      setMovies([createEmptyMovie()]);
-      setErrors([]);
-      setTouched([]);
+      setMovie(initialMovie);
+      setErrors({});
+      setTouched({});
       setSubmitAttempted(false);
     }
-  }, [show]);
+  }, [show, initialMovie]);
 
-  const validateMovie = (movie) => {
+  const validateMovie = (movieToValidate = movie) => {
     const movieErrors = {};
 
-    if (!movie.name.trim()) {
+    if (!movieToValidate.name.trim()) {
       movieErrors.name = 'Vui lòng nhập tên phim';
     }
 
-    if (isNaN(movie.releaseYear)) {
+    if (isNaN(movieToValidate.releaseYear)) {
       movieErrors.releaseYear = 'Năm phát hành phải là số';
-    } else if (movie.releaseYear < 1900 || movie.releaseYear > new Date().getFullYear()) {
-      movieErrors.releaseYear = `Năm phát hành phải từ 1900 đến ${new Date().getFullYear()}`;
+    } else if (movieToValidate.releaseYear > new Date().getFullYear()) {
+      movieErrors.releaseYear = `Năm phát hành không hợp lệ`;
     }
 
-    if (isNaN(movie.views)) {
+    if (isNaN(movieToValidate.views)) {
       movieErrors.views = 'Lượt xem phải là số';
-    } else if (movie.views < 0) {
+    } else if (movieToValidate.views < 0) {
       movieErrors.views = 'Lượt xem không hợp lệ';
     }
 
-    if (movie.genres.length === 0) {
+    if (movieToValidate.genres.length === 0) {
       movieErrors.genres = 'Vui lòng chọn ít nhất 1 thể loại';
+    }
+
+    if (movieToValidate.type === 'Lẻ') {
+      if (!movieToValidate.singleStream.dubbed && !movieToValidate.singleStream.subbed) {
+        movieErrors.singleStream = 'Vui lòng upload ít nhất 1 phiên bản video';
+      }
+    }
+
+    if (movieToValidate.type === 'Bộ') {
+      const seasonErrors = movieToValidate.seasons.map((season) => {
+        const episodeErrors = season.episodes.map((episode) => {
+          const errors = {};
+          if (!episode.dubbed && !episode.subbed) {
+            errors.video = 'Vui lòng upload ít nhất 1 phiên bản video';
+          }
+          return Object.keys(errors).length > 0 ? errors : null;
+        });
+        return episodeErrors.some(e => e) ? episodeErrors : null;
+      });
+
+      if (seasonErrors.some(s => s)) {
+        movieErrors.seasons = seasonErrors;
+      }
     }
 
     return movieErrors;
   };
 
-  const handleAddRow = () => {
-    setMovies([...movies, createEmptyMovie()]);
-    setTouched([...touched, {}]);
-    setErrors([...errors, {}]);
+  const handleAddSeason = () => {
+    setMovie(prev => ({
+      ...prev,
+      seasons: [...prev.seasons, createEmptySeason()]
+    }));
   };
 
-  const handleDeleteRow = (index) => {
-    setMovieToDelete(index);
-    setShowDeleteConfirm(true);
+  const handleDeleteSeason = (seasonIndex) => {
+    setMovie(prev => ({
+      ...prev,
+      seasons: prev.seasons.filter((_, i) => i !== seasonIndex)
+    }));
   };
 
-  const confirmDeleteRow = () => {
-    const newMovies = [...movies];
-    newMovies.splice(movieToDelete, 1);
-    setMovies(newMovies.length > 0 ? newMovies : [createEmptyMovie()]);
+  const handleAddEpisode = useCallback((seasonIndex) => {
+    setMovie(prev => {
+      const newSeasons = JSON.parse(JSON.stringify(prev.seasons));
+      newSeasons[seasonIndex].episodes.push(createEmptyEpisode());
+      return {...prev, seasons: newSeasons};
+    });
+  }, []);
 
-    const newErrors = [...errors];
-    newErrors.splice(movieToDelete, 1);
-    setErrors(newErrors);
-
-    const newTouched = [...touched];
-    newTouched.splice(movieToDelete, 1);
-    setTouched(newTouched);
-
-    setShowDeleteConfirm(false);
+  const handleDeleteEpisode = (seasonIndex, episodeIndex) => {
+    setMovie(prev => {
+      const newSeasons = JSON.parse(JSON.stringify(prev.seasons));
+      newSeasons[seasonIndex].episodes = newSeasons[seasonIndex].episodes.filter((_, i) => i !== episodeIndex);
+      return {...prev, seasons: newSeasons};
+    });
   };
 
-  const handleChange = (index, field, value) => {
-    const newMovies = [...movies];
-    newMovies[index][field] = value;
-    setMovies(newMovies);
+  const handleSeasonChange = (seasonIndex, field, value) => {
+    setMovie(prev => {
+      const newSeasons = JSON.parse(JSON.stringify(prev.seasons));
+      newSeasons[seasonIndex][field] = value;
+      return {...prev, seasons: newSeasons};
+    });
+  };
 
-    // Nếu đã blur field này rồi thì validate ngay
-    if (touched[index]?.[field] || submitAttempted) {
-      const newErrors = [...errors];
-      newErrors[index] = validateMovie(newMovies[index]);
-      setErrors(newErrors);
+  const handleEpisodeChange = (seasonIndex, epIndex, field, value) => {
+    setMovie(prev => {
+      const newSeasons = JSON.parse(JSON.stringify(prev.seasons));
+      const episodes = newSeasons[seasonIndex].episodes;
+      episodes[epIndex][field] = value;
+      const newMovie = {...prev, seasons: newSeasons};
+      setErrors(validateMovie(newMovie))
+      return newMovie;
+    })
+  }
+
+  const handleChange = (field, value) => {
+    setMovie(prev => ({...prev, [field]: value}));
+
+    if (touched[field] || submitAttempted) {
+      setErrors(validateMovie({...movie, [field]: value}));
     }
   };
 
-  const handleBlur = (index, field) => {
-    const newTouched = [...touched];
-    if (!newTouched[index]) newTouched[index] = {};
-    newTouched[index][field] = true;
-    setTouched(newTouched);
-
-    // Validate field vừa blur
-    const newErrors = [...errors];
-    newErrors[index] = validateMovie(movies[index]);
-    setErrors(newErrors);
+  const handleBlur = (field) => {
+    setTouched(prev => ({...prev, [field]: true}));
+    setErrors(validateMovie());
   };
 
-  const handleGenreChange = (index, genre, isChecked) => {
-    const newMovies = [...movies];
-    if (isChecked) {
-      newMovies[index].genres = [...newMovies[index].genres, genre];
-    } else {
-      newMovies[index].genres = newMovies[index].genres.filter(g => g !== genre);
-    }
-    setMovies(newMovies);
+  const handleGenreChange = (genre, isChecked) => {
+    setMovie(prev => {
+      const newGenres = isChecked
+        ? [...prev.genres, genre]
+        : prev.genres.filter(g => g !== genre);
+      return {...prev, genres: newGenres};
+    });
 
-    // Nếu đã blur genres rồi thì validate ngay
-    if (touched[index]?.genres || submitAttempted) {
-      const newErrors = [...errors];
-      newErrors[index] = validateMovie(newMovies[index]);
-      setErrors(newErrors);
+    if (touched.genres || submitAttempted) {
+      setErrors(validateMovie({
+        ...movie,
+        genres: isChecked
+          ? [...movie.genres, genre]
+          : movie.genres.filter(g => g !== genre)
+      }));
     }
   };
 
-  const handleFileChange = (index, field, e) => {
+  const handleFileChange = (fieldPath, e) => {
     const file = e.target.files[0];
-    if (file) {
-      handleChange(index, field, file);
+    if (!file) return;
+
+    const fieldParts = fieldPath.split('.');
+
+    if (fieldParts.length === 1) {
+      setMovie(prev => ({...prev, [fieldParts[0]]: file.name}));
+    } else if (fieldParts.length === 2) {
+      setMovie(prev => {
+        const newMovie = {
+          ...prev,
+          [fieldParts[0]]: {
+            ...prev[fieldParts[0]],
+            [fieldParts[1]]: file.name
+          }
+        }
+
+        setErrors(validateMovie(newMovie))
+        return newMovie;
+      });
     }
   };
 
   const handleSubmit = () => {
     setSubmitAttempted(true);
-
-    // Validate tất cả movies
-    const newErrors = movies.map(movie => validateMovie(movie));
+    const newErrors = validateMovie();
     setErrors(newErrors);
 
-    // Kiểm tra xem có lỗi nào không
-    const isValid = newErrors.every(movieErrors => Object.keys(movieErrors).length === 0);
-
-    if (isValid) {
-      console.log('Movies to submit:', movies);
-      onHide();
+    if (Object.keys(newErrors).length === 0) {
+      console.log('Movie to submit:', movie);
+      onHide(movie);
     } else {
-      // Cuộn đến lỗi đầu tiên
-      const firstErrorIndex = newErrors.findIndex(err => Object.keys(err).length > 0);
-      if (firstErrorIndex !== -1) {
-        document.querySelector(`.movie-row-${firstErrorIndex}`)?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
+      document.querySelector(`.invalid-feedback:not(:empty)`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     }
   };
 
   const handleCancel = () => {
-    if (movies.some(movie =>
-      movie.name ||
+    if (movie.name ||
       movie.releaseYear ||
       movie.views ||
       movie.genres.length > 0 ||
       movie.thumbnail ||
-      movie.poster
-    )) {
+      movie.poster ||
+      (movie.type === 'Lẻ' && (movie.singleStream.dubbed || movie.singleStream.subbed)) ||
+      (movie.type === 'Bộ' && movie.seasons.some(s => s.episodes.some(e => e.dubbed || e.subbed)))
+    ) {
       setShowCancelConfirm(true);
     } else {
       onHide();
@@ -185,9 +216,9 @@ const MovieFormModal = ({show, onHide}) => {
   };
 
   const confirmCancel = () => {
-    setMovies([createEmptyMovie()]);
-    setErrors([]);
-    setTouched([]);
+    setMovie(createEmptyMovie());
+    setErrors({});
+    setTouched({});
     setShowCancelConfirm(false);
     onHide();
   };
@@ -196,169 +227,210 @@ const MovieFormModal = ({show, onHide}) => {
     <>
       <Modal show={show} onHide={handleCancel} size="xl" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Thêm phim mới</Modal.Title>
+          <Modal.Title>{initialMovie.id ? 'Chỉnh sửa phim' : 'Thêm phim mới'}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form>
             <Container className={'movie-form-modal__cards has-scroll'}>
-              {movies.map((movie, index) => (
-                <div key={index} className={`p-3 mb-2 border rounded movie-row-${index}`}>
-                  <Row className="mb-3">
-                    <Form.Group as={Col} md={6}>
-                      <Form.Label>Tên phim <span className="text-danger">*</span></Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={movie.name}
-                        onChange={(e) => handleChange(index, 'name', e.target.value)}
-                        onBlur={() => handleBlur(index, 'name')}
-                        isInvalid={(touched[index]?.name || submitAttempted) && !!errors[index]?.name}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors[index]?.name}
-                      </Form.Control.Feedback>
-                    </Form.Group>
+              <div className="mb-2 movie-row">
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={6}>
+                    <Form.Label>Tên phim <span className="text-danger">*</span></Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={movie.name}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                      onBlur={() => handleBlur('name')}
+                      isInvalid={(touched.name || submitAttempted) && !!errors.name}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
+                  </Form.Group>
 
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Kiểu phim</Form.Label>
-                      <Form.Select
-                        value={movie.type}
-                        onChange={(e) => handleChange(index, 'type', e.target.value)}
-                      >
-                        <option value="Lẻ">Lẻ</option>
-                        <option value="Bộ">Bộ</option>
-                      </Form.Select>
-                    </Form.Group>
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Năm phát hành</Form.Label>
+                    <Form.Control
+                      type="number"
+                      min="1900"
+                      max={new Date().getFullYear() + 5}
+                      value={movie.releaseYear}
+                      onChange={(e) => handleChange('releaseYear', e.target.value)}
+                      onBlur={() => handleBlur('releaseYear')}
+                      isInvalid={(touched.releaseYear || submitAttempted) && !!errors.releaseYear}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.releaseYear}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Quốc gia</Form.Label>
+                    <Form.Select
+                      value={movie.country}
+                      onChange={(e) => handleChange('country', e.target.value)}
+                    >
+                      {generateOptions(countries)}
+                    </Form.Select>
+                  </Form.Group>
+                </Row>
 
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Năm phát hành <span className="text-danger">*</span></Form.Label>
-                      <Form.Control
-                        type="number"
-                        min="1900"
-                        max={new Date().getFullYear() + 5}
-                        value={movie.releaseYear}
-                        onChange={(e) => handleChange(index, 'releaseYear', e.target.value)}
-                        onBlur={() => handleBlur(index, 'releaseYear')}
-                        isInvalid={(touched[index]?.releaseYear || submitAttempted) && !!errors[index]?.releaseYear}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors[index]?.releaseYear}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Row>
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Lượt xem</Form.Label>
+                    <Form.Control
+                      type="number"
+                      min="0"
+                      defaultValue={'0'}
+                      value={movie.views}
+                      onChange={(e) => handleChange('views', e.target.value)}
+                      onBlur={() => handleBlur('views')}
+                      isInvalid={(touched.views || submitAttempted) && !!errors.views}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.views}
+                    </Form.Control.Feedback>
+                  </Form.Group>
 
-                  <Row className="mb-3">
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Lượt xem</Form.Label>
-                      <Form.Control
-                        type="number"
-                        min="0"
-                        defaultValue={'0'}
-                        value={movie.views}
-                        onChange={(e) => handleChange(index, 'views', e.target.value)}
-                        onBlur={() => handleBlur(index, 'views')}
-                        isInvalid={(touched[index]?.views || submitAttempted) && !!errors[index]?.views}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors[index]?.views}
-                      </Form.Control.Feedback>
-                    </Form.Group>
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Độ tuổi</Form.Label>
+                    <Form.Select
+                      value={movie.ageRating}
+                      onChange={(e) => handleChange('ageRating', e.target.value)}
+                    >
+                      {generateOptions(ageRatings)}
+                    </Form.Select>
+                  </Form.Group>
 
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Độ tuổi</Form.Label>
-                      <Form.Select
-                        value={movie.ageRating}
-                        onChange={(e) => handleChange(index, 'ageRating', e.target.value)}
-                      >
-                        <option value="G">G</option>
-                        <option value="PG">PG</option>
-                        <option value="PG-13">PG-13</option>
-                        <option value="R">R</option>
-                      </Form.Select>
-                    </Form.Group>
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Ảnh nhỏ</Form.Label>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange('thumbnail', e)}
+                    />
+                  </Form.Group>
 
-                    <Form.Group as={Col} md={3}>
-                      <Form.Label>Quốc gia</Form.Label>
-                      <Form.Select
-                        value={movie.country}
-                        onChange={(e) => handleChange(index, 'country', e.target.value)}
-                      >
-                        <option value="Âu Mỹ">Âu Mỹ</option>
-                        <option value="Hàn Quốc">Hàn Quốc</option>
-                        <option value="Thái Lan">Thái Lan</option>
-                        <option value="Trung Quốc">Trung Quốc</option>
-                        <option value="Việt Nam">Việt Nam</option>
-                        <option value="Nhật Bản">Nhật Bản</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Row>
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Ảnh to</Form.Label>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange('poster', e)}
+                    />
+                  </Form.Group>
+                </Row>
 
-                  <Row className="mb-3">
-                    <Form.Group as={Col} md={12}>
-                      <Form.Label>Thể loại <span className="text-danger">*</span></Form.Label>
-                      <div className="d-flex flex-wrap gap-3">
-                        {genreOptions.map(genre => (
-                          <FormCheck
-                            key={genre}
-                            type="checkbox"
-                            id={`genre-${index}-${genre}`}
-                            label={genre}
-                            checked={movie.genres.includes(genre)}
-                            onChange={(e) => handleGenreChange(index, genre, e.target.checked)}
-                            onBlur={() => handleBlur(index, 'genres')}
-                            isInvalid={(touched[index]?.genres || submitAttempted) && !!errors[index]?.genres}
-                          />
-                        ))}
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={12}>
+                    <Form.Label>Thể loại <span className="text-danger">*</span></Form.Label>
+                    <div className="d-flex flex-wrap gap-3">
+                      {genreOptions.map(genre => (
+                        <FormCheck
+                          key={genre}
+                          type="checkbox"
+                          id={`genre-${genre}`}
+                          label={genre}
+                          checked={movie.genres.includes(genre)}
+                          onChange={(e) => handleGenreChange(genre, e.target.checked)}
+                          onBlur={() => handleBlur('genres')}
+                          isInvalid={(touched.genres || submitAttempted) && !!errors.genres}
+                        />
+                      ))}
+                    </div>
+                    {(touched.genres || submitAttempted) && errors.genres && (
+                      <div className="text-danger invalid-feedback d-block"
+                           style={{fontSize: '0.875em', marginTop: '0.25rem'}}>
+                        {errors.genres}
                       </div>
-                      {(touched[index]?.genres || submitAttempted) && errors[index]?.genres && (
-                        <div className="text-danger" style={{fontSize: '0.875em', marginTop: '0.25rem'}}>
-                          {errors[index]?.genres}
-                        </div>
-                      )}
-                    </Form.Group>
-                  </Row>
+                    )}
+                  </Form.Group>
+                </Row>
 
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={3}>
+                    <Form.Label>Kiểu phim</Form.Label>
+                    <Form.Select
+                      value={movie.type}
+                      onChange={(e) => handleChange('type', e.target.value)}
+                    >
+                      {generateOptions(movieTypes)}
+                    </Form.Select>
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={12}>
+                    <Form.Label>Bộ sưu tập</Form.Label>
+                    <CollectionPicker
+                      selectedCollections={movie.collections}
+                      onSelect={(collections) => handleChange('collections', collections)}
+                    />
+                  </Form.Group>
+                </Row>
+
+                {movie.type === 'Lẻ' && (
                   <Row className="mb-3">
                     <Form.Group as={Col} md={6}>
-                      <Form.Label>Ảnh nhỏ</Form.Label>
+                      <Form.Label>Lồng tiếng</Form.Label>
                       <Form.Control
                         type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(index, 'thumbnail', e)}
+                        accept="video/*"
+                        onChange={(e) => handleFileChange('singleStream.dubbed', e)}
+                        isInvalid={(touched.singleStream || submitAttempted) && !!errors.singleStream}
                       />
                     </Form.Group>
-
                     <Form.Group as={Col} md={6}>
-                      <Form.Label>Ảnh to</Form.Label>
+                      <Form.Label>Phụ đề</Form.Label>
                       <Form.Control
                         type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(index, 'poster', e)}
+                        accept="video/*"
+                        onChange={(e) => handleFileChange('singleStream.subbed', e)}
+                        isInvalid={(touched.singleStream || submitAttempted) && !!errors.singleStream}
                       />
                     </Form.Group>
+                    {(touched.singleStream || submitAttempted) && errors.singleStream && (
+                      <div className="text-danger invalid-feedback d-block"
+                           style={{fontSize: '0.875em', marginTop: '0.25rem'}}>
+                        {errors.singleStream}
+                      </div>
+                    )}
                   </Row>
+                )}
 
-                  {movies.length > 1 && (
-                    <div className="text-end">
+                {movie.type === 'Bộ' && (
+                  <Row className="mb-3">
+                    <label className={'form-label'}>Danh sách mùa phim:</label>
+                    <div>
+                      {movie.seasons.map((season, seasonIndex) => (
+                        <SeasonRow
+                          key={`season-${seasonIndex}`}
+                          season={season}
+                          index={seasonIndex}
+                          onChange={(field, value) => handleSeasonChange(seasonIndex, field, value)}
+                          onAddEpisode={() => handleAddEpisode(seasonIndex)}
+                          onChangeEpisode={(epIndex, field, value) => {
+                            handleEpisodeChange(seasonIndex, epIndex, field, value)
+                          }}
+                          onDelete={movie.seasons.length > 1 ? () => handleDeleteSeason(seasonIndex) : null}
+                          onDeleteEpisode={(episodeIndex) => handleDeleteEpisode(seasonIndex, episodeIndex)}
+                          errors={errors.seasons?.[seasonIndex]}
+                        />
+                      ))}
+                    </div>
+                    <div className="text-center mt-3">
                       <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleDeleteRow(index)}
+                        variant="outline-primary"
+                        onClick={handleAddSeason}
                       >
-                        <FaTrash/>
+                        <FaPlus className="me-2"/>
+                        Thêm mùa
                       </Button>
                     </div>
-                  )}
-                </div>
-              ))}
+                  </Row>
+                )}
+              </div>
             </Container>
-
-            <div className="text-center mt-3">
-              <Button variant="outline-primary" onClick={handleAddRow}>
-                <FaPlus className="me-2"/>
-                Thêm phim
-              </Button>
-            </div>
           </Form>
         </Modal.Body>
 
@@ -371,14 +443,6 @@ const MovieFormModal = ({show, onHide}) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <ConfirmModal
-        show={showDeleteConfirm}
-        onHide={() => setShowDeleteConfirm(false)}
-        onConfirm={confirmDeleteRow}
-        title="Xác nhận xoá"
-        message="Bạn có chắc chắn muốn xoá phim này?"
-      />
 
       <ConfirmModal
         show={showCancelConfirm}
