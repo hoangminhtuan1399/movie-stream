@@ -4,6 +4,7 @@ import { FaEdit, FaFilter, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons
 import './MoviePage.css'
 import { movies } from "./dummyData.js";
 import MovieFormModal from "../../../components/MovieFormModal/MovieFormModal.jsx";
+import { createEmptyMovie } from "../../../utils/createEmptyMovie.js";
 
 export const MoviePage = () => {
   // State cho các control
@@ -65,6 +66,7 @@ export const MoviePage = () => {
           <MovieFormModal
             show={showModal}
             onHide={() => setShowModal(false)}
+            initialMovie={createEmptyMovie()}
           />
         </Col>
       </Row>
