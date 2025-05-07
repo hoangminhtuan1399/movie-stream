@@ -1,0 +1,150 @@
+/* Mặc định cho menu và các mục */
+.nav-link,
+.dropdown-toggle {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: flex-start;
+    /* Căn trái */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    width: 100%;
+    padding-left: 20px;
+    text-decoration: none;
+    color: white;
+    /* Khoảng cách từ lề trái */
+}
+
+.dropdown-item {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 20px;
+    /* Khoảng cách từ lề trái */
+}
+
+.offcanvas-body .nav-link {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 20px;
+}
+
+
+/* Cải thiện hiển thị trên mobile */
+@media (max-width: 991px) {
+    .header {
+        padding: 10px 0;
+        background-color: #1e1e1e;
+    }
+
+    .navbar-brand img {
+        width: 35px;
+        /* Điều chỉnh kích thước logo cho mobile */
+    }
+
+    .navbar-brand div {
+        font-size: 0.9rem;
+        color: white;
+    }
+
+    .mobile-search-wrapper {
+        background-color: #1e1e1e;
+        padding: 10px;
+        position: fixed;
+        top: 60px;
+        /* Khoảng cách từ đầu trang */
+        left: 0;
+        width: 100%;
+        z-index: 999;
+    }
+
+    .search-input {
+        background-color: #333;
+        border: 1px solid #444;
+        color: white;
+        width: 100%;
+        padding-left: 40px;
+    }
+
+    .search-icon-btn {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: white;
+    }
+
+    .offcanvas-header {
+        background-color: #333;
+    }
+
+    .offcanvas-body {
+        background-color: #1e1e1e;
+        padding: 20px;
+    }
+
+    
+    .offcanvas-body .dropdown-item {
+        color: white;
+    }
+
+    .offcanvas-body .dropdown-item:hover {
+        background-color: #444;
+    }
+
+    /* Cải thiện Button thành viên */
+    .ms-3 .btn {
+        font-size: 0.875rem;
+        padding: 8px 16px;
+    }
+
+    /* Điều chỉnh cho các nút menu khi di động */
+    .navbar-toggler {
+        border: none;
+    }
+
+    .navbar-toggler-icon {
+        background-color: white;
+    }
+
+    .dropdown-toggle {
+        color: white;
+    }
+
+    /* Khoảng cách giữa các mục trong menu */
+    .nav-link {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+/* Cải thiện khoảng cách khi hover vào các mục trong menu */
+.nav-link:hover,
+.dropdown-item:hover {
+    background-color: #444;
+    color: white;
+
+}
+
+/* Đảm bảo dropdown menu hiển thị đúng */
+.nav-item:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    background-color: #1e1e1e;
+    border: none;
+}
+
+.dropdown-item {
+    color: white;
+}
+
+.menu-links {
+    white-space: nowrap;
+    flex-wrap: nowrap !important;
+}
