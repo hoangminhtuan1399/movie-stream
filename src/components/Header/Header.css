@@ -1,17 +1,14 @@
-/* Mặc định cho menu và các mục */
+
 .nav-link,
 .dropdown-toggle {
     font-size: 1.2rem;
     display: flex;
     justify-content: flex-start;
-    /* Căn trái */
     align-items: center;
-    /* Căn giữa theo chiều dọc */
     width: 100%;
     padding-left: 20px;
     text-decoration: none;
     color: white;
-    /* Khoảng cách từ lề trái */
 }
 
 .dropdown-item {
@@ -20,7 +17,6 @@
     justify-content: flex-start;
     align-items: center;
     padding-left: 20px;
-    /* Khoảng cách từ lề trái */
 }
 
 .offcanvas-body .nav-link {
@@ -32,7 +28,6 @@
 }
 
 
-/* Cải thiện hiển thị trên mobile */
 @media (max-width: 991px) {
     .header {
         padding: 10px 0;
@@ -41,7 +36,6 @@
 
     .navbar-brand img {
         width: 35px;
-        /* Điều chỉnh kích thước logo cho mobile */
     }
 
     .navbar-brand div {
@@ -54,7 +48,6 @@
         padding: 10px;
         position: fixed;
         top: 60px;
-        /* Khoảng cách từ đầu trang */
         left: 0;
         width: 100%;
         z-index: 999;
@@ -96,13 +89,11 @@
         background-color: #444;
     }
 
-    /* Cải thiện Button thành viên */
     .ms-3 .btn {
         font-size: 0.875rem;
         padding: 8px 16px;
     }
 
-    /* Điều chỉnh cho các nút menu khi di động */
     .navbar-toggler {
         border: none;
     }
@@ -115,14 +106,12 @@
         color: white;
     }
 
-    /* Khoảng cách giữa các mục trong menu */
     .nav-link {
         padding-left: 20px;
         padding-right: 20px;
     }
 }
 
-/* Cải thiện khoảng cách khi hover vào các mục trong menu */
 .nav-link:hover,
 .dropdown-item:hover {
     background-color: #444;
@@ -130,7 +119,6 @@
 
 }
 
-/* Đảm bảo dropdown menu hiển thị đúng */
 .nav-item:hover .dropdown-menu {
     display: block;
 }

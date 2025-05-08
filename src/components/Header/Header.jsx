@@ -12,7 +12,6 @@ const Header = () => {
             {/* Navbar for desktop */}
             <Navbar expand="lg" className="bg-dark header d-none d-lg-flex py-2" variant="dark">
                 <Container fluid className="d-flex justify-content-between align-items-center">
-                    {/* Left block: logo + search + menu */}
                     <div className="d-flex align-items-center flex-grow-1">
                         <Navbar.Brand href="/" className="d-flex align-items-center me-3">
                             <img src="/logo.png" alt="RoPhim" width="40" className="me-2" />
@@ -51,7 +50,6 @@ const Header = () => {
                         </Nav>
                     </div>
 
-                    {/* Right: thành viên */}
                     <div className="ms-3">
                         <Button variant="light" className="rounded-pill">
                             <FaUser className="me-2" />

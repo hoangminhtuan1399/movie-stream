@@ -22,7 +22,7 @@ function App() {
         <Route path={'report'} element={<ReportPage />} />
       </Route>
       <Route path={'/'} element={<UserLayout />}>
-        <Route path={'movie'} element={<HomePage />} />
+        <Route index element={<HomePage />} />
       </Route>
     </Routes>
   )
