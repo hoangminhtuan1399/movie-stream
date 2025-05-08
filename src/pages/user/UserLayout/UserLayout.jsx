@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../../../components/Header/Header';
 import Footer from '../../../components/Footer/Footer';
-import { HomePage } from '../HomePage/HomePage';
+import { Outlet } from 'react-router-dom';
 
 
 
@@ -10,7 +10,7 @@ const UserLayout = ({ children }) => {
         <div>
             <Header />
             <main>{children}</main>
-            <HomePage/>
+            <Outlet/>
             <Footer />
         </div>
     );
