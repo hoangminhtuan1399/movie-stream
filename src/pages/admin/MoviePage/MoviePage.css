@@ -38,6 +38,8 @@
 }
 
 .movie-table {
+  flex-grow: 1;
+
   thead {
     th {
       background-color: var(--bs-dark);

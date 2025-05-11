@@ -2,10 +2,14 @@ import { useState } from 'react'
 import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap'
 import { FaEdit, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons/fa'
 import { collections } from './dummyData'
+import CollectionFormModal from '../../../components/CollectionFormModal/CollectionFormModal'
+import { createEmptyCollection } from "../../../utils/createEmptyCollection.js";
 
 export const CollectionPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [showCollectionFormModal, setShowCollectionFormModal] = useState(false)
+
   const itemsPerPage = 10
 
   return (
@@ -38,6 +42,7 @@ export const CollectionPage = () => {
             variant="primary"
             className="icon-button square-button"
             aria-label="Thêm bộ sưu tập"
+            onClick={() => setShowCollectionFormModal(true)}
           >
             <FaPlus/>
             <span className="button-tooltip">Thêm mới</span>
@@ -63,7 +68,7 @@ export const CollectionPage = () => {
               <td>{collection.id}</td>
               <td>{collection.title}</td>
               <td>{collection.movies.length}</td>
-              <td>{collection.featured ? 'Nổi bật' : 'Bình thường'}</td>
+              <td>{collection.featured ? 'Hiện' : 'Ẩn'}</td>
               <td>{collection.index}</td>
               <td className="text-center p-1">
                 <div className="d-flex justify-content-center gap-2">
@@ -97,6 +102,12 @@ export const CollectionPage = () => {
           />
         </Pagination>
       </div>
+
+      <CollectionFormModal
+        show={showCollectionFormModal}
+        onHide={() => setShowCollectionFormModal(false)}
+        initialCollection={createEmptyCollection()}
+      />
     </Container>
   )
 }
