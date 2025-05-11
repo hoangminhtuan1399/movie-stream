@@ -1,12 +1,19 @@
-import { Link, Outlet } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { Button, Container, Nav, Navbar, Offcanvas } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { FaBars, FaBoxOpen, FaChartBar, FaFilm, FaSignOutAlt, FaStar, FaUsers } from 'react-icons/fa'
-import './AdminLayout.css' // Tạo file CSS mới cho transition
+import './AdminLayout.css'
 
 const AdminLayout = () => {
-  const [activeItem, setActiveItem] = useState('movie')
+  const location = useLocation()
+  const [activeItem, setActiveItem] = useState('')
+
+  useEffect(() => {
+    const path = location.pathname.split('admin/')[1]
+    setActiveItem(path || 'movie')
+  }, [location])
+
   const [showSidebar, setShowSidebar] = useState(false)
 
   const handleLogout = () => {
