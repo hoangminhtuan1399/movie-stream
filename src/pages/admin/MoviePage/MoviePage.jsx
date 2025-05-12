@@ -82,7 +82,7 @@ export const MoviePage = () => {
             <th>Năm phát hành</th>
             <th>Bộ sưu tập</th>
             <th>Lượt xem</th>
-            <th style={{width: '120px'}}>Actions</th>
+            <th style={{width: '120px'}}>Hành động</th>
           </tr>
           </thead>
           <tbody>
