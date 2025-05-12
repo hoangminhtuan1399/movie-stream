@@ -7,7 +7,7 @@
 }
 
 .row-topic {
-  flex: 1 1 calc(16.66% - 16px); /* 6 cột trên PC */
+  flex: 1 1 calc(16.66% - 16px);
   max-width: calc(16.66% - 16px);
   height: 140px;
   border-radius: 16px;
@@ -18,9 +18,17 @@
   transition: transform 0.3s;
 }
 
+.row-topic .btn-outline {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: white;
+  font-weight: 500;
+}
 
 .row-topic:hover {
   transform: scale(1.03);
+  color: white;
 }
 
 .mask {
@@ -55,25 +63,25 @@
   gap: 4px;
   font-size: 0.875rem;
   color: white;
-  transition: background 0.3s, color 0.3s;
+  transition: 0.3s, color 0.3s;
 }
 
-.btn-outline:hover {
-  background-color: white;
-  color: #000;
-}
+
 
 /* Responsive */
 @media (max-width: 992px) {
   .row-topic {
     flex: 1 1 calc(50% - 16px);
     max-width: calc(50% - 16px);
+    height: 120px;
   }
 }
 
+/* Mobile */
 @media (max-width: 576px) {
   .row-topic {
     flex: 1 1 100%;
     max-width: 100%;
+    height: 100px;
   }
 }
