@@ -23,7 +23,6 @@ const AdminLayout = () => {
   const navItems = [
     {name: 'Phim', path: 'movie', key: 'movie', icon: <FaFilm className="me-2"/>},
     {name: 'Bộ sưu tập', path: 'collection', key: 'collection', icon: <FaBoxOpen className="me-2"/>},
-    {name: 'Nổi bật', path: 'feature', key: 'feature', icon: <FaStar className="me-2"/>},
     {name: 'Diễn viên', path: 'actor', key: 'actor', icon: <FaUsers className="me-2"/>},
     {name: 'Báo cáo', path: 'report', key: 'report', icon: <FaChartBar className="me-2"/>},
   ]
