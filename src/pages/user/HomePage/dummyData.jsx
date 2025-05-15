@@ -6,3 +6,36 @@ export const topicList = [
     { title: 'Xuyên Không', href: '/c/xuyen-khong', bgColor: '#CF7753' },
     { title: 'Cổ Trang', href: '/c/co-trang', bgColor: '#A73939' },
   ];
+
+export const movies = [
+  {
+    title: "Một Bộ Phim Minecraft",
+    alias: "A Minecraft Movie",
+    imdb: "5.8",
+    quality: "4K",
+    year: "2025",
+    duration: "1h 41m",
+    genres: ["Hành Động", "Chiếu Rạp", "Gia Đình", "Thiếu Nhi", "Viễn Tưởng", "Phiêu Lưu"],
+    description:
+      "Chào mừng bạn đến với thế giới của Minecraft...",
+    background: "https://static.nutscdn.com/vimg/1920-0/e6df9b575322a47a94f4a1892ddd9561.jpg",
+    thumbnail: "https://static.nutscdn.com/vimg/150-0/e6df9b575322a47a94f4a1892ddd9561.jpg",
+    watchLink: "/xem-phim/mot-bo-phim-minecraft.S8C5sshG",
+    detailLink: "/phim/mot-bo-phim-minecraft.S8C5sshG"
+  },
+  {
+    title: "Nàng Bạch Tuyết",
+    alias: "Snow White",
+    imdb: "1.6",
+    quality: "4K",
+    year: "2025",
+    duration: "1h 50m",
+    genres: ["Chiếu Rạp", "Gia Đình", "Kỳ Ảo", "Cổ Tích", "Viễn Tưởng", "Chuyển Thể", "Phiêu Lưu"],
+    description: "Chuyển thể live-action của bộ phim hoạt hình Disney...",
+    background: "https://static.nutscdn.com/vimg/1920-0/14b31bb07f6db250fd72b91f468f930b.jpg",
+    thumbnail: "https://static.nutscdn.com/vimg/150-0/1ad24f4bee126126e72c54ad6f55f3b2.jpg",
+    watchLink: "/xem-phim/nang-bach-tuyet.46BLVWgG",
+    detailLink: "/phim/nang-bach-tuyet.46BLVWgG"
+  },
+  // Add more movie objects...
+];

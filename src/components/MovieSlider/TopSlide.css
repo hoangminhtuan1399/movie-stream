@@ -1,0 +1,227 @@
+#top_slide {
+  position: relative;
+  background-color: #0e0e10;
+  overflow: hidden;
+  color: #fff;
+}
+
+.top-slide-wrap {
+  position: relative;
+  padding-bottom: 0; /* giảm padding nếu có */
+}
+
+.top-slide-main {
+  width: 100%;
+  height: 600px; /* chiều cao slide chính */
+  position: relative;
+  z-index: 1;
+}
+
+.top-slide-small {
+  position: absolute;
+  bottom: 20px;    /* cách đáy 20px */
+  right: 20px;     /* cách phải 20px */
+  width: 300px;    /* chiều rộng khung thumbnail */
+  background: rgba(0, 0, 0, 0.5); /* nền mờ để nổi bật */
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 10;     /* nằm trên slide chính */
+  box-shadow: 0 0 15px rgba(0,0,0,0.7);
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.top-slide-small .swiper-slide {
+  width: 70px !important;
+  margin-right: 5px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border 0.3s ease;
+}
+
+.top-slide-small .swiper-slide img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
+.top-slide-small .swiper-slide.swiper-slide-thumb-active {
+  border: 2px solid #ffc107;
+}
+
+
+.slide-wrapper {
+  position: relative;
+}
+
+.swiper-slide {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.slide-elements {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slide-url {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.background-fade {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.5);
+  z-index: 0;
+}
+
+.cover-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.cover-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.safe-area {
+  position: relative;
+  z-index: 3;
+  padding: 4rem;
+  max-width: 50%;
+}
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.media-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.media-alias-title {
+  font-size: 3rem;         
+  font-weight: 600;
+  color: #ffffff;          
+  margin-bottom: 1rem;
+}
+
+.media-alias-title a {
+  color: inherit;
+  text-decoration: none;    
+}
+
+.hl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hl-tags .tag-imdb,
+.hl-tags .tag-model,
+.hl-tags .tag-classic {
+  background-color: #222;
+  border-radius: 5px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.tag-topic {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: white;
+  text-decoration: none;
+}
+
+.description {
+  margin: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-height: 4.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.touch {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.button-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffc107;
+  color: black;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: inherit;        
+  display: inline-flex; 
+}
+
+.button-play i {
+  pointer-events: none; 
+}
+
+.touch-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.touch-group .item {
+  cursor: pointer;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.top-slide-small {
+  padding: 1rem 4rem;
+  overflow: hidden;
+}
+
+.top-slide-small .swiper-slide {
+  width: 70px !important;
+  margin-right: 5px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border 0.3s ease;
+}
+
+.top-slide-small .swiper-slide img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
+.top-slide-small .swiper-slide.swiper-slide-thumb-active {
+  border: 2px solid #ffc107;
+}
+
