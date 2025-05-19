@@ -1,9 +1,11 @@
 import { createEmptySeason } from "./createEmptySeason.js";
+import { createEmptyEpisode } from "./createEmptyEpisode.js";
+import { MOVIE_TYPES } from "./movieTypeOptions.js";
 
 export function createEmptyMovie() {
   return {
-    name: '',
-    type: 'Lẻ',
+    title: '',
+    type: MOVIE_TYPES.SINGLE,
     releaseYear: '',
     views: '',
     ageRating: 'PG',
@@ -12,10 +14,7 @@ export function createEmptyMovie() {
     collections: [],
     thumbnail: null,
     poster: null,
-    singleStream: {
-      dubbed: null,
-      subbed: null
-    },
+    singleStream: createEmptyEpisode(),
     seasons: [createEmptySeason()] // Thêm seasons vào movie
   };
 }

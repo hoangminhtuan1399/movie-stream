@@ -5,10 +5,10 @@ import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import './MovieFormModal.css';
 import { createEmptyMovie } from "../../utils/createEmptyMovie.js";
 import { genreOptions } from "../../utils/genreOptions.js";
-import { ageRatings } from "../../utils/ageRatings.js";
+import { ageRatingOptions } from "../../utils/ageRatingOptions.js";
 import { generateOptions } from "../../utils/generateOptions.jsx";
-import { countries } from "../../utils/countries.js";
-import { movieTypes } from "../../utils/movieTypes.js";
+import { countryOptions } from "../../utils/countryOptions.js";
+import { MOVIE_TYPES, movieTypeOptions } from "../../utils/movieTypeOptions.js";
 import { createEmptySeason } from "../../utils/createEmptySeason.js";
 import { createEmptyEpisode } from "../../utils/createEmptyEpisode.js";
 import SeasonRow from "../SeasonRow/SeasonRow.jsx";
@@ -33,8 +33,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
   const validateMovie = (movieToValidate = movie) => {
     const movieErrors = {};
 
-    if (!movieToValidate.name.trim()) {
-      movieErrors.name = 'Vui lòng nhập tên phim';
+    if (!movieToValidate.title.trim()) {
+      movieErrors.title = 'Vui lòng nhập tên phim';
     }
 
     if (isNaN(movieToValidate.releaseYear)) {
@@ -53,17 +53,17 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
       movieErrors.genres = 'Vui lòng chọn ít nhất 1 thể loại';
     }
 
-    if (movieToValidate.type === 'Lẻ') {
-      if (!movieToValidate.singleStream.dubbed && !movieToValidate.singleStream.subbed) {
+    if (movieToValidate.type === MOVIE_TYPES.SINGLE) {
+      if (!movieToValidate.singleStream.dubbed.fileUrl && !movieToValidate.singleStream.subbed.fileUrl) {
         movieErrors.singleStream = 'Vui lòng upload ít nhất 1 phiên bản video';
       }
     }
 
-    if (movieToValidate.type === 'Bộ') {
+    if (movieToValidate.type === MOVIE_TYPES.SEASON) {
       const seasonErrors = movieToValidate.seasons.map((season) => {
         const episodeErrors = season.episodes.map((episode) => {
           const errors = {};
-          if (!episode.dubbed && !episode.subbed) {
+          if (!episode.dubbed.fileUrl && !episode.subbed.fileUrl) {
             errors.video = 'Vui lòng upload ít nhất 1 phiên bản video';
           }
           return Object.keys(errors).length > 0 ? errors : null;
@@ -200,14 +200,14 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
   };
 
   const handleCancel = () => {
-    if (movie.name ||
+    if (movie.title ||
       movie.releaseYear ||
       movie.views ||
       movie.genres.length > 0 ||
       movie.thumbnail ||
       movie.poster ||
-      (movie.type === 'Lẻ' && (movie.singleStream.dubbed || movie.singleStream.subbed)) ||
-      (movie.type === 'Bộ' && movie.seasons.some(s => s.episodes.some(e => e.dubbed || e.subbed)))
+      (movie.type === MOVIE_TYPES.SINGLE && (movie.singleStream.dubbed.fileUrl || movie.singleStream.subbed.fileUrl)) ||
+      (movie.type === MOVIE_TYPES.SEASON && movie.seasons.some(s => s.episodes.some(e => e.dubbed.fileUrl || e.subbed.fileUrl)))
     ) {
       setShowCancelConfirm(true);
     } else {
@@ -239,13 +239,13 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                     <Form.Label>Tên phim <span className="text-danger">*</span></Form.Label>
                     <Form.Control
                       type="text"
-                      value={movie.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      onBlur={() => handleBlur('name')}
-                      isInvalid={(touched.name || submitAttempted) && !!errors.name}
+                      value={movie.title}
+                      onChange={(e) => handleChange('title', e.target.value)}
+                      onBlur={() => handleBlur('title')}
+                      isInvalid={(touched.title || submitAttempted) && !!errors.title}
                     />
                     <Form.Control.Feedback type="invalid">
-                      {errors.name}
+                      {errors.title}
                     </Form.Control.Feedback>
                   </Form.Group>
 
@@ -270,7 +270,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                       value={movie.country}
                       onChange={(e) => handleChange('country', e.target.value)}
                     >
-                      {generateOptions(countries)}
+                      {generateOptions(countryOptions)}
                     </Form.Select>
                   </Form.Group>
                 </Row>
@@ -298,7 +298,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                       value={movie.ageRating}
                       onChange={(e) => handleChange('ageRating', e.target.value)}
                     >
-                      {generateOptions(ageRatings)}
+                      {generateOptions(ageRatingOptions)}
                     </Form.Select>
                   </Form.Group>
 
@@ -354,18 +354,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                       value={movie.type}
                       onChange={(e) => handleChange('type', e.target.value)}
                     >
-                      {generateOptions(movieTypes)}
+                      {generateOptions(movieTypeOptions)}
                     </Form.Select>
-                  </Form.Group>
-                </Row>
-
-                <Row className="mb-3">
-                  <Form.Group as={Col} md={12}>
-                    <Form.Label>Bộ sưu tập</Form.Label>
-                    <CollectionPicker
-                      selectedCollections={movie.collections}
-                      onSelect={(collections) => handleChange('collections', collections)}
-                    />
                   </Form.Group>
                 </Row>
 
@@ -398,7 +388,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                   </Row>
                 )}
 
-                {movie.type === 'Bộ' && (
+                {movie.type === MOVIE_TYPES.SEASON && (
                   <Row className="mb-3">
                     <label className={'form-label'}>Danh sách mùa phim:</label>
                     <div>
@@ -429,6 +419,16 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                     </div>
                   </Row>
                 )}
+
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={12}>
+                    <Form.Label>Bộ sưu tập</Form.Label>
+                    <CollectionPicker
+                      selectedCollections={movie.collections}
+                      onSelect={(collections) => handleChange('collections', collections)}
+                    />
+                  </Form.Group>
+                </Row>
               </div>
             </Container>
           </Form>

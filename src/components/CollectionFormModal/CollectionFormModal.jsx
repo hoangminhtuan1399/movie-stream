@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal.jsx';
 import MoviePicker from "../MoviePicker/MoviePicker.jsx";
+import { createEmptyCollection } from "../../utils/createEmptyCollection.js";
 
-const CollectionFormModal = ({ show, onHide, initialCollection = { name: '', featured: true, index: '', movies: [] } }) => {
+const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyCollection() }) => {
   const [collection, setCollection] = useState(initialCollection);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [errors, setErrors] = useState({});
@@ -22,8 +22,8 @@ const CollectionFormModal = ({ show, onHide, initialCollection = { name: '', fea
 
   const validateCollection = (collectionToValidate = collection) => {
     const collectionErrors = {};
-    if (!collectionToValidate.name.trim()) {
-      collectionErrors.name = 'Vui lòng nhập tên bộ sưu tập';
+    if (!collectionToValidate.title.trim()) {
+      collectionErrors.title = 'Vui lòng nhập tên bộ sưu tập';
     }
     return collectionErrors;
   };
@@ -52,7 +52,7 @@ const CollectionFormModal = ({ show, onHide, initialCollection = { name: '', fea
   };
 
   const handleCancel = () => {
-    if (collection.name || collection.movies.length > 0) {
+    if (collection.title || collection.movies.length > 0) {
       setShowCancelConfirm(true);
     } else {
       onHide();
@@ -76,19 +76,19 @@ const CollectionFormModal = ({ show, onHide, initialCollection = { name: '', fea
 
         <Modal.Body>
           <Form>
-            <Container>
+            <Container className={'movie-form-modal__cards has-scroll'}>
               <Row className="mb-3">
                 <Form.Group as={Col} md={6}>
                   <Form.Label>Tên bộ sưu tập <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     type="text"
-                    value={collection.name}
+                    value={collection.title}
                     onChange={(e) => handleChange('name', e.target.value)}
                     onBlur={() => handleBlur('name')}
-                    isInvalid={(touched.name || submitAttempted) && !!errors.name}
+                    isInvalid={(touched.title || submitAttempted) && !!errors.title}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.name}
+                    {errors.title}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md={6}>
