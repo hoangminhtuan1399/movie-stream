@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap'
 import { FaEdit, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons/fa'
-import { collections } from './dummyData'
+import { collections } from './dummyCollections.js'
 import CollectionFormModal from '../../../components/CollectionFormModal/CollectionFormModal'
 import { createEmptyCollection } from "../../../utils/createEmptyCollection.js";
 
@@ -9,6 +9,8 @@ export const CollectionPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showCollectionFormModal, setShowCollectionFormModal] = useState(false)
+
+  const [selectedCollection, setSelectedCollection] = useState(createEmptyCollection());
 
   const itemsPerPage = 10
 
@@ -42,7 +44,10 @@ export const CollectionPage = () => {
             variant="primary"
             className="icon-button square-button"
             aria-label="Thêm bộ sưu tập"
-            onClick={() => setShowCollectionFormModal(true)}
+            onClick={() => {
+              setSelectedCollection(createEmptyCollection())
+              setShowCollectionFormModal(true)
+            }}
           >
             <FaPlus/>
             <span className="button-tooltip">Thêm mới</span>
@@ -72,7 +77,15 @@ export const CollectionPage = () => {
               <td>{collection.index}</td>
               <td className="text-center p-1">
                 <div className="d-flex justify-content-center gap-2">
-                  <Button variant="outline-primary" size="sm" className="p-1 icon-button border-0">
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="p-1 icon-button border-0"
+                    onClick={() => {
+                      setSelectedCollection(collection)
+                      setShowCollectionFormModal(true)
+                    }}
+                  >
                     <FaEdit/>
                     <span className="button-tooltip">Chỉnh sửa</span>
                   </Button>
@@ -106,7 +119,7 @@ export const CollectionPage = () => {
       <CollectionFormModal
         show={showCollectionFormModal}
         onHide={() => setShowCollectionFormModal(false)}
-        initialCollection={createEmptyCollection()}
+        initialCollection={selectedCollection}
       />
     </Container>
   )

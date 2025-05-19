@@ -1,6 +1,14 @@
 export function createEmptyEpisode() {
   return {
-    dubbed: null,
-    subbed: null
+    dubbed: {
+      id: null,
+      fileName: '',
+      fileUrl: ''
+    },
+    subbed: {
+      id: null,
+      fileName: '',
+      fileUrl: ''
+    }
   };
 }

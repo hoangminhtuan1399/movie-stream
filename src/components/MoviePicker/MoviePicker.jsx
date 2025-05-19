@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button, Col, Form, Row, Pagination, InputGroup } from 'react-bootstrap';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-import { movies } from '../../pages/admin/MoviePage/dummyData';
+import { movies } from '../../pages/admin/MoviePage/dummyMovies.js';
 
 const ITEMS_PER_PAGE = 5;
 

@@ -1,3 +1,9 @@
 export const createEmptyCollection = () => {
-  return {name: '', featured: true, index: '', movies: []}
+  return {
+    id: null,
+    name: '',
+    featured: true,
+    index: '',
+    movies: []
+  }
 }

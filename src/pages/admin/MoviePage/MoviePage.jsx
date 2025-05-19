@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap'
 import { FaEdit, FaFilter, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons/fa'
 import './MoviePage.css'
-import { movies } from "./dummyData.js";
+import { movies } from "./dummyMovies.js";
 import MovieFormModal from "../../../components/MovieFormModal/MovieFormModal.jsx";
 import { createEmptyMovie } from "../../../utils/createEmptyMovie.js";
 
@@ -16,6 +16,7 @@ export const MoviePage = () => {
   const itemsPerPage = 10
 
   const [showModal, setShowModal] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(createEmptyMovie());
 
   return (
     <Container fluid className="h-100 d-flex flex-column">
@@ -57,16 +58,19 @@ export const MoviePage = () => {
             variant="primary"
             className="icon-button square-button"
             aria-label="Thêm phim"
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setSelectedMovie(createEmptyMovie())
+              setShowModal(true)
+            }}
           >
-            <FaPlus />
+            <FaPlus/>
             <span className="button-tooltip">Thêm phim</span>
           </Button>
 
           <MovieFormModal
             show={showModal}
             onHide={() => setShowModal(false)}
-            initialMovie={createEmptyMovie()}
+            initialMovie={selectedMovie}
           />
         </Col>
       </Row>
@@ -78,9 +82,7 @@ export const MoviePage = () => {
             <th>Id</th>
             <th width={72}>Ảnh</th>
             <th>Tên</th>
-            <th>Thể loại</th>
             <th>Năm phát hành</th>
-            <th>Bộ sưu tập</th>
             <th>Lượt xem</th>
             <th style={{width: '120px'}}>Hành động</th>
           </tr>
@@ -98,13 +100,18 @@ export const MoviePage = () => {
                   />
                 </td>
                 <td>{movie.title}</td>
-                <td>{movie.genre}</td>
                 <td>{movie.releaseYear}</td>
-                <td>{movie.collection}</td>
                 <td>{movie.views.toLocaleString()}</td>
                 <td className="text-center p-1">
                   <div className="d-flex justify-content-center gap-2">
-                    <Button variant="outline-primary" size="sm" className="p-1 icon-button border-0">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="p-1 icon-button border-0"
+                      onClick={() => {
+                        setSelectedMovie(movie);
+                        setShowModal(true)
+                      }}>
                       <FaEdit/>
                       <span className="button-tooltip">Chỉnh sửa</span>
                     </Button>
