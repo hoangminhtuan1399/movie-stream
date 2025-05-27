@@ -1,11 +1,40 @@
-import React, { useState } from 'react';
-import { Navbar, Nav, Container, Form, FormControl, Button, Offcanvas, Dropdown } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { Navbar, Nav, Container, Form, FormControl, Button, Offcanvas, Dropdown, Spinner, Modal } from 'react-bootstrap';
 import { FaBars, FaSearch, FaUser } from 'react-icons/fa';
 import './Header.css';
+import ListItem from '../ListItem';
+import { genreOptions } from '../../utils/genreOptions';
+import { countryOptions } from '../../utils/countryOptions';
+import { mockSearchResults } from '../../utils/mockSearchResults';
+import SearchModal from './components/SearchModal';
 
 const Header = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+    const [filteredResults, setFilteredResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const debounceTimeout = useRef();
+
+    useEffect(() => {
+      if (!searchValue) {
+        setFilteredResults([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+      debounceTimeout.current = setTimeout(() => {
+        const results = mockSearchResults.filter(movie =>
+          movie.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+          movie.originalTitle.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setFilteredResults(results);
+        setLoading(false);
+      }, 400);
+      return () => clearTimeout(debounceTimeout.current);
+    }, [searchValue]);
 
     return (
         <>
@@ -21,30 +50,37 @@ const Header = () => {
                             </div>
                         </Navbar.Brand>
 
-                        <Form className="d-flex me-3 flex-grow-1" style={{ maxWidth: '400px' }}>
-                            <FormControl
-                                type="search"
-                                placeholder="Tìm kiếm phim, diễn viên"
-                                className="me-2 search-input"
-                                aria-label="Search"
-                            />
-                            
-                        </Form>
+                        <div className="position-relative" style={{ width: '100%', maxWidth: '400px' }}>
+                          <Form className="d-flex me-3 flex-grow-1" style={{ maxWidth: '400px' }}>
+                              <FormControl
+                                  type="search"
+                                  placeholder="Tìm kiếm phim, diễn viên"
+                                  className="me-2 search-input"
+                                  aria-label="Search"
+                                  value={searchValue}
+                                  onChange={e => {
+                                    setSearchValue(e.target.value);
+                                    setShowSearchDropdown(!!e.target.value);
+                                  }}
+                                  onFocus={() => setShowSearchDropdown(!!searchValue)}
+                                  onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
+                                  autoComplete="off"
+                              />
+                          </Form>
+                          <SearchModal
+                            show={showSearchDropdown}
+                            onHide={() => setShowSearchDropdown(false)}
+                            loading={loading}
+                            searchValue={searchValue}
+                            filteredResults={filteredResults}
+                          />
+                        </div>
 
                         <Nav className="d-flex align-items-center gap-3 menu-links flex-nowrap">
-                            <Nav.Link href="#" className="text-white">Thể loại</Nav.Link>
+                            <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} />
                             <Nav.Link href="#" className="text-white">Phim Lẻ</Nav.Link>
                             <Nav.Link href="#" className="text-white">Phim Bộ</Nav.Link>
-                            <Dropdown className="text-white">
-                                <Dropdown.Toggle variant="link" className="text-white">
-                                    Quốc gia
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu className="bg-dark text-white">
-                                    <Dropdown.Item href="#">Âu Mỹ</Dropdown.Item>
-                                    <Dropdown.Item href="#">Hàn Quốc</Dropdown.Item>
-                                    <Dropdown.Item href="#">Trung Quốc</Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown>
+                            <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
                             <Nav.Link href="#" className="text-white">Diễn Viên</Nav.Link>
                             
                         </Nav>
@@ -81,14 +117,57 @@ const Header = () => {
 
             {/* Mobile search input */}
             {showSearch && (
-                <div className="mobile-search-wrapper d-lg-none">
-                    <Form className="d-flex mx-3 flex-grow-1">
+                <div className="mobile-search-wrapper d-lg-none position-relative">
+                    <Form className="d-flex mx-3 flex-grow-1 position-relative">
                         <FormControl
                             type="search"
                             placeholder="Tìm kiếm phim, diễn viên"
                             className="me-2"
                             aria-label="Search"
+                            value={searchValue}
+                            onChange={e => {
+                              setSearchValue(e.target.value);
+                              setShowSearchDropdown(!!e.target.value);
+                            }}
+                            onFocus={() => setShowSearchDropdown(!!searchValue)}
+                            onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
+                            autoComplete="off"
                         />
+                        {showSearchDropdown && (
+                          <div className="search-modal-body position-absolute w-100 mt-2" style={{zIndex: 1050, left: 0, top: '100%'}}>
+                            <div className="text-secondary mb-2" style={{fontSize: '0.95rem'}}>Danh sách phim</div>
+                            {loading ? (
+                              <div className="d-flex justify-content-center align-items-center py-4">
+                                <Spinner animation="border" variant="light" size="sm" className="me-2" />
+                                <span className="text-white">Đang tìm kiếm...</span>
+                              </div>
+                            ) : filteredResults.length > 0 ? (
+                              <>
+                                <div className="search-modal-list">
+                                  {filteredResults.map(movie => (
+                                    <div key={movie.id} className="search-modal-item">
+                                      <img src={movie.poster} alt={movie.title} className="search-modal-poster" />
+                                      <div className="search-modal-info">
+                                        <div className="search-modal-title">{movie.title}</div>
+                                        <div className="search-modal-subtitle">{movie.originalTitle}</div>
+                                        <div className="search-modal-meta">
+                                          <span>{movie.age}</span>
+                                          <span>•</span>
+                                          <span>{movie.year}</span>
+                                          <span>•</span>
+                                          <span>{movie.duration}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <Button variant="secondary" className="w-100 mt-3 search-modal-btn">Toàn bộ kết quả</Button>
+                              </>
+                            ) : (
+                              !loading && searchValue && <div className="text-secondary text-center py-3">Không tìm thấy kết quả</div>
+                            )}
+                          </div>
+                        )}
                     </Form>
                 </div>
             )}
@@ -108,18 +187,10 @@ const Header = () => {
                     </Button>
 
                     <Nav className="flex-column">
-                        <Nav.Link href="#">Thể loại</Nav.Link>
+                        <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} />
                         <Nav.Link href="#">Phim Lẻ</Nav.Link>
                         <Nav.Link href="#">Phim Bộ</Nav.Link>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="link" className="text-white">Quốc gia
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu className="bg-dark text-white">
-                                <Dropdown.Item href="#">Âu Mỹ</Dropdown.Item>
-                                <Dropdown.Item href="#">Hàn Quốc</Dropdown.Item>
-                                <Dropdown.Item href="#">Trung Quốc</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
                         <Nav.Link href="#">Diễn Viên</Nav.Link>
                     </Nav>
                 </Offcanvas.Body>
