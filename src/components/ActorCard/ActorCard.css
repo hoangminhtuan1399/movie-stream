@@ -1,0 +1,63 @@
+.actor-card {
+    text-align: center;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.actor-card:hover {
+    transform: translateY(-5px);
+}
+
+.actor-card__image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.actor-card:hover .actor-card__image {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.actor-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.actor-card__info {
+    padding: 0 10px;
+}
+
+.actor-card__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.actor-card__role {
+    font-size: 14px;
+    color: #e0e0e0;
+    margin: 0;
+}
+
+
+/* Responsive styles */
+
+@media (max-width: 768px) {
+    .actor-card__image {
+        width: 100px;
+        height: 100px;
+    }
+    .actor-card__name {
+        font-size: 14px;
+    }
+    .actor-card__role {
+        font-size: 12px;
+    }
+}

@@ -8,6 +8,7 @@ module.exports = {
         extend: {
             colors: {
                 'btn-primary': 'linear-gradient(39deg, rgba(254,207,89,1), rgba(255,241,204,1))',
+                'layout-primary': '#191B24',
             },
             fontSize: {
                 'base': '13px',

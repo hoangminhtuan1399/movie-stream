@@ -1,0 +1,80 @@
+.list-item {
+    position: relative;
+    user-select: none;
+}
+
+.list-item-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: var(--radius-base);
+    transition: background-color var(--transition-base);
+    color: var(--color-text);
+}
+
+.list-item-title {
+    font-weight: 500;
+    font-size: var(--font-size-base);
+}
+
+.list-item-icon {
+    transition: transform var(--transition-base);
+}
+
+.list-item-icon.open {
+    transform: rotate(180deg);
+}
+
+.list-item-menu {
+    position: absolute;
+    left: 0;
+    margin-top: 8px;
+    background: var(--color-background-dark);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+    padding: 16px;
+    animation: fade-in var(--transition-base);
+}
+
+.list-item-menu.single-column {
+    min-width: 200px;
+}
+
+.list-item-menu.double-column {
+    min-width: 300px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.list-item-option {
+    padding: 8px 12px;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.list-item-option:hover {
+    /* background-color: var(--color-primary); */
+    color: var(--color-primary);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

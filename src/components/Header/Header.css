@@ -97,7 +97,6 @@
 
 .nav-link:hover,
 .dropdown-item:hover {
-    background-color: #444;
     color: white;
 }
 
@@ -202,4 +201,70 @@
 .search-modal-btn:hover {
     background: #ffd700 !important;
     color: #181a20 !important;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+.header.scrolled {
+    background-color: #0d0e17;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 300px;
+    height: 44px;
+    line-height: 2rem;
+    padding: .4rem 3rem;
+    background-color: rgba(255, 255, 255, .18);
+    color: #fff !important;
+    font-size: 13px;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: .4rem;
+    border: 1px solid transparent !important;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-input:focus {
+    background-color: rgba(255, 255, 255, .12);
+}
+
+.search-loading {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.search-loading .spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
 }
