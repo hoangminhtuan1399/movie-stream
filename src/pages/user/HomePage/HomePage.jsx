@@ -1,10 +1,11 @@
-import TopSlide from "../../../components/MovieSlider/TopSlide"
+import TopSlide from "../../../components/MovieSlider/MainSlide/TopSlide"
+import TopTenShows from "../../../components/MovieSlider/Top10Slide/TopTenShows"
 import TopicCard from "../../../components/TopicCard/TopicCard"
 import { topicList } from "./dummyData"
 
 export const HomePage = () => {
   return <>
-    <TopSlide/>
+    <TopSlide />
     <div className="topic-container">
       {topicList.map((topic, index) => (
         <TopicCard
@@ -15,5 +16,6 @@ export const HomePage = () => {
         />
       ))}
     </div>
+    <TopTenShows />
   </>
 }

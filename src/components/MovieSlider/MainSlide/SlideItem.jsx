@@ -10,11 +10,7 @@ const SlideItem = ({ data }) => {
         className="background-fade"
         style={{ backgroundImage: `url(${data.bgImage})` }}
       ></div>
-      <div className="cover-fade">
-        <div className="cover-image">
-          <img className="fade-in visible" title={data.title} loading="lazy"  />
-        </div>
-      </div>
+      
       <div className="safe-area">
         <div className="slide-content">
           <div className="media-item">
