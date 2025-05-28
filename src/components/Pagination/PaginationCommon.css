@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 32px;
+    gap: 20px;
     margin: 32px 0 0 0;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .pagination-arrow:not(:disabled):hover {
-    background: #ffe066;
+    background: var(--color-primary);
     color: #23242b;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .pagination-input:focus {
-    border: 1.5px solid #ffe066;
+    border: 1.5px solid var(--color-primary);
 }
 
 .pagination-total {

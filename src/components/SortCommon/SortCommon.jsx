@@ -4,6 +4,7 @@ import { countryOptions } from '../../utils/countryOptions';
 import { movieTypeOptions } from '../../utils/movieTypeOptions';
 import { ageRatingOptions } from '../../utils/ageRatingOptions';
 import { genreOptions } from '../../utils/genreOptions';
+import { Button } from "react-bootstrap";
 
 
 const sortOptions = [
@@ -47,15 +48,14 @@ const SortCommon = ({ selected, onSelect, onApply }) => {
   }
 
   return (
-    <div className={`sort-common ${!expanded ? 'w-[160px]' : ''}`}>
-      <div className={`sort-title ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(e => !e)} style={{ cursor: 'pointer', userSelect: 'none' }}>
-        <span className={`sort-title-icon`}
-          style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
+    <div className={`sort-common`}>
+      <Button variant={'link'} className={`sort-title text-decoration-none ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(e => !e)}>
+        <span className={`sort-title-icon d-flex align-items-center`}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-5.6 7.47V19a1 1 0 0 1-1.45.89l-3-1.5A1 1 0 0 1 10 17v-4.93L4.2 6.6A1 1 0 0 1 3 5z" fill={expanded ? '#ffe066' : '#fff'} />
+            <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6l-5.6 7.47V19a1 1 0 0 1-1.45.89l-3-1.5A1 1 0 0 1 10 17v-4.93L4.2 6.6A1 1 0 0 1 3 5z" fill='currentColor' />
           </svg>
         </span> Bộ lọc
-      </div>
+      </Button>
       {expanded && (
         <>
           <div className="sort-table">

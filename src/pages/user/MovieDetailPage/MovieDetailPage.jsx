@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import ActorCard from '../../components/ActorCard/ActorCard';
+import ActorCard from '../../../components/ActorCard/ActorCard.jsx';
 import './MovieDetailPage.css';
 
 const MovieDetailPage = () => {

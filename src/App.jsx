@@ -9,9 +9,9 @@ import { ReportPage } from "./pages/admin/ReportPage/ReportPage.jsx";
 import AdminLayout from "./pages/admin/AdminLayout/AdminLayout.jsx";
 import UserLayout from './pages/user/UserLayout/UserLayout.jsx';
 import { HomePage } from './pages/user/HomePage/HomePage.jsx';
-import Category from './pages/Category/Category.jsx';
-import MovieDetailPage from './pages/MovieDetail/MovieDetailPage.jsx'; // Will be created
-import MovieWatchPage from './pages/MovieWatch/MovieWatchPage';
+import CategoryPage from './pages/user/CategoryPage/CategoryPage.jsx';
+import MovieDetailPage from './pages/user/MovieDetailPage/MovieDetailPage.jsx';
+import MovieWatchPage from './pages/user/MovieWatchPage/MovieWatchPage';
 import useScrollToTop from './hooks/useScrollToTop';
 
 function App() {
@@ -29,9 +29,9 @@ function App() {
       </Route>
       <Route path={'/'} element={<UserLayout />}>
         <Route index element={<HomePage />} />
-        <Route path={'category'} element={<Category />} />
+        <Route path={'category'} element={<CategoryPage />} />
         <Route path={'movie/:id'} element={<MovieDetailPage />} />
-        <Route path="/watch/:id" element={<MovieWatchPage />} />
+        <Route path="watch/:id" element={<MovieWatchPage />} />
       </Route>
     </Routes>
   )

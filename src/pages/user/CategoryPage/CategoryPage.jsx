@@ -1,8 +1,8 @@
 import React from 'react';
-import CardCommon from '../../components/CardMovie/CardCommon';
-import PaginationCommon from '../../components/Pagination/PaginationCommon';
-import './Category.css';
-import SortCommon from '../../components/SortCommon/SortCommon';
+import CardCommon from '../../../components/CardMovie/CardCommon.jsx';
+import PaginationCommon from '../../../components/Pagination/PaginationCommon.jsx';
+import SortCommon from '../../../components/SortCommon/SortCommon.jsx';
+import './CategoryPage.css';
 
 const mockMovies = [
   {
@@ -69,7 +69,7 @@ const mockMovies = [
 ];
 
 
-const Category = () => {
+const CategoryPage = () => {
   const [page, setPage] = React.useState(1);
   const totalPages = 17;
   const [selected, setSelected] = React.useState({});
@@ -96,4 +96,4 @@ const Category = () => {
   );
 };
 
-export default Category; 
+export default CategoryPage;

@@ -142,7 +142,7 @@
 }
 
 .search-modal-item:hover {
-    background: #ffe066;
+    background: var(--color-primary);
 }
 
 .search-modal-item:hover .search-modal-title,
@@ -192,7 +192,7 @@
     border-radius: 8px;
     font-weight: 600;
     font-size: 1rem;
-    background: #ffe066 !important;
+    background: var(--color-primary) !important;
     color: #181a20 !important;
     border: none;
     transition: background 0.18s;
@@ -214,7 +214,7 @@
 }
 
 .header.scrolled {
-    background-color: #0d0e17;
+    background-color: var(--color-background-dark);
 }
 
 .search-input-wrapper {
@@ -233,13 +233,13 @@
 }
 
 .search-input {
-    width: 300px;
+    width: 400px;
     height: 44px;
     line-height: 2rem;
     padding: .4rem 3rem;
     background-color: rgba(255, 255, 255, .18);
     color: #fff !important;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     outline: none !important;
     box-shadow: none !important;
     border-radius: .4rem;

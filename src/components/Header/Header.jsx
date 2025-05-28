@@ -55,7 +55,7 @@ const Header = () => {
   return (
     <>
       {/* Navbar for desktop */}
-      <Navbar expand="lg" className={`header d-none d-lg-flex ${isScrolled ? 'scrolled' : ''}`} variant="dark">
+      <Navbar expand="lg" className={`header d-none d-xl-flex ${isScrolled ? 'scrolled' : ''}`} variant="dark">
         <Container fluid className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center justify-between flex-grow-1">
             <div className="d-flex align-items-center me-3">
@@ -103,7 +103,6 @@ const Header = () => {
               <Nav.Link href="#" className="text-white" style={{ fontSize: '13px' }}>Phim Bộ</Nav.Link>
               <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
               <Nav.Link href="#" className="text-white" style={{ fontSize: '13px' }}>Diễn Viên</Nav.Link>
-
             </Nav>
           </div>
 
@@ -117,7 +116,7 @@ const Header = () => {
       </Navbar>
 
       {/* Navbar for mobile */}
-      <Navbar expand={false} className="bg-dark header d-lg-none" variant="dark">
+      <Navbar expand={false} className="bg-dark header d-xl-none" variant="dark">
         <Container fluid>
           <Button variant="link" onClick={() => setShowMenu(true)} className="text-white">
             <FaBars size={22} />

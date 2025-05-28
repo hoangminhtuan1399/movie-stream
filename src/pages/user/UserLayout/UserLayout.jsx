@@ -4,15 +4,15 @@ import Footer from '../../../components/Footer/Footer';
 import { Outlet } from 'react-router-dom';
 
 
-
-const UserLayout = ({ children }) => {
+const UserLayout = () => {
     return (
-        <div>
-            <Header />
-            <main>{children}</main>
-            <Outlet/>
-            <Footer />
-        </div>
+        <>
+            <Header/>
+            <main>
+                <Outlet/>
+            </main>
+            <Footer/>
+        </>
     );
 };
 

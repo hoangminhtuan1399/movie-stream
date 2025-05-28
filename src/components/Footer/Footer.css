@@ -1,5 +1,5 @@
 .footer {
-    background-color: #0d0e17;
+    background-color: var(--color-background-dark);
     color: #d1d1d1;
     padding: 40px 0;
     font-size: 15px;
@@ -72,7 +72,6 @@
   
   .footer-copy {
     margin-top: 10px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: #888;
   }
-  

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './MovieWatchPage.css';
 import ReactPlayer from 'react-player';
-import ActorCard from '../../components/ActorCard/ActorCard';
+import ActorCard from '../../../components/ActorCard/ActorCard.jsx';
 
 const MovieWatchPage = () => {
   const [playing, setPlaying] = useState(false);
