@@ -1,0 +1,85 @@
+.actor-detail-page {
+    background: #181922;
+}
+
+
+/* Border cho phần phim */
+
+@media (min-width: 992px) {
+    .actor-movie-col {
+        border-left: 1.5px solid #ffffff10;
+        padding-left: 32px;
+        padding-bottom: 24px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .actor-movie-col {
+        border-left: none;
+        padding-left: 0;
+    }
+}
+
+.actor-avatar-wrapper {
+    display: flex;
+    justify-content: start;
+}
+
+.actor-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.18);
+    background: #23242b;
+}
+
+.actor-name {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.35rem;
+}
+
+.actor-info-list {
+    margin-top: 24px;
+    font-size: 1rem;
+    line-height: 2;
+}
+
+.movie-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.18);
+    background: #23242b !important;
+    position: relative;
+}
+
+.movie-img-wrapper {
+    position: relative;
+}
+
+.movie-img {
+    border-radius: 16px 16px 0 0;
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.movie-badges {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 2;
+}
+
+@media (max-width: 768px) {
+    .actor-avatar {
+        width: 90px;
+        height: 90px;
+    }
+    .movie-img {
+        height: 150px;
+    }
+}

@@ -13,6 +13,9 @@ import CategoryPage from './pages/user/CategoryPage/CategoryPage.jsx';
 import MovieDetailPage from './pages/user/MovieDetailPage/MovieDetailPage.jsx';
 import MovieWatchPage from './pages/user/MovieWatchPage/MovieWatchPage';
 import useScrollToTop from './hooks/useScrollToTop';
+import SearchPage from './pages/user/SearchPage/SearchPage.jsx';
+import ActorDetailPage from './pages/user/ActorDetailPage/ActorDetailPage.jsx';
+import UserActorPage from './pages/user/ActorPage/ActorPage.jsx';
 
 function App() {
   useScrollToTop();
@@ -32,6 +35,9 @@ function App() {
         <Route path={'category'} element={<CategoryPage />} />
         <Route path={'movie/:id'} element={<MovieDetailPage />} />
         <Route path="watch/:id" element={<MovieWatchPage />} />
+        <Route path={'actor'} element={<UserActorPage />} />
+        <Route path={'actor/:id'} element={<ActorDetailPage />} />
+        <Route path={'search'} element={<SearchPage />} />
       </Route>
     </Routes>
   )

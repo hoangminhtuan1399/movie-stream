@@ -1,0 +1,26 @@
+.btn-facebook {
+    background: #1877f3 !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px 0 rgba(24, 119, 242, 0.10);
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+
+.btn-facebook svg {
+    fill: #fff;
+}
+
+.btn-facebook:hover {
+    background: #145dc2 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px 0 rgba(24, 119, 242, 0.18);
+    text-decoration: none;
+}

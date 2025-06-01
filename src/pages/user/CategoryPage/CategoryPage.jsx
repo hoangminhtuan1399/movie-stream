@@ -2,6 +2,7 @@ import React from 'react';
 import CardCommon from '../../../components/CardMovie/CardCommon.jsx';
 import PaginationCommon from '../../../components/Pagination/PaginationCommon.jsx';
 import SortCommon from '../../../components/SortCommon/SortCommon.jsx';
+import MovieGrid from '../../../components/MovieGrid/MovieGrid';
 import './CategoryPage.css';
 
 const mockMovies = [
@@ -68,32 +69,26 @@ const mockMovies = [
   // ...add more mock movies as needed
 ];
 
-
-const CategoryPage = () => {
-  const [page, setPage] = React.useState(1);
-  const totalPages = 17;
-  const [selected, setSelected] = React.useState({});
-  const handleSelect = (key, value) => setSelected(s => ({ ...s, [key]: value }));
-
-  return (
-    <div className="category-container">
-      <div className="category-header">
-        <h2 className="category-title">Duyệt tìm</h2>
-      </div>
-      <SortCommon
-        selected={selected}
-        onSelect={handleSelect}
-        onApply={() => {}}
-        onClose={() => {}}
-      />
-      <div className="category-grid">
-        {mockMovies.map((movie, idx) => (
-          <CardCommon {...movie} key={idx} />
-        ))}
-      </div>
-      <PaginationCommon page={page} totalPages={totalPages} onPageChange={setPage} />
+const CategoryPage = () => (
+  <div className="category-container">
+    <div className="category-header">
+      <span className="category-header-icon">🎬</span>
+      <h2 className="category-title">Danh mục phim</h2>
     </div>
-  );
-};
+    <div className="category-filter">Bộ lọc</div>
+    <MovieGrid
+      items={mockMovies}
+      renderItem={(movie, idx) => (
+        <CardCommon
+          poster={movie.poster}
+          title={movie.title}
+          subtitle={movie.subtitle}
+          badge={movie.badge}
+        />
+      )}
+    />
+    <PaginationCommon />
+  </div>
+);
 
 export default CategoryPage;

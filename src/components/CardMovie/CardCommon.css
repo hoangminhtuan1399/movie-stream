@@ -74,7 +74,6 @@
     max-width: 95vw;
     background: var(--color-background-dark);
     border-radius: 20px;
-    overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     z-index: 100;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -84,6 +83,7 @@
     visibility: hidden;
     transform-origin: center center;
     animation: popoverFadeIn 0.3s ease-out;
+    overflow: hidden;
 }
 
 .card-common:hover {
