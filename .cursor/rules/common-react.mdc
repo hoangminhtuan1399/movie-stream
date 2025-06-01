@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Common React Project Structure and Conventions
+
+This project uses React for building the user interface. Here are some common conventions and structure guidelines to help you navigate and understand the codebase:
+
+## Main Entry Point
+- The main entry point is typically `src/App.jsx`, which sets up the main application routes and layout.
+- Global styles and third-party CSS (like Bootstrap) are imported in `App.jsx` or `index.js`.
+
+## Components
+- Reusable UI elements are placed in the `src/components/` directory.
+- Components are usually functional components, using hooks for state and side effects.
+- Component files are named with PascalCase (e.g., `Header.jsx`, `SearchModal.jsx`).
+- Related CSS files are often placed alongside the component (e.g., `Header.jsx` and `Header.css`).
+
+## Pages
+- Route-level components (pages) are placed in `src/pages/`.
+- Each page may have its own directory (e.g., `src/pages/Category/Category.jsx`).
+- Pages are rendered via React Router in `App.jsx`.
+
+## Routing
+- Routing is handled with `react-router-dom`.
+- The main `<Routes>` and `<Route>` setup is in `App.jsx`.
+- Nested routes are used for layouts (e.g., `UserLayout`, `AdminLayout`).
+
+## State Management
+- Local state is managed with React's `useState` and `useEffect` hooks.
+- For global state, context or external libraries may be used (not present in this starter).
+
+## Best Practices
+- Use functional components and hooks.
+- Keep components small and focused.
+- Use prop-types or TypeScript for type safety (if configured).
+- Keep styles modular and scoped to components when possible.
+- Use clear, descriptive names for components and props.
+
+## Example File References
+- [App.jsx](mdc:src/App.jsx): Main app and routing
+- [Header.jsx](mdc:src/components/Header/Header.jsx): Example of a reusable header component
+- [Category.jsx](mdc:src/pages/Category/Category.jsx): Example of a page component
+
+Refer to these conventions when adding new components, pages, or features to the project.
+
