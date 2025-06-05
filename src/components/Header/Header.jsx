@@ -5,9 +5,9 @@ import './Header.css';
 import ListItem from '../ListItem/ListItem';
 import { genreOptions } from '../../utils/genreOptions';
 import { countryOptions } from '../../utils/countryOptions';
-import { mockSearchResults } from '../../utils/mockSearchResults';
 import SearchModal from './SearchModal';
 import useDebounce from '../../hooks/useDebounce';
+import { movieService } from '../../services/movieService';
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -18,19 +18,22 @@ const Header = () => {
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const handleSearch = useCallback((value) => {
+  const handleSearch = useCallback(async (value) => {
     if (!value) {
       setFilteredResults([]);
       setLoading(false);
       return;
     }
     setLoading(true);
-    const results = mockSearchResults.filter(movie =>
-      (movie.title?.toLowerCase() || '').includes(value.toLowerCase()) ||
-      (movie.originalTitle?.toLowerCase() || '').includes(value.toLowerCase())
-    );
-    setFilteredResults(results);
-    setLoading(false);
+    try {
+      const results = await movieService.searchMovies(value);
+      setFilteredResults(results);
+    } catch (error) {
+      console.error('Search error:', error);
+      setFilteredResults([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const debouncedSearch = useDebounce(handleSearch, 400);
