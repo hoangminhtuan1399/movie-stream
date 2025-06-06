@@ -17,11 +17,7 @@ const Footer = () => {
             <Container fluid className="px-5">
                 <Row className="align-items-center mb-4">
                     <Col md={6} className="d-flex align-items-center">
-                        <img src="/logo.png" alt="RoPhim Logo" className="footer-logo" />
-                        <div className="footer-title">
-                            <h4>RoPhim</h4>
-                            <span>Phim hay cả rổ</span>
-                        </div>
+                        <img src="/logo.svg" alt="RoPhim Logo" className="footer-logo" />
                     </Col>
                     <Col md={6} className="footer-social d-flex justify-content-md-end justify-content-start mt-3 mt-md-0">
                         <div className="icon"><FaArrowLeft /></div>

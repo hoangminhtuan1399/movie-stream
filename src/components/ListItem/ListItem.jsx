@@ -20,7 +20,7 @@ const ListItem = ({ title, itemsMenu, columns = 2, path='/' }) => {
       onBlur={() => setOpen(false)}
     >
       <div className="list-item-header">
-        <span className="list-item-title">{title}</span>
+        <span className="list-item-title fs-6">{title}</span>
         <FaChevronDown className={`list-item-icon ${open ? 'open' : ''}`} size={13} />
       </div>
       {open && (
