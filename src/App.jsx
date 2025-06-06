@@ -16,6 +16,7 @@ import useScrollToTop from './hooks/useScrollToTop';
 import SearchPage from './pages/user/SearchPage/SearchPage.jsx';
 import ActorDetailPage from './pages/user/ActorDetailPage/ActorDetailPage.jsx';
 import UserActorPage from './pages/user/ActorPage/ActorPage.jsx';
+import LoginAdmin from "./pages/admin/LoginAdmin/LoginAdmin.jsx";
 
 function App() {
   useScrollToTop();
@@ -24,6 +25,7 @@ function App() {
     <Routes>
       <Route path={'/admin'} element={<AdminLayout />}>
         <Route index element={<MoviePage />} />
+        <Route path={'login'} element={<LoginAdmin />} />
         <Route path={'movie'} element={<MoviePage />} />
         <Route path={'collection'} element={<CollectionPage />} />
         <Route path={'feature'} element={<FeaturePage />} />
