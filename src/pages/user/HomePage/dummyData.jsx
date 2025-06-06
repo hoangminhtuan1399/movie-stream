@@ -1,11 +1,11 @@
 export const topicList = [
-    { title: 'Marvel', href: '/c/marvel', bgColor: '#2D5BFF' },
-    { title: '4K', href: '/c/4k', bgColor: '#6C6993' },
-    { title: 'Sitcom', href: '/c/sitcom', bgColor: '#288A73' },
-    { title: 'Lồng Tiếng Cực Mạnh', href: '/c/long-tieng', bgColor: '#8A6EDB' },
-    { title: 'Xuyên Không', href: '/c/xuyen-khong', bgColor: '#CF7753' },
-    { title: 'Cổ Trang', href: '/c/co-trang', bgColor: '#A73939' },
-  ];
+  {title: 'Marvel', href: '/c/marvel', bgColor: '#2D5BFF'},
+  {title: '4K', href: '/c/4k', bgColor: '#6C6993'},
+  {title: 'Sitcom', href: '/c/sitcom', bgColor: '#288A73'},
+  {title: 'Lồng Tiếng Cực Mạnh', href: '/c/long-tieng', bgColor: '#8A6EDB'},
+  {title: 'Xuyên Không', href: '/c/xuyen-khong', bgColor: '#CF7753'},
+  {title: 'Cổ Trang', href: '/c/co-trang', bgColor: '#A73939'},
+];
 
 export const movies = [
   {
@@ -39,3 +39,96 @@ export const movies = [
   },
   // Add more movie objects...
 ];
+
+const collection =
+  {
+    id: 1,
+    name: 'Phim Việt Nam Nổi Bật',
+    featured: true,
+    index: '1',
+    movies: [
+      {
+        id: 1,
+        title: 'Mắt Biếc',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 2,
+        title: 'Mắt Biếc 2',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 3,
+        title: 'Mắt Biếc 3',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 4,
+        title: 'Mắt Biếc 4',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 5,
+        title: 'Mắt Biếc 5',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 6,
+        title: 'Mắt Biếc 6',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 7,
+        title: 'Mắt Biếc 7',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      },
+      {
+        id: 8,
+        title: 'Mắt Biếc 8',
+        type: 'Phim lẻ',
+        releaseYear: '2019',
+        ageRating: 'PG',
+        genres: ['Tình cảm', 'Drama'],
+        thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
+        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+      }
+    ]
+  }
+
+
+export const dummyCollections = [collection, collection, collection, collection, collection, collection, collection, collection]

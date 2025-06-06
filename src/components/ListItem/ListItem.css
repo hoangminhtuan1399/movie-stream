@@ -8,7 +8,7 @@
     align-items: center;
     gap: 4px;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 8px 1rem;
     border-radius: var(--radius-base);
     transition: background-color var(--transition-base);
     color: var(--color-text);
@@ -16,7 +16,6 @@
 
 .list-item-title {
     font-weight: 500;
-    font-size: var(--font-size-base);
 }
 
 .list-item-icon {

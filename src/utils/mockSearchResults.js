@@ -3,13 +3,13 @@ export const mockSearchResults = [{
         title: "Phản ứng nghịch truyền",
         year: 1996,
         age: "T16",
-        poster: "/logo.png" // Using logo as placeholder
+        poster: "/logo.svg" // Using logo as placeholder
     }, {
         id: 2,
         title: "Phản ứng nghịch truyền",
         year: 1996,
         age: "T16",
-        poster: "/logo.png" // Using logo as placeholder
+        poster: "/logo.svg" // Using logo as placeholder
     },
     // You can add more mock movies here
 ];

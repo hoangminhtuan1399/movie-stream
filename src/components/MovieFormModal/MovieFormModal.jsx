@@ -327,12 +327,12 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                     <div className="d-flex flex-wrap gap-3">
                       {genreOptions.map(genre => (
                         <FormCheck
-                          key={genre}
+                          key={genre.value}
                           type="checkbox"
-                          id={`genre-${genre}`}
-                          label={genre}
-                          checked={movie.genres.includes(genre)}
-                          onChange={(e) => handleGenreChange(genre, e.target.checked)}
+                          id={`genre-${genre.value}`}
+                          label={genre.label}
+                          checked={movie.genres.includes(genre.value)}
+                          onChange={(e) => handleGenreChange(genre.value, e.target.checked)}
                           onBlur={() => handleBlur('genres')}
                           isInvalid={(touched.genres || submitAttempted) && !!errors.genres}
                         />

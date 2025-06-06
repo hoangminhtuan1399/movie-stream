@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar, Nav, Container, Form, FormControl, Button, Offcanvas, Dropdown, Spinner, Modal } from 'react-bootstrap';
 import { FaBars, FaSearch, FaUser } from 'react-icons/fa';
 import './Header.css';
@@ -63,11 +63,7 @@ const Header = () => {
           <div className="d-flex align-items-center justify-between flex-grow-1">
             <div className="d-flex align-items-center me-3">
               <Navbar.Brand href="/" className='d-flex align-items-center' style={{ padding: '8px 0' }}>
-                <img src="/logo.png" alt="RoPhim" width="40" className="me-2" />
-                <div className="d-flex flex-column lh-sm">
-                  <span className="fw-bold text-white m-0" style={{ fontSize: '1.1rem' }}>RoPhim</span>
-
-                </div>
+                <img src="/logo.svg" alt="RoPhim" width="120" className="me-2" />
               </Navbar.Brand>
               <div className="position-relative" style={{ width: '100%', maxWidth: '400px', marginLeft: '40px' }}>
                 <Form className="d-flex me-3 flex-grow-1" style={{ maxWidth: '400px' }}>
@@ -102,10 +98,10 @@ const Header = () => {
 
             <Nav className="d-flex align-items-center gap-3 menu-links flex-nowrap">
               <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} path="/category" />
-              <Nav.Link href="#" className="text-white" style={{ fontSize: '13px' }}>Phim Lẻ</Nav.Link>
-              <Nav.Link href="#" className="text-white" style={{ fontSize: '13px' }}>Phim Bộ</Nav.Link>
+              <Nav.Link href="#" className="text-white fs-6">Phim Lẻ</Nav.Link>
+              <Nav.Link href="#" className="text-white fs-6">Phim Bộ</Nav.Link>
               <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
-              <Nav.Link href="#" className="text-white" style={{ fontSize: '13px' }}>Diễn Viên</Nav.Link>
+              <Nav.Link href="#" className="text-white fs-6">Diễn Viên</Nav.Link>
             </Nav>
           </div>
 
@@ -119,17 +115,14 @@ const Header = () => {
       </Navbar>
 
       {/* Navbar for mobile */}
-      <Navbar expand={false} className="bg-dark header d-xl-none" variant="dark">
+      <Navbar expand={false} className={`header d-xl-none ${isScrolled ? 'scrolled' : ''}`} variant="dark">
         <Container fluid>
           <Button variant="link" onClick={() => setShowMenu(true)} className="text-white">
             <FaBars size={22} />
           </Button>
 
           <Navbar.Brand href="/" className="d-flex align-items-center">
-            <img src="/logo.png" alt="RoPhim" width="30" className="me-2" />
-            <div>
-              <div className="fw-bold">RoPhim</div>
-            </div>
+            <img src="/logo.svg" alt="RoPhim" width="120" />
           </Navbar.Brand>
 
           <Button variant="link" onClick={() => setShowSearch(!showSearch)} className="text-white">
@@ -196,26 +189,24 @@ const Header = () => {
       )}
 
       {/* Offcanvas menu for mobile */}
-      <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} placement="start" className="bg-dark text-white">
+      <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} placement="start" className="bg-black text-white">
         <Offcanvas.Header closeButton closeVariant="white">
           <Offcanvas.Title>
-            <img src="/logo.png" alt="RoPhim" width="30" className="me-2" />
-            RoPhim
+            <img src="/logo.svg" alt="RoPhim" width="120" />
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <Button variant="light" className="w-100 mb-3 rounded-pill">
+          <Nav className="flex-column">
+            <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} />
+            <Nav.Link className={'fs-6 ps-3'} href="#">Phim Lẻ</Nav.Link>
+            <Nav.Link className={'fs-6 ps-3'} href="#">Phim Bộ</Nav.Link>
+            <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
+            <Nav.Link className={'fs-6 ps-3'} href="#">Diễn Viên</Nav.Link>
+          </Nav>
+          <Button variant="light" className="w-100 mt-3 rounded-pill">
             <FaUser className="me-2" />
             Thành viên
           </Button>
-
-          <Nav className="flex-column">
-            <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} />
-            <Nav.Link href="#">Phim Lẻ</Nav.Link>
-            <Nav.Link href="#">Phim Bộ</Nav.Link>
-            <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
-            <Nav.Link href="#">Diễn Viên</Nav.Link>
-          </Nav>
         </Offcanvas.Body>
       </Offcanvas>
     </>
