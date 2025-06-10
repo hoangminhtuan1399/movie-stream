@@ -55,7 +55,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 2,
@@ -65,7 +65,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 3,
@@ -75,7 +75,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 4,
@@ -85,7 +85,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 5,
@@ -95,7 +95,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 6,
@@ -105,7 +105,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 7,
@@ -115,7 +115,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       },
       {
         id: 8,
@@ -125,7 +125,7 @@ const collection =
         ageRating: 'PG',
         genres: ['Tình cảm', 'Drama'],
         thumbnail: 'https://lumiere-a.akamaihd.net/v1/images/avatar_800x1200_208c9665.jpeg',
-        poster: 'https://thanhnien.mediacdn.vn/uploaded/ngocthanh/2020_12_10/da-04_PBWC.jpg?width=500'
+        poster: 'https://static.nutscdn.com/vimg/1920-0/ca24572562380c30faeaedb6e5fcb854.webp'
       }
     ]
   }

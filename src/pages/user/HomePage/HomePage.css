@@ -4,5 +4,15 @@
     justify-content: space-between;
     gap: 16px;
     padding: 16px;
-    background-color: #1e1e1e;
+}
+
+.collection-slider__view-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-color: var(--bs-white);
+    color: var(--color-text);
 }
