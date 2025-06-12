@@ -1,0 +1,170 @@
+.file-manager .file-thumb {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.file-manager .file-thumb:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    border-color: #b6d4fe;
+    z-index: 2;
+}
+
+.file-manager .thumb-img {
+    max-width: 100%;
+    max-height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto;
+}
+
+.file-manager .thumb-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    color: #0d6efd;
+    background: #f1f3f6;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-manager .btn-danger.btn-sm {
+    display: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: 1rem;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+}
+
+.file-manager .file-thumb:hover .btn-danger.btn-sm {
+    display: flex;
+}
+
+.file-manager .btn-danger.btn-sm i {
+    margin: 0 auto;
+    font-size: 1.1rem;
+}
+
+.file-manager .small.text-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 0.97rem;
+    margin-top: 4px;
+}
+
+.file-manager .text-muted.small {
+    text-align: center;
+    font-size: 0.92rem;
+    margin-bottom: 2px;
+}
+
+.file-manager .row.g-3 {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.file-manager .col-6,
+.file-manager .col-sm-3,
+.file-manager .col-md-2,
+.file-manager .col-lg-1 {
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-bottom: 12px;
+}
+
+.file-manager .d-flex.align-items-center.mb-3.gap-2.flex-wrap {
+    gap: 10px !important;
+}
+
+.file-manager .form-control,
+.file-manager .form-select {
+    border-radius: 8px;
+    font-size: 1rem;
+    min-height: 38px;
+}
+
+.file-manager .btn.btn-primary {
+    border-radius: 8px;
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-manager .pagination {
+    margin-top: 10px;
+}
+
+.file-manager .modal.fade.show.d-block {
+    display: block;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1050;
+}
+
+.file-manager .modal-content {
+    border-radius: 12px;
+}
+
+.file-manager .modal-header {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.file-manager .modal-footer {
+    border-top: 1px solid #e5e7eb;
+}
+
+.file-manager .modal-title {
+    font-weight: 600;
+}
+
+
+/* Responsive grid: 8 cột trên >=1200px, 6 cột trên md, 4 cột trên sm, 2 cột trên xs */
+
+@media (min-width: 1200px) {
+    .file-manager .col-lg-1 {
+        flex: 0 0 12.5%;
+        max-width: 12.5%;
+    }
+}
+
+@media (max-width: 1199.98px) and (min-width: 992px) {
+    .file-manager .col-md-2 {
+        flex: 0 0 16.6667%;
+        max-width: 16.6667%;
+    }
+}
+
+@media (max-width: 991.98px) and (min-width: 576px) {
+    .file-manager .col-sm-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .file-manager .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
