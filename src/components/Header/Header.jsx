@@ -7,7 +7,7 @@ import { genreOptions } from '../../utils/genreOptions';
 import { countryOptions } from '../../utils/countryOptions';
 import SearchModal from './SearchModal';
 import useDebounce from '../../hooks/useDebounce';
-import { movieService } from '../../services/movieService';
+import movieApi from '../../services/movieService';
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -26,7 +26,7 @@ const Header = () => {
     }
     setLoading(true);
     try {
-      const results = await movieService.searchMovies(value);
+      const results = await movieApi.searchMovies(value);
       setFilteredResults(results);
     } catch (error) {
       console.error('Search error:', error);

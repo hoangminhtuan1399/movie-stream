@@ -1,35 +1,51 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { API_ENDPOINTS, DEFAULT_HEADERS } from '../config/api.config';
 
-// eslint-disable-next-line no-undef
-// const USER_SERVICE_API = process.env.REACT_APP_USER_SERVICE_API;
+// Create axios instances for different services
+const createAxiosInstance = (baseURL) => {
+    const instance = axios.create({
+        baseURL,
+        headers: DEFAULT_HEADERS,
+    });
 
-const axiosInstance = axios.create({
-    baseURL: 'https://movie-streaming-user-service-319946458144.asia-southeast1.run.app/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+    // Add request interceptor
+    instance.interceptors.request.use(
+        (config) => {
+            // Get token from cookie
+            const token = Cookies.get('token');
 
-// Add request interceptor
-axiosInstance.interceptors.request.use(
-    (config) => {
-        // You can add auth token here if needed
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+            // If token exists, add it to headers
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
 
-// Add response interceptor
-axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        // Handle errors here
-        return Promise.reject(error);
-    }
-);
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
+    );
 
-export default axiosInstance;
+    // Add response interceptor
+    instance.interceptors.response.use(
+        (response) => {
+            return response;
+        },
+        (error) => {
+            // Handle errors here
+            return Promise.reject(error);
+        }
+    );
+
+    return instance;
+};
+
+// Create instances for each service
+export const userService = createAxiosInstance(API_ENDPOINTS.USER_SERVICE);
+export const movieService = createAxiosInstance(API_ENDPOINTS.MOVIE_SERVICE);
+export const streamService = createAxiosInstance(API_ENDPOINTS.STREAM_SERVICE);
+export const errorService = createAxiosInstance(API_ENDPOINTS.ERROR_SERVICE);
+
+// Export a function to create new instances if needed
+export const createService = (baseURL) => createAxiosInstance(baseURL);

@@ -17,6 +17,7 @@ import SearchPage from './pages/user/SearchPage/SearchPage.jsx';
 import ActorDetailPage from './pages/user/ActorDetailPage/ActorDetailPage.jsx';
 import UserActorPage from './pages/user/ActorPage/ActorPage.jsx';
 import LoginAdmin from "./pages/admin/LoginAdmin/LoginAdmin.jsx";
+import FilesWithModal from './pages/FilesWithModal.jsx';
 
 function App() {
   useScrollToTop();
@@ -31,6 +32,7 @@ function App() {
         <Route path={'feature'} element={<FeaturePage />} />
         <Route path={'actor'} element={<ActorPage />} />
         <Route path={'report'} element={<ReportPage />} />
+        <Route path={'files'} element={<FilesWithModal />} />
       </Route>
       <Route path={'/'} element={<UserLayout />}>
         <Route index element={<HomePage />} />
