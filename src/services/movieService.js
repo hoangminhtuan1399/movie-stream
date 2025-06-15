@@ -1,9 +1,9 @@
-import axiosInstance from './axios';
+import { movieService } from './axios';
 
-export const movieService = {
+export const movieApi = {
     searchMovies: async(keyword) => {
         try {
-            const response = await axiosInstance.get(`/movies/search`, {
+            const response = await movieService.get(`/movies/search`, {
                 params: {
                     keyword: keyword
                 }
@@ -15,4 +15,4 @@ export const movieService = {
     }
 };
 
-export default movieService;
+export default movieApi;

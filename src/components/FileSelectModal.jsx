@@ -8,7 +8,7 @@ const FileSelectModal = ({ show, onClose, onSelect }) => {
   return (
     <div className={`modal fade${show ? ' show d-block' : ''}`} tabIndex="-1" style={show ? { background: 'rgba(0,0,0,0.3)' } : { display: 'none' }}>
       <div className="modal-dialog modal-xl modal-dialog-centered">
-        <div className="modal-content">
+        <div className="modal-content" style={{ overflowY: 'auto' }}>
           <div className="modal-header">
             <h5 className="modal-title">Chọn file</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>

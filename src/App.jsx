@@ -32,6 +32,7 @@ function App() {
         <Route path={'feature'} element={<FeaturePage />} />
         <Route path={'actor'} element={<ActorPage />} />
         <Route path={'report'} element={<ReportPage />} />
+        <Route path={'files'} element={<FilesWithModal />} />
       </Route>
       <Route path={'/'} element={<UserLayout />}>
         <Route index element={<HomePage />} />
@@ -42,7 +43,6 @@ function App() {
         <Route path={'actor/:id'} element={<ActorDetailPage />} />
         <Route path={'search'} element={<SearchPage />} />
       </Route>
-      <Route path={'/files-modal'} element={<FilesWithModal />} />
     </Routes>
   )
 }

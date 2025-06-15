@@ -1,9 +1,7 @@
-import axiosInstance from "./axios";
+import { userService } from './axios';
 
 export const loginService = {
-  login: async (username, password) => {
-    return axiosInstance.post("/user/login",
-      { username, password },
-    );
-  },
+    login: async(username, password) => {
+        return userService.post("/user/login", { username, password });
+    },
 };
