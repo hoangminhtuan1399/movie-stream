@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Button, Container, Nav, Navbar, Offcanvas, Modal } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { FaBars, FaBoxOpen, FaChartBar, FaFilm, FaSignOutAlt, FaStar, FaUsers } from 'react-icons/fa'
+import { FaBars, FaBoxOpen, FaChartBar, FaFilm, FaSignOutAlt, FaStar, FaUsers, FaUpload } from 'react-icons/fa'
 import './AdminLayout.css'
 import Cookies from 'js-cookie';
 
@@ -21,7 +21,11 @@ const AdminLayout = () => {
   }, [location])
 
   const handleLogout = () => {
+    // Remove token from cookie
     Cookies.remove('token');
+    // Close the logout modal
+    setShowLogoutModal(false);
+    // Navigate to login page
     navigate('/admin/login');
   }
 
@@ -30,6 +34,7 @@ const AdminLayout = () => {
     {name: 'Bộ sưu tập', path: 'collection', key: 'collection', icon: <FaBoxOpen className="me-2"/>},
     {name: 'Diễn viên', path: 'actor', key: 'actor', icon: <FaUsers className="me-2"/>},
     {name: 'Báo cáo', path: 'report', key: 'report', icon: <FaChartBar className="me-2"/>},
+    {name: 'Upload File', path: 'files', key: 'files', icon: <FaUpload className="me-2"/>},
   ]
 
   // Nếu là route auth thì chỉ render nội dung con (login)
