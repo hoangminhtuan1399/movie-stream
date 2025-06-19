@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import FileManager from '../components/FileManager';
-import FileSelectModal from '../components/FileSelectModal';
+import FileManager from '../components/FileUpload/FileManager';
+import FileSelectModal from '../components/FileUpload/FileSelectModal';
 
 // Page with FileManager and file select modal
 const FilesWithModal = () => {

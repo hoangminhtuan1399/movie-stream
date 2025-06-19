@@ -1,63 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import CardCommon from '../../../components/CardMovie/CardCommon';
 import SortCommon from '../../../components/SortCommon/SortCommon';
 import MovieGrid from '../../../components/MovieGrid/MovieGrid';
+import movieApi from '../../../services/movieService';
 import './SearchPage.css';
 
-const mockMovies = [
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Bí Ẩn Karawek',
-    subtitle: 'A Cage Of Karawek',
-    badges: ['PĐ. 24', 'TM. 24'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Chiếc Lồng',
-    subtitle: 'The Cage',
-    badges: ['PĐ. 5'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Long Ngục Thiên Quan',
-    subtitle: "Dragon's Cage",
-    badges: ['P.Đề', 'T.Minh'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Mồi Cá Mập',
-    subtitle: 'Open Water 3: Cage Dive',
-    badges: ['P.Đề'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Điệp Viên xXx: Phản Đòn',
-    subtitle: 'xXx: Return of Xander...',
-    badges: ['P.Đề'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: "Marvel's Luke Cage",
-    subtitle: "Marvel's Luke Cage",
-    badges: ['PĐ. 13'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Đặc Cảnh Đồ Long 2',
-    subtitle: 'Tiger Cage 2',
-    badges: ['P.Đề'],
-  },
-  {
-    poster: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    title: 'Ngôi Nhà Bươm Bướm',
-    subtitle: 'La Cage aux Folles',
-    badges: ['P.Đề'],
-  },
-];
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 const SearchPage = () => {
   const [tab, setTab] = useState('movie');
   const [selectedFilter, setSelectedFilter] = useState({});
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const query = useQuery();
+  const searchValue = query.get('q') || '';
+
+  useEffect(() => {
+    if (!searchValue) {
+      setMovies([]);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    movieApi.searchMovies(searchValue)
+      .then(res => {
+        setMovies(res.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Không thể tải kết quả tìm kiếm');
+        setLoading(false);
+      });
+  }, [searchValue]);
 
   const handleSelectFilter = (key, value) => {
     setSelectedFilter(prev => ({ ...prev, [key]: value }));
@@ -65,8 +45,6 @@ const SearchPage = () => {
 
   const handleApplyFilter = () => {
     // TODO: Lọc dữ liệu theo selectedFilter
-    // Hiện tại chỉ mock, bạn có thể tích hợp API/filter thực tế ở đây
-    // alert(JSON.stringify(selectedFilter));
   };
 
   return (
@@ -74,24 +52,31 @@ const SearchPage = () => {
       <div className="container">
         <div className="search-header d-flex align-items-center mb-4">
           <span className="me-2">🔍</span>
-          <h2 className="mb-0">Kết quả tìm kiếm "cage"</h2>
+          <h2 className="mb-0">Kết quả tìm kiếm "{searchValue}"</h2>
         </div>
         <div className="search-tabs mb-3">
           <button className={`search-tab ${tab === 'movie' ? 'active' : ''}`} onClick={() => setTab('movie')}>Phim</button>
           <button className={`search-tab ${tab === 'actor' ? 'active' : ''}`} onClick={() => setTab('actor')}>Diễn viên</button>
         </div>
         <SortCommon selected={selectedFilter} onSelect={handleSelectFilter} onApply={handleApplyFilter} />
+        {loading ? (
+          <div className="text-center py-5">Đang tìm kiếm...</div>
+        ) : error ? (
+          <div className="text-danger text-center py-5">{error}</div>
+        ) : (
         <MovieGrid
-          items={mockMovies}
-          renderItem={(movie, idx) => (
+            items={movies}
+            renderItem={movie => (
             <CardCommon
-              poster={movie.poster}
+                key={movie.id}
+                poster={movie.bigBanner || movie.smallBanner || 'https://via.placeholder.com/80x120?text=No+Image'}
               title={movie.title}
               subtitle={movie.subtitle}
-              badges={movie.badges}
+                badges={[]}
             />
           )}
         />
+        )}
       </div>
     </div>
   );

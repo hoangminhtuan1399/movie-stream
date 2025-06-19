@@ -26,8 +26,8 @@ const Header = () => {
     }
     setLoading(true);
     try {
-      const results = await movieApi.searchMovies(value);
-      setFilteredResults(results);
+      const {data} = await movieApi.searchMovies(value);
+      setFilteredResults(data);
     } catch (error) {
       console.error('Search error:', error);
       setFilteredResults([]);

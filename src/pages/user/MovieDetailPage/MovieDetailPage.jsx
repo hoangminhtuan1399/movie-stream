@@ -1,10 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ActorCard from '../../../components/ActorCard/ActorCard.jsx';
 import CardCommon from '../../../components/CardMovie/CardCommon.jsx';
 import MovieGrid from '../../../components/MovieGrid/MovieGrid';
 import { FacebookShareButton, FacebookIcon } from 'react-share';
 import './MovieDetailPage.css';
+import { getMovieDetail } from '../../../services/movieService';
+import { Spinner } from 'react-bootstrap';
 
 const similarMovies = [
   {
@@ -35,37 +37,59 @@ const similarMovies = [
 
 const MovieDetailPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleWatchClick = () => {
-    navigate('/watch/1'); // Replace '1' with actual movie ID
-  };
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    getMovieDetail(id)
+      .then(data => {
+        setMovie(data.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Không thể tải dữ liệu phim');
+        setLoading(false);
+      });
+  }, [id]);
 
-  const actors = [
-    { name: 'Jason Momoa', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Steve' },
-    { name: 'Jack Black', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Alex' },
-    { name: 'Sebastian Eugene', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Zombie' },
-    { name: 'Emma Myers', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Creeper' },
-    { name: 'Danielle Brooks', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Villager' },
-    { name: 'Jennifer Coolidge', img: 'https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg', role: 'Witch' }
-  ];
+  if (loading) return (
+    <div className="text-white text-center py-5">
+      <Spinner animation="border" variant="light" size="md" className="me-2" />
+      Đang tải dữ liệu phim...
+    </div>
+  );
+  if (error) return <div className="text-danger text-center py-5">{error}</div>;
+  if (!movie) return null;
+
+  // Lấy các trường cơ bản, fallback nếu thiếu
+  const poster = movie.bigBanner || movie.smallBanner || 'https://via.placeholder.com/300x450?text=No+Image';
+  const title = movie.title || 'Đang cập nhật';
+  const subtitle = movie.subtitle || '';
+  const year = movie.year || '';
+  const intro = movie.intro || '';
+  const ageRating = movie.ageRating || '';
+  const actors = movie.actors || [];
 
   return (
     <div className="movie-detail">
       <div className="movie-detail__container">
         <div className="movie-detail__poster">
-          <img src="https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg" alt="Minecraft Poster" />
-          <button className="movie-detail__watch-button" onClick={handleWatchClick}>
+          <img src={poster} alt={title} />
+          <button className="movie-detail__watch-button" onClick={() => navigate(`/watch/${id}`)}>
             <span className="icon-play" /> XEM PHIM
           </button>
         </div>
 
         <div className="movie-detail__info">
-          <h1 className="movie-title">A Minecraft Movie</h1>
-          <p className="movie-subtitle">Một bộ phim Minecraft (2025)</p>
+          <h1 className="movie-title">{title}</h1>
+          <p className="movie-subtitle">{subtitle} {year && `(${year})`}</p>
 
           <div className="movie-meta">
-            <span>1 giờ 41 phút</span>
-            <span className="imdb-badge">IMDB <b>5.8</b></span>
+            <span>{ageRating}</span>
             <div className="btn-add">
               <FacebookShareButton url={window.location.href} quote="Xem phim này cực hay!" className="btn-facebook d-flex align-items-center">
                 <FacebookIcon size={20} round />
@@ -81,15 +105,11 @@ const MovieDetailPage = () => {
           </div>
 
           <div className="movie-attributes">
-            <div><strong>Đạo diễn:</strong> Jared Hess</div>
-            <div><strong>Quốc gia:</strong> Thụy Điển, Mỹ</div>
-            <div><strong>Khởi chiếu:</strong> 31/3/2025</div>
+            <div><strong>Giới thiệu:</strong> {intro}</div>
           </div>
 
           <p className="movie-description">
-            Bốn kẻ lập dị đột nhiên bị kéo qua một cánh cổng bí ẩn đến một xứ sở thần tiên hình khối kỳ lạ,
-            nơi phát triển trí tưởng tượng. Để trở về nhà, họ sẽ phải làm chủ thế giới này trong khi bắt đầu một nhiệm vụ
-            với một thợ thủ công chuyên nghiệp bất ngờ.
+            {intro}
           </p>
 
           <div className="movie-tags">
@@ -104,9 +124,9 @@ const MovieDetailPage = () => {
       <div className="movie-cast">
         <h2>DIỄN VIÊN</h2>
         <div className="cast-list">
-          {actors.map((actor, idx) => (
-            <ActorCard key={idx} actor={actor} />
-          ))}
+          {actors.length > 0 ? actors.map((actor, idx) => (
+            <ActorCard key={idx} actor={actor}/>
+          )) : <div className="text-secondary">Chưa có thông tin diễn viên</div>}
         </div>
       </div>
 

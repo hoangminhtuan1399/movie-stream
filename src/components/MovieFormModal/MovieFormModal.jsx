@@ -13,6 +13,7 @@ import { createEmptySeason } from "../../utils/createEmptySeason.js";
 import { createEmptyEpisode } from "../../utils/createEmptyEpisode.js";
 import SeasonRow from "../SeasonRow/SeasonRow.jsx";
 import CollectionPicker from "../CollectionPicker/CollectionPicker.jsx";
+import FileSelectModal from '../FileUpload/FileSelectModal';
 
 const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
   const [movie, setMovie] = useState(initialMovie);
@@ -20,6 +21,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [showFileModal, setShowFileModal] = useState(false);
+  const [fileField, setFileField] = useState(null);
 
   useEffect(() => {
     if (show) {
@@ -159,28 +162,27 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
     }
   };
 
-  const handleFileChange = (fieldPath, e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleOpenFileModal = (field) => {
+    setFileField(field);
+    setShowFileModal(true);
+  };
 
-    const fieldParts = fieldPath.split('.');
-
-    if (fieldParts.length === 1) {
-      setMovie(prev => ({...prev, [fieldParts[0]]: file.name}));
-    } else if (fieldParts.length === 2) {
-      setMovie(prev => {
-        const newMovie = {
-          ...prev,
-          [fieldParts[0]]: {
-            ...prev[fieldParts[0]],
-            [fieldParts[1]]: file.name
-          }
+  const handleFileSelectFromModal = (file) => {
+    if (!fileField) return;
+    if (fileField.includes('.')) {
+      const [parent, child] = fileField.split('.');
+      setMovie(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: file.name
         }
-
-        setErrors(validateMovie(newMovie))
-        return newMovie;
-      });
+      }));
+    } else {
+      setMovie(prev => ({ ...prev, [fileField]: file.name }));
     }
+    setShowFileModal(false);
+    setFileField(null);
   };
 
   const handleSubmit = () => {
@@ -304,20 +306,20 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
 
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Ảnh nhỏ</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange('thumbnail', e)}
-                    />
+                    <div>
+                      <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('thumbnail')}>
+                        {movie.thumbnail ? movie.thumbnail.name || movie.thumbnail : 'Chọn file...'}
+                      </Button>
+                    </div>
                   </Form.Group>
 
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Ảnh to</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange('poster', e)}
-                    />
+                    <div>
+                      <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('poster')}>
+                        {movie.poster ? movie.poster.name || movie.poster : 'Chọn file...'}
+                      </Button>
+                    </div>
                   </Form.Group>
                 </Row>
 
@@ -363,21 +365,19 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                   <Row className="mb-3">
                     <Form.Group as={Col} md={6}>
                       <Form.Label>Lồng tiếng</Form.Label>
-                      <Form.Control
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => handleFileChange('singleStream.dubbed', e)}
-                        isInvalid={(touched.singleStream || submitAttempted) && !!errors.singleStream}
-                      />
+                      <div>
+                        <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('singleStream.dubbed')}>
+                          {movie.singleStream.dubbed.fileUrl ? movie.singleStream.dubbed.fileName || movie.singleStream.dubbed.fileUrl : 'Chọn file...'}
+                        </Button>
+                      </div>
                     </Form.Group>
                     <Form.Group as={Col} md={6}>
                       <Form.Label>Phụ đề</Form.Label>
-                      <Form.Control
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => handleFileChange('singleStream.subbed', e)}
-                        isInvalid={(touched.singleStream || submitAttempted) && !!errors.singleStream}
-                      />
+                      <div>
+                        <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('singleStream.subbed')}>
+                          {movie.singleStream.subbed.fileUrl ? movie.singleStream.subbed.fileName || movie.singleStream.subbed.fileUrl : 'Chọn file...'}
+                        </Button>
+                      </div>
                     </Form.Group>
                     {(touched.singleStream || submitAttempted) && errors.singleStream && (
                       <div className="text-danger invalid-feedback d-block"
@@ -451,6 +451,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
         title="Xác nhận huỷ"
         message="Bạn có chắc chắn muốn huỷ bỏ? Tất cả thay đổi sẽ không được lưu."
       />
+
+      <FileSelectModal show={showFileModal} onClose={() => setShowFileModal(false)} onSelect={handleFileSelectFromModal} />
     </>
   );
 };
