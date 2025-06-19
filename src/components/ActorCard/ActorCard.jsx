@@ -1,11 +1,17 @@
 import React from 'react';
 import './ActorCard.css';
+import { useNavigate } from 'react-router-dom';
 
 const ActorCard = ({ actor }) => {
+  const navigate = useNavigate();
   const { name, img, role } = actor;
 
+  const handleActorClick = (actorId) => {
+    navigate(`/actor/${actorId}`);
+  };
+
   return (
-    <div className="actor-card">
+    <div className="actor-card" onClick={() => handleActorClick(actor.id)} >
       <div className="actor-card__image">
         <img src={img} alt={name} />
       </div>

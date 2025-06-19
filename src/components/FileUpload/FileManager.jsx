@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './FileManager.css';
-import fileService from '../services/fileService';
+import fileService from '../../services/fileService';
 
 const FILE_TYPES = [
     { label: 'Tất cả', value: 'all' },
@@ -13,7 +13,7 @@ function formatSize(size) {
     return (size / 1024).toFixed(2) + ' KB';
 }
 
-const FileManager = ({ files = [], onSelect, selectable = false }) => {
+const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone = false, onUpload }) => {
     const [search, setSearch] = useState('');
     const [type, setType] = useState('all');
     const [showDelete, setShowDelete] = useState(null);
@@ -26,6 +26,7 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
     const [deleting, setDeleting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const fileInputRef = useRef();
+    const [dragActive, setDragActive] = useState(false);
 
     const filesPerPage = 16;
 
@@ -34,7 +35,8 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
         try {
             setLoading(true);
             const response = await fileService.searchFiles(search, type === 'all' ? '' : type);
-            const mappedFiles = response.map(file => ({
+            console.log(response);
+            const mappedFiles = response.content.map(file => ({
                 id: file.id,
                 name: file.fileName,
                 url: file.fileUrl,
@@ -109,8 +111,59 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
         onSelect?.(newSelected);
     };
 
+    // Drag & drop handlers
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            if (onUpload) onUpload(file);
+        }
+    };
+    const handleUploadZoneFile = (e) => {
+        const file = e.target.files[0];
+        if (file && onUpload) onUpload(file);
+        e.target.value = '';
+    };
+
     return (
         <div className="file-manager">
+            {/* Upload Zone */}
+            {showUploadZone && (
+                <div
+                    className={`upload-zone${dragActive ? ' drag-active' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
+                    <div className="upload-zone-icon">
+                        <i className="bi bi-upload" />
+                    </div>
+                    <div className="upload-zone-heading">
+                        Add media <span className="upload-zone-url">| Add from URL</span>
+                    </div>
+                    <div className="upload-zone-subtext">Drag and drop images, videos, 3D models, and files</div>
+                    <input
+                        type="file"
+                        accept="image/*,video/*"
+                        style={{ display: 'none' }}
+                        id="upload-zone-input"
+                        onChange={handleUploadZoneFile}
+                    />
+                    <label htmlFor="upload-zone-input" className="btn btn-outline-primary btn-sm upload-zone-btn">Chọn file</label>
+                </div>
+            )}
             {/* Toolbar */}
             <div className="d-flex align-items-center mb-3 gap-2 flex-wrap">
                 <input

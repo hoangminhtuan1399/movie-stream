@@ -20,6 +20,7 @@ export function createEmptyMovie() {
     thumbnail: null,
     poster: null,
     duration: '',
+    singleStream: { dubbed: {}, subbed: {} },
     actors: createEmptyActor(),
     seasons: [createEmptySeason()] // Thêm seasons vào movie
   };
