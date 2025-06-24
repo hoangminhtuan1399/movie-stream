@@ -4,7 +4,7 @@ import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import CardCommon from "../../../components/CardMovie/CardCommon";
 import MovieGrid from "../../../components/MovieGrid/MovieGrid";
 import "./ActorDetailPage.css";
-import { getActorDetail } from "../../../services/movieService";
+import { actorService } from "../../../services/actorService";
 
 const DEFAULT_AVATAR = "https://via.placeholder.com/120x120?text=No+Image";
 
@@ -17,7 +17,7 @@ const ActorDetailPage = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    getActorDetail(id)
+    actorService.getActorDetail(id)
       .then((data) => {
         setActor(data.data);
         setLoading(false);

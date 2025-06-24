@@ -1,30 +1,31 @@
 import { createEmptySeason } from "./createEmptySeason.js";
-import { createEmptyEpisode } from "./createEmptyEpisode.js";
-import { MOVIE_TYPES } from "./movieTypeOptions.js";
-import { AGE_RATINGS } from "./ageRatingOptions.js";
-import { COUNTRIES } from "./countryOptions.js";
-import { createEmptyActor } from "./createEmptyActor.js";
+import { MOVIE_TYPES, MOVIE_VALUES } from "./movieTypeOptions.js";
 
-export function createEmptyMovie() {
-  return {
+const createEmptyStream = () => ({
+  fileUrl: '',
+  fileName: ''
+});
+
+export const createEmptyMovie = () => ({
+  id: null,
     title: '',
     subtitle: '',
     description: '',
-    type: MOVIE_TYPES.SINGLE,
-    releaseYear: '',
-    views: '',
-    ageRating: AGE_RATINGS.PG,
-    country: COUNTRIES.VIETNAM,
-    genres: [],
-    collections: [],
-    thumbnail: null,
-    poster: null,
-    duration: '',
-    singleStream: { dubbed: {}, subbed: {} },
-    actors: createEmptyActor(),
-    seasons: [createEmptySeason()] // Thêm seasons vào movie
-  };
-}
+  releaseYear: new Date().getFullYear(),
+  country: 'US',
+  genres: [],
+  ageRating: '13+',
+  thumbnail: '',
+  poster: '',
+  views: 0,
+    type: MOVIE_VALUES.SINGLE,
+  singleStream: {
+    dubbed: createEmptyStream(),
+    subbed: createEmptyStream()
+  },
+  seasons: [createEmptySeason()],
+  actors: [],
+});
 
 /*
 title: String

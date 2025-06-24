@@ -13,7 +13,7 @@ const SearchModal = ({ show, onHide, loading, searchValue, filteredResults }) =>
 
     const handleViewAll = () => {
         if (searchValue) {
-            navigate(`/search?q=${encodeURIComponent(searchValue)}`);
+            navigate(`/search?keyword=${encodeURIComponent(searchValue)}`);
         } else {
             navigate('/search');
         }

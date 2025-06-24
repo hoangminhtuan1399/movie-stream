@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ActorCard = ({ actor }) => {
   const navigate = useNavigate();
-  const { name, img, role } = actor;
+  const { name, avatarUrl, role } = actor;
 
   const handleActorClick = (actorId) => {
     navigate(`/actor/${actorId}`);
@@ -13,7 +13,7 @@ const ActorCard = ({ actor }) => {
   return (
     <div className="actor-card" onClick={() => handleActorClick(actor.id)} >
       <div className="actor-card__image">
-        <img src={img} alt={name} />
+        <img src={avatarUrl} alt={name} />
       </div>
       <div className="actor-card__info">
         <h4 className="actor-card__name">{name}</h4>

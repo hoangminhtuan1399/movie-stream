@@ -1,22 +1,86 @@
-import { useState } from 'react'
-import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table, Spinner, ToastContainer, Toast } from 'react-bootstrap'
 import { FaEdit, FaFilter, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons/fa'
 import './MoviePage.css'
-import { movies } from "./dummyMovies.js";
 import MovieFormModal from "../../../components/MovieFormModal/MovieFormModal.jsx";
 import { createEmptyMovie } from "../../../utils/createEmptyMovie.js";
+import { movieServiceApi } from '../../../services/movieService.js';
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal.jsx';
 
 export const MoviePage = () => {
-  // State cho các control
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showFilter, setShowFilter] = useState(false)
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
   const [showModal, setShowModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(createEmptyMovie());
+  const [toastInfo, setToastInfo] = useState({ show: false, message: '', type: 'danger' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [movieToDelete, setMovieToDelete] = useState(null);
+
+  const fetchMovies = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        page: currentPage - 1,
+        size: itemsPerPage,
+        keyword: submittedQuery,
+      };
+      const { data } = await movieServiceApi.getMovies(params);
+      setMovies(data.data.content || []);
+      setTotalPages(data.data.totalPages || 1);
+    } catch (error) {
+      console.error("Failed to fetch movies:", error);
+      setMovies([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+  }, [currentPage, submittedQuery]);
+  
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setSubmittedQuery(searchQuery);
+  };
+
+  const handleModalHide = (result) => {
+    setShowModal(false);
+    if (result) {
+      fetchMovies();
+    }
+  };
+
+  const handleApiError = (message) => {
+    setToastInfo({ show: true, message, type: 'danger' });
+  };
+  
+  const handleDeleteClick = (movie) => {
+    setMovieToDelete(movie);
+    setShowDeleteConfirm(true);
+  };
+  
+  const confirmDelete = async () => {
+    if (movieToDelete) {
+      try {
+        await movieServiceApi.deleteMovie(movieToDelete.id);
+        fetchMovies();
+      } catch (error) {
+        console.error("Failed to delete movie:", error);
+        handleApiError('Xoá phim thất bại.');
+      } finally {
+        setShowDeleteConfirm(false);
+        setMovieToDelete(null);
+      }
+    }
+  };
 
   return (
     <Container fluid className="h-100 d-flex flex-column">
@@ -36,8 +100,9 @@ export const MoviePage = () => {
               placeholder="Tìm kiếm phim"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <Button variant="outline-secondary" className={'d-flex align-items-center'}>
+            <Button variant="outline-secondary" className={'d-flex align-items-center'} onClick={handleSearch}>
               <FaSearch/>
             </Button>
           </InputGroup>
@@ -45,35 +110,26 @@ export const MoviePage = () => {
 
         <Col xs="auto" className="d-flex gap-2">
           <Button
-            variant="outline-secondary"
-            className="icon-button square-button"
-            onClick={() => setShowFilter(!showFilter)}
-            aria-label="Bộ lọc"
-          >
-            <FaFilter/>
-            <span className="button-tooltip">Bộ lọc</span>
-          </Button>
-
-          <Button
             variant="primary"
             className="icon-button square-button"
             aria-label="Thêm phim"
             onClick={() => {
-              setSelectedMovie(createEmptyMovie())
-              setShowModal(true)
+              setSelectedMovie(createEmptyMovie());
+              setShowModal(true);
             }}
           >
             <FaPlus/>
             <span className="button-tooltip">Thêm phim</span>
           </Button>
-
-          <MovieFormModal
-            show={showModal}
-            onHide={() => setShowModal(false)}
-            initialMovie={selectedMovie}
-          />
         </Col>
       </Row>
+
+      <MovieFormModal
+        show={showModal}
+        onHide={handleModalHide}
+        initialMovie={selectedMovie}
+        onError={handleApiError}
+      />
 
       <div className="table-responsive movie-table">
         <Table bordered hover className="align-middle mb-0 position-relative">
@@ -88,20 +144,28 @@ export const MoviePage = () => {
           </tr>
           </thead>
           <tbody>
-          {movies.length > 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan="6" className="text-center py-5">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </td>
+            </tr>
+          ) : movies.length > 0 ? (
             movies.map(movie => (
               <tr key={movie.id}>
                 <td>{movie.id}</td>
                 <td>
                   <img
-                    src={movie.image}
+                    src={movie.bigBanner || '/default-thumbnail.jpg'}
                     alt={movie.title}
                     className={'movie-item__image'}
                   />
                 </td>
                 <td>{movie.title}</td>
-                <td>{movie.releaseYear}</td>
-                <td>{movie.views.toLocaleString()}</td>
+                <td>{movie.year}</td>
+                <td>{movie.views?.toLocaleString() || 0}</td>
                 <td className="text-center p-1">
                   <div className="d-flex justify-content-center gap-2">
                     <Button
@@ -110,12 +174,12 @@ export const MoviePage = () => {
                       className="p-1 icon-button border-0"
                       onClick={() => {
                         setSelectedMovie(movie);
-                        setShowModal(true)
+                        setShowModal(true);
                       }}>
                       <FaEdit/>
                       <span className="button-tooltip">Chỉnh sửa</span>
                     </Button>
-                    <Button variant="outline-danger" size="sm" className="p-1 icon-button border-0">
+                    <Button variant="outline-danger" size="sm" className="p-1 icon-button border-0" onClick={() => handleDeleteClick(movie)}>
                       <FaTrash/>
                       <span className="button-tooltip">Xoá</span>
                     </Button>
@@ -125,29 +189,59 @@ export const MoviePage = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="text-center py-4">Không có dữ liệu</td>
+              <td colSpan="6" className="text-center py-4">Không có dữ liệu</td>
             </tr>
           )}
           </tbody>
         </Table>
       </div>
 
-      {/* Pagination */}
-      {movies.length > 0 && (
+      {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
           <Pagination className={'mb-0'}>
             <Pagination.Prev
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage(p => p - 1)}
             />
-            <Pagination.Item active>{currentPage}</Pagination.Item>
+            {[...Array(totalPages).keys()].map(pageNumber => (
+              <Pagination.Item
+                key={pageNumber + 1}
+                active={pageNumber + 1 === currentPage}
+                onClick={() => setCurrentPage(pageNumber + 1)}
+              >
+                {pageNumber + 1}
+              </Pagination.Item>
+            ))}
             <Pagination.Next
-              disabled={movies.length < itemsPerPage}
+              disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(p => p + 1)}
             />
           </Pagination>
         </div>
       )}
+      
+      <ConfirmModal
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Xác nhận xoá"
+        message={`Bạn có chắc chắn muốn xoá phim "${movieToDelete?.title}"?`}
+      />
+
+      <ToastContainer position="top-center" className="p-3" style={{ zIndex: 9999 }}>
+        <Toast
+          onClose={() => setToastInfo({ ...toastInfo, show: false })}
+          show={toastInfo.show}
+          delay={5000}
+          autohide
+          bg={toastInfo.type}
+        >
+          <Toast.Header closeButton>
+            <strong className="me-auto">Thông báo</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{toastInfo.message}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   )
 }

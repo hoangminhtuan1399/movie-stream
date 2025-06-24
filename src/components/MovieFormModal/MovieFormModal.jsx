@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Col, Container, Form, FormCheck, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, FormCheck, Modal, Row, Spinner } from 'react-bootstrap';
 import { FaPlus } from 'react-icons/fa';
 import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import './MovieFormModal.css';
@@ -8,30 +8,127 @@ import { genreOptions } from "../../utils/genreOptions.js";
 import { ageRatingOptions } from "../../utils/ageRatingOptions.js";
 import { generateOptions } from "../../utils/generateOptions.jsx";
 import { countryOptions } from "../../utils/countryOptions.js";
-import { MOVIE_TYPES, movieTypeOptions } from "../../utils/movieTypeOptions.js";
+import { MOVIE_TYPES, MOVIE_VALUES, movieTypeOptions } from "../../utils/movieTypeOptions.js";
 import { createEmptySeason } from "../../utils/createEmptySeason.js";
 import { createEmptyEpisode } from "../../utils/createEmptyEpisode.js";
 import SeasonRow from "../SeasonRow/SeasonRow.jsx";
-import CollectionPicker from "../CollectionPicker/CollectionPicker.jsx";
-import FileSelectModal from '../FileUpload/FileSelectModal';
+import FilePickerInput from '../FileUpload/FilePickerInput.jsx';
+import FileSelectModal from '../FileUpload/FileSelectModal.jsx';
+import ActorPicker from '../ActorPicker/ActorPicker.jsx';
+import { movieServiceApi } from '../../services/movieService.js';
 
-const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
+const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onError}) => {
   const [movie, setMovie] = useState(initialMovie);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // New state for the single modal
   const [showFileModal, setShowFileModal] = useState(false);
-  const [fileField, setFileField] = useState(null);
+  const [currentFieldContext, setCurrentFieldContext] = useState(null);
 
   useEffect(() => {
     if (show) {
-      setMovie(initialMovie);
+      let movieForForm;
+
+      if (initialMovie && initialMovie.id) {
+        // Editing an existing movie, format it for the form
+        const formatted = {
+          ...createEmptyMovie(),
+          ...initialMovie,
+          actors: initialMovie.actors || [],
+          genres: (initialMovie.genreNames || []).map(g => g.name || g),
+          thumbnail: initialMovie.smallBanner || '',
+          poster: initialMovie.bigBanner || '',
+          subtitle: initialMovie.subtitle || '',
+          description: initialMovie.intro || initialMovie.description || '',
+        };
+
+        if (formatted.type === MOVIE_VALUES.SINGLE && formatted.seasons?.length > 0 && formatted.seasons[0].episodes?.length > 0) {
+          const firstEpisode = formatted.seasons[0].episodes[0];
+          formatted.singleStream = {
+            dubbed: { fileUrl: firstEpisode?.dubbed || firstEpisode?.dubbedUrl || '', fileName: firstEpisode?.dubbed || firstEpisode?.dubbedUrl || '' },
+            subbed: { fileUrl: firstEpisode?.subbed || firstEpisode?.subtitleUrl || '', fileName: firstEpisode?.subbed || firstEpisode?.subtitleUrl || '' },
+          };
+          formatted.seasons = [createEmptySeason()]; // Reset for single movie type
+        } else if (formatted.type === MOVIE_VALUES.SEASON) {
+          formatted.seasons = formatted.seasons.map(s => ({
+            name: s.name,
+            episodes: s.episodes.map(e => ({
+              dubbed: { fileUrl: e.dubbed || e.dubbedUrl || '', fileName: e.dubbed || e.dubbedUrl || '' },
+              subbed: { fileUrl: e.subbed || e.subtitleUrl || '', fileName: e.subbed || e.subtitleUrl || '' },
+            })),
+          }));
+          if (formatted.seasons.length === 0) {
+            formatted.seasons.push(createEmptySeason());
+          }
+        }
+        console.log(formatted);
+        movieForForm = formatted;
+      } else {
+        // Creating a new movie
+        movieForForm = createEmptyMovie();
+      }
+
+      setMovie(movieForForm);
       setErrors({});
       setTouched({});
       setSubmitAttempted(false);
+      setIsSubmitting(false);
+      setCurrentFieldContext(null);
     }
   }, [show, initialMovie]);
+
+  const openFileModal = (context) => {
+    setCurrentFieldContext(context);
+    setShowFileModal(true);
+  };
+
+  const handleModalSelect = (files) => {
+    if (!currentFieldContext || !files || files.length === 0) {
+      setShowFileModal(false);
+      return;
+    }
+
+    const file = files[0];
+    const { field, seasonIndex, epIndex } = currentFieldContext;
+
+    if (seasonIndex !== undefined && epIndex !== undefined) {
+      const streamData = { fileUrl: file.url, fileName: file.name };
+      handleEpisodeChange(seasonIndex, epIndex, field, streamData);
+    } else if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setMovie(prev => ({ ...prev, [parent]: { ...prev[parent], [child]: { fileUrl: file.url, fileName: file.name }}}));
+    } else {
+      setMovie(prev => ({ ...prev, [field]: file.url }));
+    }
+    setShowFileModal(false);
+  };
+
+  const handleModalUpload = (file) => {
+    if (!currentFieldContext || !file) {
+      setShowFileModal(false);
+      return;
+    }
+    
+    const { field, seasonIndex, epIndex } = currentFieldContext;
+    const tempPath = `(uploading) ${file.name}`;
+    
+    if (seasonIndex !== undefined && epIndex !== undefined) {
+      const streamData = { fileUrl: tempPath, fileName: file.name };
+      handleEpisodeChange(seasonIndex, epIndex, field, streamData);
+    } else if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setMovie(prev => ({ ...prev, [parent]: { ...prev[parent], [child]: { fileUrl: tempPath, fileName: file.name }}}));
+    } else {
+      setMovie(prev => ({ ...prev, [field]: tempPath }));
+    }
+
+    setShowFileModal(false);
+    // TODO: Trigger actual file upload service here
+  };
 
   const validateMovie = (movieToValidate = movie) => {
     const movieErrors = {};
@@ -56,13 +153,13 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
       movieErrors.genres = 'Vui lòng chọn ít nhất 1 thể loại';
     }
 
-    if (movieToValidate.type === MOVIE_TYPES.SINGLE) {
+    if (movieToValidate.type === MOVIE_VALUES.SINGLE) {
       if (!movieToValidate.singleStream.dubbed.fileUrl && !movieToValidate.singleStream.subbed.fileUrl) {
         movieErrors.singleStream = 'Vui lòng upload ít nhất 1 phiên bản video';
       }
     }
 
-    if (movieToValidate.type === MOVIE_TYPES.SEASON) {
+    if (movieToValidate.type === MOVIE_VALUES.SEASON) {
       const seasonErrors = movieToValidate.seasons.map((season) => {
         const episodeErrors = season.episodes.map((episode) => {
           const errors = {};
@@ -162,37 +259,69 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
     }
   };
 
-  const handleOpenFileModal = (field) => {
-    setFileField(field);
-    setShowFileModal(true);
-  };
-
-  const handleFileSelectFromModal = (file) => {
-    if (!fileField) return;
-    if (fileField.includes('.')) {
-      const [parent, child] = fileField.split('.');
-      setMovie(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: file.name
-        }
-      }));
-    } else {
-      setMovie(prev => ({ ...prev, [fileField]: file.name }));
-    }
-    setShowFileModal(false);
-    setFileField(null);
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitAttempted(true);
     const newErrors = validateMovie();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Movie to submit:', movie);
-      onHide(movie);
+      console.log(movie);
+      setIsSubmitting(true);
+      // Format lại dữ liệu gửi lên giống format.json
+      const formattedMovie = {
+        title: movie.title,
+        subtitle: movie.subtitle,
+        intro: movie.description,
+        year: Number(movie.releaseYear),
+        countryName: movie.country,
+        genreNames: movie.genres, // mảng string
+        ageRating: movie.ageRating,
+        smallBanner: movie.thumbnail,
+        largeBanner: movie.poster,
+        views: Number(movie.views),
+        type: movie.type,
+        seasons: movie.type === MOVIE_VALUES.SINGLE
+          ? [
+          {
+                name: '',
+            seasonNumber: 1,
+                episodes: [
+                  {
+                    episodeNumber: 1,
+                    dubbed: movie.singleStream.dubbed.fileUrl || '',
+                    subbed: movie.singleStream.subbed.fileUrl || '',
+                  }
+                ]
+              }
+            ]
+          : movie.seasons.map((season, seasonIndex) => ({
+          name: season.name,
+          seasonNumber: seasonIndex + 1,
+          episodes: season.episodes.map((episode, episodeIndex) => ({
+            episodeNumber: episodeIndex + 1,
+            dubbed: episode.dubbed.fileUrl || '',
+            subbed: episode.subbed.fileUrl || '',
+              }))
+            })),
+        actorIds: movie.actors.map(a => a.id),
+      };
+      try {
+        let response;
+        if (movie.id) {
+          response = await movieServiceApi.updateMovie(movie.id, formattedMovie);
+        } else {
+          response = await movieServiceApi.createMovie(formattedMovie);
+        }
+        onHide(response.data);
+      } catch (error) {
+        console.error('Failed to save movie', error);
+        if (onError) {
+          const errorMessage = error.response?.data?.message || 'Lưu phim thất bại.';
+          onError(errorMessage);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       document.querySelector(`.invalid-feedback:not(:empty)`)?.scrollIntoView({
         behavior: 'smooth',
@@ -208,8 +337,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
       movie.genres.length > 0 ||
       movie.thumbnail ||
       movie.poster ||
-      (movie.type === MOVIE_TYPES.SINGLE && (movie.singleStream.dubbed.fileUrl || movie.singleStream.subbed.fileUrl)) ||
-      (movie.type === MOVIE_TYPES.SEASON && movie.seasons.some(s => s.episodes.some(e => e.dubbed.fileUrl || e.subbed.fileUrl)))
+      (movie.type === MOVIE_VALUES.SINGLE && (movie.singleStream.dubbed.fileUrl || movie.singleStream.subbed.fileUrl)) ||
+      (movie.type === MOVIE_VALUES.SEASON && movie.seasons.some(s => s.episodes.some(e => e.dubbed.fileUrl || e.subbed.fileUrl)))
     ) {
       setShowCancelConfirm(true);
     } else {
@@ -306,20 +435,20 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
 
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Ảnh nhỏ</Form.Label>
-                    <div>
-                      <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('thumbnail')}>
-                        {movie.thumbnail ? movie.thumbnail.name || movie.thumbnail : 'Chọn file...'}
-                      </Button>
-                    </div>
+                    <FilePickerInput
+                      value={movie.thumbnail}
+                      onClick={() => openFileModal({ field: 'thumbnail', fileType: 'images' })}
+                      placeholder="Chọn hoặc tải lên ảnh..."
+                    />
                   </Form.Group>
 
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Ảnh to</Form.Label>
-                    <div>
-                      <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('poster')}>
-                        {movie.poster ? movie.poster.name || movie.poster : 'Chọn file...'}
-                      </Button>
-                    </div>
+                    <FilePickerInput
+                      value={movie.poster}
+                      onClick={() => openFileModal({ field: 'poster', fileType: 'images' })}
+                      placeholder="Chọn hoặc tải lên ảnh..."
+                    />
                   </Form.Group>
                 </Row>
 
@@ -350,34 +479,60 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                 </Row>
 
                 <Row className="mb-3">
+                  <Form.Group as={Col} md={6}>
+                    <Form.Label>Tên gọi khác</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={movie.subtitle}
+                      onChange={(e) => handleChange('subtitle', e.target.value)}
+                    />
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-3">
+                  <Form.Group as={Col} md={12}>
+                    <Form.Label>Mô tả</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      value={movie.description}
+                      onChange={(e) => handleChange('description', e.target.value)}
+                    />
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-3">
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Kiểu phim</Form.Label>
                     <Form.Select
                       value={movie.type}
-                      onChange={(e) => handleChange('type', e.target.value)}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        handleChange('type', e.target.value)
+                      }}
                     >
                       {generateOptions(movieTypeOptions)}
                     </Form.Select>
                   </Form.Group>
                 </Row>
 
-                {movie.type === 'Lẻ' && (
+                {movie.type === MOVIE_VALUES.SINGLE && (
                   <Row className="mb-3">
                     <Form.Group as={Col} md={6}>
                       <Form.Label>Lồng tiếng</Form.Label>
-                      <div>
-                        <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('singleStream.dubbed')}>
-                          {movie.singleStream.dubbed.fileUrl ? movie.singleStream.dubbed.fileName || movie.singleStream.dubbed.fileUrl : 'Chọn file...'}
-                        </Button>
-                      </div>
+                      <FilePickerInput
+                        value={movie.singleStream.dubbed.fileUrl}
+                        onClick={() => openFileModal({ field: 'singleStream.dubbed', fileType: 'videos' })}
+                        placeholder="Chọn hoặc tải lên video..."
+                      />
                     </Form.Group>
                     <Form.Group as={Col} md={6}>
                       <Form.Label>Phụ đề</Form.Label>
-                      <div>
-                        <Button variant="outline-secondary" className="w-100" onClick={() => handleOpenFileModal('singleStream.subbed')}>
-                          {movie.singleStream.subbed.fileUrl ? movie.singleStream.subbed.fileName || movie.singleStream.subbed.fileUrl : 'Chọn file...'}
-                        </Button>
-                      </div>
+                      <FilePickerInput
+                        value={movie.singleStream.subbed.fileUrl}
+                        onClick={() => openFileModal({ field: 'singleStream.subbed', fileType: 'videos' })}
+                        placeholder="Chọn hoặc tải lên video..."
+                      />
                     </Form.Group>
                     {(touched.singleStream || submitAttempted) && errors.singleStream && (
                       <div className="text-danger invalid-feedback d-block"
@@ -388,7 +543,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                   </Row>
                 )}
 
-                {movie.type === MOVIE_TYPES.SEASON && (
+                {movie.type === MOVIE_VALUES.SEASON && (
                   <Row className="mb-3">
                     <label className={'form-label'}>Danh sách mùa phim:</label>
                     <div>
@@ -399,9 +554,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
                           index={seasonIndex}
                           onChange={(field, value) => handleSeasonChange(seasonIndex, field, value)}
                           onAddEpisode={() => handleAddEpisode(seasonIndex)}
-                          onChangeEpisode={(epIndex, field, value) => {
-                            handleEpisodeChange(seasonIndex, epIndex, field, value)
-                          }}
+                          onPickerClick={(epIndex, field) => openFileModal({ seasonIndex, epIndex, field, fileType: 'videos' })}
                           onDelete={movie.seasons.length > 1 ? () => handleDeleteSeason(seasonIndex) : null}
                           onDeleteEpisode={(episodeIndex) => handleDeleteEpisode(seasonIndex, episodeIndex)}
                           errors={errors.seasons?.[seasonIndex]}
@@ -422,10 +575,10 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
 
                 <Row className="mb-3">
                   <Form.Group as={Col} md={12}>
-                    <Form.Label>Bộ sưu tập</Form.Label>
-                    <CollectionPicker
-                      selectedCollections={movie.collections}
-                      onSelect={(collections) => handleChange('collections', collections)}
+                    <Form.Label>Diễn viên</Form.Label>
+                    <ActorPicker
+                      selectedActors={movie.actors}
+                      onSelect={(actors) => handleChange('actors', actors)}
                     />
                   </Form.Group>
                 </Row>
@@ -435,11 +588,16 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
             Huỷ bỏ
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Xác nhận
+          <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                <span className="ms-1">Đang lưu...</span>
+              </>
+            ) : 'Xác nhận'}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -452,7 +610,15 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie()}) => {
         message="Bạn có chắc chắn muốn huỷ bỏ? Tất cả thay đổi sẽ không được lưu."
       />
 
-      <FileSelectModal show={showFileModal} onClose={() => setShowFileModal(false)} onSelect={handleFileSelectFromModal} />
+      {showFileModal && (
+        <FileSelectModal
+          show={showFileModal}
+          onClose={() => setShowFileModal(false)}
+          onSelect={handleModalSelect}
+          onUpload={handleModalUpload}
+          fileType={currentFieldContext?.fileType || 'all'}
+        />
+      )}
     </>
   );
 };

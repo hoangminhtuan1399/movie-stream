@@ -1,5 +1,4 @@
     .movie-detail {
-        background: url('https://kinhdoanh.hanoi.vnpt.vn/Uploads/images/2021/2020012001.jpg') no-repeat center;
         background-size: cover;
         color: white;
         font-family: 'Inter', sans-serif;
@@ -198,7 +197,7 @@
         position: relative;
         z-index: 2;
         max-width: 1200px;
-        margin: 80px auto 0 auto;
+        margin: 140px auto 0 auto;
     }
     
     .movie-cast h2 {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './LoginAdmin.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { loginService } from '../../../services/loginService';
@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../contexts/AuthContext.jsx';
 
 const schema = yup.object().shape({
   username: yup.string().required('Vui lòng nhập tên đăng nhập'),
@@ -20,6 +21,7 @@ const LoginAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -34,6 +36,7 @@ const LoginAdmin = () => {
       const userData = res.data && res.data.data;
       if (userData && userData.accessToken) {
         Cookies.set('token', userData.accessToken, { expires: 7 });
+        login(userData);
         if (userData.role === 'ADMIN') {
           navigate('/admin');
         } else {

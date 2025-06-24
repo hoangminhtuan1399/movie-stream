@@ -1,0 +1,73 @@
+.auth-modal-content {
+  background-color: #2c304d;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.auth-modal-image-section {
+  width: 400px;
+  background-image: url('https://image.tmdb.org/t/p/original/AhsDtm8b3b3a24j2iB6D42B4M9A.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-modal-form-section {
+  flex: 1;
+  background-color: #2c304d;
+}
+
+.auth-modal-form-section .form-label {
+  color: #a7a9be;
+}
+
+.auth-modal-form-section .form-control {
+  background-color: #3a3e5d;
+  border: 1px solid #4a4e6d;
+  color: #ffffff;
+  border-radius: 8px;
+}
+
+.auth-modal-form-section .form-control:focus {
+  background-color: #3a3e5d;
+  color: #ffffff;
+  border-color: #fca311;
+  box-shadow: 0 0 0 0.25rem rgba(252, 163, 17, 0.25);
+}
+
+.auth-modal-form-section .form-control::placeholder {
+  color: #a7a9be;
+}
+
+.auth-modal-form-section .form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.auth-modal-form-section .btn-link {
+  color: #fca311;
+  text-decoration: none;
+}
+
+.auth-modal-form-section .btn-link:hover {
+  text-decoration: underline;
+  color: #ffb74d;
+}
+
+.auth-modal-form-section .btn-warning {
+  background-color: #fca311;
+  border-color: #fca311;
+  color: #141414;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.auth-modal-form-section .btn-warning:hover {
+  background-color: #ffb74d;
+  border-color: #ffb74d;
+}
+
+.auth-modal-content .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+} 

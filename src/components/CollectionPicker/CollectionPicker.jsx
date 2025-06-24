@@ -1,36 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Col, Form, Row, Pagination, InputGroup } from 'react-bootstrap';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-
-// Dummy data cho collections
-const dummyCollections = [
-  { id: 1, name: 'Phim hot trong tuần' },
-  { id: 2, name: 'Phim chiếu rạp mới nhất' },
-  { id: 3, name: 'Phim Việt Nam hay nhất' },
-  { id: 4, name: 'Phim hành động đỉnh cao' },
-  { id: 5, name: 'Phim tình cảm lãng mạn' },
-  { id: 6, name: 'Phim kinh dị nổi bật' },
-  { id: 7, name: 'Phim hoạt hình cho gia đình' },
-  { id: 8, name: 'Phim khoa học viễn tưởng' },
-];
+import { collectionService } from '../../services/collectionService';
+import useDebounce from '../../hooks/useDebounce';
 
 const ITEMS_PER_PAGE = 5;
 
 const CollectionPicker = ({ selectedCollections, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [collections, setCollections] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Lọc collections theo search term
-  const filteredCollections = dummyCollections.filter(collection =>
-    collection.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Phân trang
-  const totalPages = Math.ceil(filteredCollections.length / ITEMS_PER_PAGE);
-  const paginatedCollections = filteredCollections.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  useEffect(() => {
+    const fetchCollections = async () => {
+      setIsLoading(true);
+      try {
+        const params = {
+          page: currentPage - 1,
+          size: ITEMS_PER_PAGE,
+          keyword: debouncedSearchTerm,
+        };
+        const { data } = await collectionService.getAllCollections(params);
+        setCollections(data.data.content || []);
+        setTotalPages(data.data.totalPages || 1);
+      } catch {
+        setCollections([]);
+        setTotalPages(1);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCollections();
+  }, [debouncedSearchTerm, currentPage]);
 
   const handleCollectionToggle = (collectionId) => {
     const newSelected = selectedCollections.includes(collectionId)
@@ -66,8 +71,10 @@ const CollectionPicker = ({ selectedCollections, onSelect }) => {
 
           {/* Collection list */}
           <div className="mb-3 has-scroll" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {paginatedCollections.length > 0 ? (
-              paginatedCollections.map(collection => (
+            {isLoading ? (
+              <div>Đang tải...</div>
+            ) : collections.length > 0 ? (
+              collections.map(collection => (
                 <Form.Check
                   key={collection.id}
                   type="checkbox"
@@ -115,7 +122,7 @@ const CollectionPicker = ({ selectedCollections, onSelect }) => {
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {selectedCollections.length > 0 ? (
               selectedCollections.map(collectionId => {
-                const collection = dummyCollections.find(c => c.id === collectionId);
+                const collection = collections.find(c => c.id === collectionId);
                 return collection ? (
                   <div key={collectionId} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
                     <span>{collection.name}</span>

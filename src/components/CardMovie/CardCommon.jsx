@@ -13,7 +13,6 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
   };
 
   const handleWatchClick = (e) => {
-    console.log(id);
     e.stopPropagation();
     navigate(`/watch/${id ?? 1}`);
   };
