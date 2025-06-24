@@ -6,7 +6,8 @@ import MovieGrid from '../../../components/MovieGrid/MovieGrid';
 import { FacebookShareButton, FacebookIcon } from 'react-share';
 import './MovieDetailPage.css';
 import { getMovieDetail } from '../../../services/movieService';
-import { Spinner } from 'react-bootstrap';
+import { Spinner, Toast, ToastContainer } from 'react-bootstrap';
+import { addFavoriteMovie } from '../../../services/userService';
 
 const similarMovies = [
   {
@@ -41,7 +42,8 @@ const MovieDetailPage = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [favLoading, setFavLoading] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ show: false, message: '', type: 'success' });  
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -56,6 +58,17 @@ const MovieDetailPage = () => {
       });
   }, [id]);
 
+  // Xử lý thêm phim vào yêu thích
+  const handleFavorite = async () => {
+    setFavLoading(true);
+    try {
+      await addFavoriteMovie(id);
+    } catch {
+      setToastInfo({ show: true, message: 'Thêm vào yêu thích thất bại!', type: 'danger' });
+    }
+    setFavLoading(false);
+  };
+
   if (loading) return (
     <div className="text-white text-center py-5">
       <Spinner animation="border" variant="light" size="md" className="me-2" />
@@ -66,7 +79,8 @@ const MovieDetailPage = () => {
   if (!movie) return null;
 
   // Lấy các trường cơ bản, fallback nếu thiếu
-  const poster = movie.bigBanner || movie.smallBanner || 'https://via.placeholder.com/300x450?text=No+Image';
+  const poster = movie.smallBanner || 'https://via.placeholder.com/300x450?text=No+Image';
+  const bigBanner = movie.bigBanner || 'https://via.placeholder.com/300x450?text=No+Image';
   const title = movie.title || 'Đang cập nhật';
   const subtitle = movie.subtitle || '';
   const year = movie.year || '';
@@ -75,10 +89,10 @@ const MovieDetailPage = () => {
   const actors = movie.actors || [];
 
   return (
-    <div className="movie-detail">
+    <div className="movie-detail" style={{backgroundImage: `url("${bigBanner}")`}}>
       <div className="movie-detail__container">
         <div className="movie-detail__poster">
-          <img src={poster} alt={title} />
+          <img src={poster} alt={title} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
           <button className="movie-detail__watch-button" onClick={() => navigate(`/watch/${id}`)}>
             <span className="icon-play" /> XEM PHIM
           </button>
@@ -96,11 +110,11 @@ const MovieDetailPage = () => {
                 <span style={{ marginLeft: 8, fontWeight: 600 }}>Chia sẻ</span>
               </FacebookShareButton>
             </div>
-            <button className="btn-add">
+            <button className="btn-add" onClick={handleFavorite} disabled={favLoading}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{marginRight: 6, verticalAlign: 'middle'}}>
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#fff"/>
               </svg>
-              Bộ sưu tập
+              {favLoading ? 'Đang thêm...' : 'Bộ sưu tập'}
             </button>
           </div>
 
@@ -113,10 +127,11 @@ const MovieDetailPage = () => {
           </p>
 
           <div className="movie-tags">
-            <button>Kỳ ảo</button>
-            <button>Phiêu lưu</button>
-            <button>Hài</button>
-            <button>Gia đình</button>
+            {
+              movie?.genreNames?.map((genre) => (
+                <button key={genre.id}>{genre.name}</button>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -142,10 +157,22 @@ const MovieDetailPage = () => {
               title={movie.title}
               subtitle={movie.subtitle}
               badge={movie.badge}
+              id={movie.id}
             />
           )}
         />
       </div>
+      <ToastContainer position="top-center" className="p-3" style={{ zIndex: 9999 }}>
+        <Toast
+          onClose={() => setToastInfo({ ...toastInfo, show: false })}
+          show={toastInfo.show}
+          delay={4000}
+          autohide
+          bg={toastInfo.type}
+        >
+          <Toast.Body className="text-white">{toastInfo.message}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 };

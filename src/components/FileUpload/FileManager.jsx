@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './FileManager.css';
 import fileService from '../../services/fileService';
 
@@ -13,7 +13,7 @@ function formatSize(size) {
     return (size / 1024).toFixed(2) + ' KB';
 }
 
-const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone = false, onUpload }) => {
+const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone = false, multiple = false }) => {
     const [search, setSearch] = useState('');
     const [type, setType] = useState('all');
     const [showDelete, setShowDelete] = useState(null);
@@ -22,10 +22,8 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
     const [page, setPage] = useState(1);
     const [fileList, setFileList] = useState(files);
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const fileInputRef = useRef();
     const [dragActive, setDragActive] = useState(false);
 
     const filesPerPage = 16;
@@ -78,36 +76,24 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
         }
     };
 
-    const handleUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-            setUploading(true);
-            await fileService.uploadFile(file);
-            await fetchFiles();
-            e.target.value = '';
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        } finally {
-            setUploading(false);
-        }
-    };
-
     const handleFileSelect = (file) => {
-        const isSelected = selectedFiles.some(f => f.id === file.id);
         let newSelected;
-        
+        if (multiple) {
+            const isSelected = selectedFiles.some(f => f.id === file.id);
         if (isSelected) {
-            // if file selected so delete it
             newSelected = selectedFiles.filter(f => f.id !== file.id);
+            } else {
+                newSelected = [...selectedFiles, file];
+            }
         } else {
-            // if file not selected so add it
-            newSelected = [...selectedFiles, file];
+            // Chỉ chọn 1 file
+            if (selectedFiles.length === 1 && selectedFiles[0].id === file.id) {
+                newSelected = [];
+            } else {
+                newSelected = [file];
         }
-        
+        }
         setSelectedFiles(newSelected);
-        // notify outside with new list
         onSelect?.(newSelected);
     };
 
@@ -127,13 +113,12 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
         e.stopPropagation();
         setDragActive(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const file = e.dataTransfer.files[0];
-            if (onUpload) onUpload(file);
+            // upload logic ở đây nếu cần
         }
     };
     const handleUploadZoneFile = (e) => {
-        const file = e.target.files[0];
-        if (file && onUpload) onUpload(file);
+        // const file = e.target.files[0];
+        // upload logic ở đây nếu cần
         e.target.value = '';
     };
 
@@ -183,26 +168,6 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                 </select>
-                <button
-                    className="btn btn-primary d-flex align-items-center"
-                    onClick={() => fileInputRef.current.click()}
-                    disabled={uploading}
-                >
-                    {uploading ? (
-                        <div className="spinner-border spinner-border-sm" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                    ) : (
-                        <span className="fs-5">+</span>
-                    )}
-                </button>
-                <input
-                    type="file"
-                    accept="image/*,video/*"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleUpload}
-                />
             </div>
 
             {/* Loading indicator */}

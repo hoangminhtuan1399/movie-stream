@@ -1,24 +1,37 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Col, Form, Row, Pagination, InputGroup } from 'react-bootstrap';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-import { movies } from '../../pages/admin/MoviePage/dummyMovies.js';
+import movieServiceApi from '../../services/movieService';
 
 const ITEMS_PER_PAGE = 5;
 
 const MoviePicker = ({ selectedMovies = [], onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [movies, setMovies] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredMovies = movies.filter(movie =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredMovies.length / ITEMS_PER_PAGE);
-  const paginatedMovies = filteredMovies.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+          const { data } = await movieServiceApi.getMovies({
+            page: currentPage - 1,
+            size: ITEMS_PER_PAGE,
+            keyword: searchTerm,
+          });
+            setMovies(data.data.content);
+            setTotalPages(data.data.totalPages);
+      } catch {
+          setMovies([]);
+          setTotalPages(1);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [searchTerm, currentPage]);
 
   const handleMovieToggle = (movieId) => {
     const newSelected = selectedMovies.includes(movieId)
@@ -30,7 +43,6 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
   const removeMovie = (movieId) => {
     onSelect(selectedMovies.filter(id => id !== movieId));
   };
-
   return (
     <Row className="g-3">
       <Col md={8}>
@@ -51,8 +63,10 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
           </div>
 
           <div className="mb-3 has-scroll" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {paginatedMovies.length > 0 ? (
-              paginatedMovies.map(movie => (
+            {isLoading ? (
+              <div>Đang tải...</div>
+            ) : movies.length > 0 ? (
+              movies.map(movie => (
                 <Form.Check
                   key={movie.id}
                   type="checkbox"

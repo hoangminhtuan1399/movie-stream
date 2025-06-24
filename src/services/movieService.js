@@ -1,12 +1,22 @@
 /* eslint-disable no-useless-catch */
-import { movieService, streamService } from './axios';
-// import { streamService } from './axios';
-import { userService } from './axios';
+import { movieService } from './axios';
 
-export const movieApi = {
-    searchMovies: async(keyword) => {
+export const movieServiceApi = {
+    getMovies: (params) => {
+        return movieService.get('/movies', { params });
+    },
+    createMovie: (movieData) => {
+        return movieService.post('/movies', movieData);
+    },
+    updateMovie: (id, movieData) => {
+        return movieService.put(`/movies/${id}`, movieData);
+    },
+    deleteMovie: (id) => {
+        return movieService.delete(`/movies/${id}`);
+    },
+    searchActors: async (keyword) => {
         try {
-            const response = await movieService.get(`/movies/search`, {
+            const response = await movieService.get(`/actors`, {
                 params: {
                     keyword: keyword
                 }
@@ -27,13 +37,4 @@ export const getMovieDetail = async (id) => {
     }
 };
 
-export const getActorDetail = async (id) => {
-    try {
-        const response = await streamService.get(`/actors/${id}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export default movieApi;
+export default movieServiceApi;

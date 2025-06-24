@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Navbar, Nav, Container, Form, FormControl, Button, Offcanvas, Dropdown, Spinner, Modal } from 'react-bootstrap';
-import { FaBars, FaSearch, FaUser } from 'react-icons/fa';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { Navbar, Nav, Container, Form, FormControl, Button, Offcanvas, Dropdown, Spinner, Image } from 'react-bootstrap';
+import { FaBars, FaSearch, FaUser, FaSignOutAlt, FaTachometerAlt, FaBell } from 'react-icons/fa';
 import './Header.css';
 import ListItem from '../ListItem/ListItem';
 import { genreOptions } from '../../utils/genreOptions';
@@ -8,6 +8,35 @@ import { countryOptions } from '../../utils/countryOptions';
 import SearchModal from './SearchModal';
 import useDebounce from '../../hooks/useDebounce';
 import movieApi from '../../services/movieService';
+import AuthUser from './AuthUser';
+import { AuthContext } from '../../contexts/AuthContext.jsx';
+
+const UserMenu = ({ user, logout }) => (
+  <Dropdown align="end">
+    <Dropdown.Toggle as="a" role="button" variant="link" id="dropdown-user" className="d-flex align-items-center text-white text-decoration-none p-0">
+      <Image src={user.avatarUrl || '/default-avatar.jpg'} roundedCircle width="32" height="32" />
+    </Dropdown.Toggle>
+    <Dropdown.Menu variant="dark" className="user-dropdown-menu">
+      <Dropdown.Header>
+        Chào,<br/>
+        <strong>{user.name || user.username}</strong>
+      </Dropdown.Header>
+      <Dropdown.Divider />
+      <Dropdown.Item href="/user/profile">
+        <FaUser className="me-2" /> Tài khoản
+      </Dropdown.Item>
+      {user.role === 'ADMIN' && (
+        <Dropdown.Item href="/admin">
+          <FaTachometerAlt className="me-2" /> Trang quản trị
+        </Dropdown.Item>
+      )}
+      <Dropdown.Divider />
+      <Dropdown.Item onClick={logout}>
+        <FaSignOutAlt className="me-2" /> Thoát
+      </Dropdown.Item>
+    </Dropdown.Menu>
+  </Dropdown>
+);
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -17,6 +46,8 @@ const Header = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
 
   const handleSearch = useCallback(async (value) => {
     if (!value) {
@@ -26,8 +57,12 @@ const Header = () => {
     }
     setLoading(true);
     try {
-      const {data} = await movieApi.searchMovies(value);
-      setFilteredResults(data);
+      const {data} = await movieApi.getMovies({
+        keyword: value,
+        page: 0,
+        size: 10,
+      });
+      setFilteredResults(data.data.content || []);
     } catch (error) {
       console.error('Search error:', error);
       setFilteredResults([]);
@@ -36,14 +71,14 @@ const Header = () => {
     }
   }, []);
 
-  const debouncedSearch = useDebounce(handleSearch, 400);
+  const debouncedSearchValue = useDebounce(searchValue, 400);
 
   useEffect(() => {
-    if (searchValue !== undefined) {
+    if (debouncedSearchValue !== undefined) {
       setLoading(true);
-      debouncedSearch(searchValue);
+      handleSearch(debouncedSearchValue);
     }
-  }, [searchValue, debouncedSearch]);
+  }, [debouncedSearchValue, handleSearch]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,19 +132,28 @@ const Header = () => {
 
 
             <Nav className="d-flex align-items-center gap-3 menu-links flex-nowrap">
-              <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} path="/category" />
-              <Nav.Link href="#" className="text-white fs-6">Phim Lẻ</Nav.Link>
-              <Nav.Link href="#" className="text-white fs-6">Phim Bộ</Nav.Link>
-              <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
-              <Nav.Link href="#" className="text-white fs-6">Diễn Viên</Nav.Link>
+              <ListItem title="Thể loại" itemsMenu={genreOptions} columns={2} path="/category?genres=" />
+              <Nav.Link href="/category?type=LE" className="text-white fs-6">Phim Lẻ</Nav.Link>
+              <Nav.Link href="/category?type=BO" className="text-white fs-6">Phim Bộ</Nav.Link>
+              <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} path="/category?countries=" />
+              <Nav.Link href="/actor" className="text-white fs-6">Diễn Viên</Nav.Link>
             </Nav>
           </div>
 
           <div className="ms-3">
-            <Button variant="light" className="rounded-pill">
+            {isAuthenticated && user ? (
+              <div className="d-flex align-items-center">
+                <Button variant="link" className="text-white me-3 notification-bell">
+                  <FaBell size={18}/>
+                </Button>
+                <UserMenu user={user} logout={logout} />
+              </div>
+            ) : (
+              <Button variant="light" className="rounded-pill" onClick={() => setShowAuthModal(true)}>
               <FaUser className="me-2" />
               Thành viên
             </Button>
+            )}
           </div>
         </Container>
       </Navbar>
@@ -203,12 +247,36 @@ const Header = () => {
             <ListItem title="Quốc gia" itemsMenu={countryOptions} columns={1} />
             <Nav.Link className={'fs-6 ps-3'} href="#">Diễn Viên</Nav.Link>
           </Nav>
-          <Button variant="light" className="w-100 mt-3 rounded-pill">
+          <div className="mt-auto">
+            {isAuthenticated && user ? (
+              <div className="mt-3">
+                <hr className='border-secondary'/>
+                <div className="d-flex align-items-center mb-3 px-2">
+                  <Image src={user.avatarUrl || '/default-avatar.jpg'} roundedCircle width="40" height="40" className="me-3" />
+                  <div>
+                    <div>Chào,</div>
+                    <strong>{user.name || user.username}</strong>
+                  </div>
+                </div>
+                <Nav className="flex-column">
+                  <Nav.Link href="/user/profile" className="text-white ps-3"><FaUser className="me-2" /> Tài khoản</Nav.Link>
+                  {user.role === 'ADMIN' && (
+                    <Nav.Link href="/admin" className="text-white ps-3"><FaTachometerAlt className="me-2" /> Trang quản trị</Nav.Link>
+                  )}
+                  <Nav.Link onClick={logout} className="text-white ps-3"><FaSignOutAlt className="me-2" /> Thoát</Nav.Link>
+                </Nav>
+              </div>
+            ) : (
+              <Button variant="light" className="w-100 mt-3 rounded-pill" onClick={() => setShowAuthModal(true)}>
             <FaUser className="me-2" />
             Thành viên
           </Button>
+            )}
+          </div>
         </Offcanvas.Body>
       </Offcanvas>
+
+      {!isAuthenticated && <AuthUser show={showAuthModal} onHide={() => setShowAuthModal(false)} />}
     </>
   );
 };

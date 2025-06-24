@@ -2,16 +2,10 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import { useState } from 'react';
+import FilePickerInput from '../FileUpload/FilePickerInput.jsx';
 
-const EpisodeRow = ({episode, index, seasonIndex, onDelete, onChange, errors}) => {
+const EpisodeRow = ({episode, index, seasonIndex, onDelete, errors, onPickerClick}) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const handleFileChange = (field, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      onChange(index, field, file.name);
-    }
-  };
 
   return (
     <>
@@ -22,18 +16,18 @@ const EpisodeRow = ({episode, index, seasonIndex, onDelete, onChange, errors}) =
         </Col>
         <Col md={5}>
           <Form.Label>Lồng tiếng</Form.Label>
-          <Form.Control
-            type="file"
-            accept="video/*"
-            onChange={(e) => handleFileChange('dubbed', e)}
+          <FilePickerInput
+            value={episode.dubbed?.fileUrl}
+            onClick={() => onPickerClick(index, 'dubbed')}
+            placeholder="Chọn hoặc tải lên video..."
           />
         </Col>
         <Col md={5}>
           <Form.Label>Vietsub</Form.Label>
-          <Form.Control
-            type="file"
-            accept="video/*"
-            onChange={(e) => handleFileChange('subbed', e)}
+          <FilePickerInput
+            value={episode.subbed?.fileUrl}
+            onClick={() => onPickerClick(index, 'subbed')}
+            placeholder="Chọn hoặc tải lên video..."
           />
         </Col>
         {onDelete && (

@@ -1,27 +1,68 @@
-
 import { useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Modal, Row, Spinner } from 'react-bootstrap';
 import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import MoviePicker from '../MoviePicker/MoviePicker.jsx';
 import './ActorFormModal.css'
 import { createEmptyActor } from "../../utils/createEmptyActor.js";
+import { actorService } from "../../services/actorService.js";
+import FilePickerInput from '../FileUpload/FilePickerInput.jsx';
+import FileSelectModal from '../FileUpload/FileSelectModal.jsx';
 
-const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => {
-  const [actor, setActor] = useState(initialActor);
+const ActorFormModal = ({ show, onHide, initialActor, onError }) => {
+  const [actor, setActor] = useState(createEmptyActor());
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [showFileModal, setShowFileModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (show) {
-      setActor(initialActor);
+      const genderMapFromApi = {
+        'MALE': 0,
+        'FEMALE': 1,
+        'OTHER': 2
+      };
+
+      let formActor = createEmptyActor();
+
+      if (initialActor && initialActor.id) {
+        formActor = {
+          ...createEmptyActor(),
+          ...initialActor,
+          gender: genderMapFromApi[initialActor.gender?.toUpperCase()] ?? 0,
+          avatar_url: initialActor.avatarUrl || '',
+          dob: Array.isArray(initialActor.dob) && initialActor.dob.length === 3
+            ? `${initialActor.dob[0]}-${String(initialActor.dob[1]).padStart(2, '0')}-${String(initialActor.dob[2]).padStart(2, '0')}`
+            : initialActor.dob || '',
+          movies: initialActor.movieIds || [],
+        };
+      }
+      setActor(formActor);
       setErrors({});
       setTouched({});
       setSubmitAttempted(false);
+      setIsSubmitting(false);
     }
   }, [show, initialActor]);
 
+  const handleModalSelect = (files) => {
+    if (files?.length > 0) {
+      setActor(prev => ({...prev, avatar_url: files[0].url}));
+    }
+    setShowFileModal(false);
+  };
+
+  const handleModalUpload = (file) => {
+    if (file) {
+      const tempPath = `(uploading) ${file.name}`;
+      setActor(prev => ({...prev, avatar_url: tempPath}));
+      // TODO: Trigger actual file upload service here
+    }
+    setShowFileModal(false);
+  };
+  
   const validateActor = (actorToValidate = actor) => {
     const actorErrors = {};
 
@@ -52,20 +93,44 @@ const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => 
     setErrors(validateActor());
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setActor(prev => ({ ...prev, avatar_url: file.name }));
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitAttempted(true);
     const newErrors = validateActor();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Actor to submit:', actor);
-      onHide(actor);
+      setIsSubmitting(true);
+      const genderMapping = {
+        0: 'male',
+        1: 'female',
+        2: 'other'
+      };
+
+      const payload = {
+        name: actor.name,
+        gender: genderMapping[actor.gender],
+        dob: actor.dob,
+        avatarUrl: actor.avatar_url,
+        bio: actor.bio,
+      };
+
+      try {
+        let response;
+        if (actor.id) {
+          response = await actorService.updateActor(actor.id, payload);
+        } else {
+          response = await actorService.createActor(payload);
+        }
+        onHide(response.data);
+      } catch (error) {
+        console.error('Failed to save actor', error);
+        if (onError) {
+          const errorMessage = error.response?.data?.message || 'Lưu diễn viên thất bại.';
+          onError(errorMessage);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -78,7 +143,7 @@ const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => 
   };
 
   const confirmCancel = () => {
-    setActor(initialActor);
+    setActor(createEmptyActor());
     setErrors({});
     setTouched({});
     setShowCancelConfirm(false);
@@ -89,7 +154,7 @@ const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => 
     <>
       <Modal show={show} onHide={handleCancel} size="xl" centered>
         <Modal.Header closeButton>
-          <Modal.Title>{initialActor.id ? 'Chỉnh sửa diễn viên' : 'Thêm diễn viên mới'}</Modal.Title>
+          <Modal.Title>{actor.id ? 'Chỉnh sửa diễn viên' : 'Thêm diễn viên mới'}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
@@ -140,10 +205,9 @@ const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => 
 
                 <Form.Group as={Col} md={6}>
                   <Form.Label>Ảnh đại diện</Form.Label>
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
+                  <FilePickerInput
+                    value={actor.avatar_url || ''}
+                    onClick={() => setShowFileModal(true)}
                   />
                 </Form.Group>
               </Row>
@@ -159,29 +223,40 @@ const ActorFormModal = ({ show, onHide, initialActor = createEmptyActor() }) => 
                   />
                 </Form.Group>
               </Row>
-
-              <Row className="mb-3">
-                <Form.Group as={Col} md={12}>
-                  <Form.Label>Phim tham gia</Form.Label>
-                  <MoviePicker
-                    selectedMovies={actor.movies}
-                    onSelect={(movies) => handleChange('movies', movies)}
-                  />
-                </Form.Group>
-              </Row>
             </Container>
           </Form>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
             Huỷ bỏ
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Xác nhận
+          <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                <span className="ms-1">Đang lưu...</span>
+              </>
+            ) : (
+              'Xác nhận'
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <FileSelectModal
+        show={showFileModal}
+        onClose={() => setShowFileModal(false)}
+        onSelect={handleModalSelect}
+        onUpload={handleModalUpload}
+        isMultiselect={false}
+      />
 
       <ConfirmModal
         show={showCancelConfirm}

@@ -4,7 +4,7 @@ import ConfirmModal from '../ConfirmModal/ConfirmModal.jsx';
 import { useState } from 'react';
 import EpisodeRow from '../../components/EpisodeRow/EpisodeRow.jsx';
 
-const SeasonRow = ({ season, index, onDelete, onChange, onAddEpisode, onChangeEpisode, onDeleteEpisode, errors }) => {
+const SeasonRow = ({ season, index, onDelete, onChange, onAddEpisode, onPickerClick, onDeleteEpisode, errors }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleChange = (field, value) => {
@@ -44,7 +44,7 @@ const SeasonRow = ({ season, index, onDelete, onChange, onAddEpisode, onChangeEp
             episode={episode}
             index={epIndex}
             seasonIndex={index}
-            onChange={onChangeEpisode}
+            onPickerClick={onPickerClick}
             onDelete={season.episodes.length > 1 ? onDeleteEpisode : null}
             errors={errors?.[epIndex]}
           />

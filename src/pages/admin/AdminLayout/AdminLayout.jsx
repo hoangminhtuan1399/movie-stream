@@ -1,19 +1,37 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Button, Container, Nav, Navbar, Offcanvas, Modal } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { FaBars, FaBoxOpen, FaChartBar, FaFilm, FaSignOutAlt, FaStar, FaUsers, FaUpload } from 'react-icons/fa'
 import './AdminLayout.css'
-import Cookies from 'js-cookie';
+import { AuthContext } from '../../../contexts/AuthContext.jsx'
 
 const routerAuth = ['/admin/login'];
 
 const AdminLayout = () => {
   const location = useLocation()
   const navigate = useNavigate();
+  const { user, isAuthenticated, loading, logout: contextLogout } = useContext(AuthContext);
   const [activeItem, setActiveItem] = useState('')
   const [showSidebar, setShowSidebar] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  useEffect(() => {
+    if (loading) return; // Wait for auth check to finish
+
+    if (isAuthenticated && user) {
+      if (user.role === 'ADMIN') {
+        if (routerAuth.includes(location.pathname) || location.pathname === '/admin') {
+          navigate('/admin/movie');
+        }
+      } else {
+        contextLogout();
+        navigate('/');
+      }
+    } else if (!routerAuth.includes(location.pathname)) {
+      navigate('/admin/login');
+    }
+  }, [user, isAuthenticated, loading, location.pathname, navigate, contextLogout]);
 
   useEffect(() => {
     const path = location.pathname.split('admin/')[1]
@@ -21,11 +39,8 @@ const AdminLayout = () => {
   }, [location])
 
   const handleLogout = () => {
-    // Remove token from cookie
-    Cookies.remove('token');
-    // Close the logout modal
+    contextLogout();
     setShowLogoutModal(false);
-    // Navigate to login page
     navigate('/admin/login');
   }
 

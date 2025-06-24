@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import ConfirmModal from '../../components/ConfirmModal/ConfirmModal.jsx';
-import MoviePicker from "../MoviePicker/MoviePicker.jsx";
 import { createEmptyCollection } from "../../utils/createEmptyCollection.js";
+import { collectionService } from "../../services/collectionService.js";
+import MoviePicker from '../MoviePicker/MoviePicker.jsx';
 
 const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyCollection() }) => {
   const [collection, setCollection] = useState(initialCollection);
@@ -10,7 +11,7 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (show) {
       setCollection(initialCollection);
@@ -22,8 +23,8 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
 
   const validateCollection = (collectionToValidate = collection) => {
     const collectionErrors = {};
-    if (!collectionToValidate.title.trim()) {
-      collectionErrors.title = 'Vui lòng nhập tên bộ sưu tập';
+    if (!collectionToValidate?.name?.trim()) {
+      collectionErrors.name = 'Vui lòng nhập tên bộ sưu tập';
     }
     return collectionErrors;
   };
@@ -40,19 +41,36 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
     setErrors(validateCollection());
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitAttempted(true);
     const newErrors = validateCollection();
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length === 0) {
-      console.log('Collection to submit:', collection);
-      onHide(collection);
+      setIsSubmitting(true);
+      const payload = {
+        name: collection.name,
+        featured: collection.featured,
+        movieIds: collection.movies.map(movie => movie),
+      };
+      try {
+        let response;
+        if (collection.id) {
+          response = await collectionService.updateCollection(collection.id, payload);
+        } else {
+          response = await collectionService.createCollection(payload);
+        }
+        onHide(response.data);
+      } catch (error) {
+        console.error('Failed to save collection', error);
+        // Có thể set thông báo lỗi ở đây
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   const handleCancel = () => {
-    if (collection.title || collection.movies.length > 0) {
+    if (collection.name || collection.movies.length > 0) {
       setShowCancelConfirm(true);
     } else {
       onHide();
@@ -82,13 +100,13 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
                   <Form.Label>Tên bộ sưu tập <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     type="text"
-                    value={collection.title}
+                    value={collection.name}
                     onChange={(e) => handleChange('name', e.target.value)}
                     onBlur={() => handleBlur('name')}
-                    isInvalid={(touched.title || submitAttempted) && !!errors.title}
+                    isInvalid={(touched.name || submitAttempted) && !!errors.name}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.title}
+                    {errors.name}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md={6}>
@@ -132,11 +150,16 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel} disabled={isSubmitting}>
             Huỷ bỏ
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Xác nhận
+          <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Đang lưu...
+              </>
+            ) : 'Xác nhận'}
           </Button>
         </Modal.Footer>
       </Modal>
