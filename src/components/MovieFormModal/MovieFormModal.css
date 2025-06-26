@@ -2,3 +2,7 @@
   max-height: calc(100vh - 20rem);
   overflow-y: auto;
 }
+
+.modal-file-select {
+  z-index: 2000 !important;
+}

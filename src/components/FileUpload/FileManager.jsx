@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './FileManager.css';
-import fileService from '../services/fileService';
+import fileService from '../../services/fileService';
 
 const FILE_TYPES = [
     { label: 'Tất cả', value: 'all' },
@@ -13,7 +13,7 @@ function formatSize(size) {
     return (size / 1024).toFixed(2) + ' KB';
 }
 
-const FileManager = ({ files = [], onSelect, selectable = false }) => {
+const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone = false, multiple = false }) => {
     const [search, setSearch] = useState('');
     const [type, setType] = useState('all');
     const [showDelete, setShowDelete] = useState(null);
@@ -22,10 +22,9 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
     const [page, setPage] = useState(1);
     const [fileList, setFileList] = useState(files);
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const fileInputRef = useRef();
+    const [dragActive, setDragActive] = useState(false);
 
     const filesPerPage = 16;
 
@@ -34,7 +33,8 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
         try {
             setLoading(true);
             const response = await fileService.searchFiles(search, type === 'all' ? '' : type);
-            const mappedFiles = response.map(file => ({
+            console.log(response);
+            const mappedFiles = response.content.map(file => ({
                 id: file.id,
                 name: file.fileName,
                 url: file.fileUrl,
@@ -76,41 +76,79 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
         }
     };
 
-    const handleUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-            setUploading(true);
-            await fileService.uploadFile(file);
-            await fetchFiles();
-            e.target.value = '';
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        } finally {
-            setUploading(false);
+    const handleFileSelect = (file) => {
+        let newSelected;
+        if (multiple) {
+            const isSelected = selectedFiles.some(f => f.id === file.id);
+        if (isSelected) {
+            newSelected = selectedFiles.filter(f => f.id !== file.id);
+            } else {
+                newSelected = [...selectedFiles, file];
+            }
+        } else {
+            // Chỉ chọn 1 file
+            if (selectedFiles.length === 1 && selectedFiles[0].id === file.id) {
+                newSelected = [];
+            } else {
+                newSelected = [file];
         }
+        }
+        setSelectedFiles(newSelected);
+        onSelect?.(newSelected);
     };
 
-    const handleFileSelect = (file) => {
-        const isSelected = selectedFiles.some(f => f.id === file.id);
-        let newSelected;
-        
-        if (isSelected) {
-            // if file selected so delete it
-            newSelected = selectedFiles.filter(f => f.id !== file.id);
-        } else {
-            // if file not selected so add it
-            newSelected = [...selectedFiles, file];
+    // Drag & drop handlers
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            // upload logic ở đây nếu cần
         }
-        
-        setSelectedFiles(newSelected);
-        // notify outside with new list
-        onSelect?.(newSelected);
+    };
+    const handleUploadZoneFile = (e) => {
+        // const file = e.target.files[0];
+        // upload logic ở đây nếu cần
+        e.target.value = '';
     };
 
     return (
         <div className="file-manager">
+            {/* Upload Zone */}
+            {showUploadZone && (
+                <div
+                    className={`upload-zone${dragActive ? ' drag-active' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
+                    <div className="upload-zone-icon">
+                        <i className="bi bi-upload" />
+                    </div>
+                    <div className="upload-zone-heading">
+                        Add media <span className="upload-zone-url">| Add from URL</span>
+                    </div>
+                    <div className="upload-zone-subtext">Drag and drop images, videos, 3D models, and files</div>
+                    <input
+                        type="file"
+                        accept="image/*,video/*"
+                        style={{ display: 'none' }}
+                        id="upload-zone-input"
+                        onChange={handleUploadZoneFile}
+                    />
+                    <label htmlFor="upload-zone-input" className="btn btn-outline-primary btn-sm upload-zone-btn">Chọn file</label>
+                </div>
+            )}
             {/* Toolbar */}
             <div className="d-flex align-items-center mb-3 gap-2 flex-wrap">
                 <input
@@ -130,26 +168,6 @@ const FileManager = ({ files = [], onSelect, selectable = false }) => {
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                 </select>
-                <button
-                    className="btn btn-primary d-flex align-items-center"
-                    onClick={() => fileInputRef.current.click()}
-                    disabled={uploading}
-                >
-                    {uploading ? (
-                        <div className="spinner-border spinner-border-sm" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                    ) : (
-                        <span className="fs-5">+</span>
-                    )}
-                </button>
-                <input
-                    type="file"
-                    accept="image/*,video/*"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleUpload}
-                />
             </div>
 
             {/* Loading indicator */}

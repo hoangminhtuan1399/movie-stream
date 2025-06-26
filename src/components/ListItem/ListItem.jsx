@@ -8,7 +8,8 @@ const ListItem = ({ title, itemsMenu, columns = 2, path='/' }) => {
   const navigate = useNavigate();
 
   const handleItemClick = (item) => {
-    navigate(`${path}?${item.value}`);
+    const queryValue = [item.value]
+    navigate(`${path}${queryValue}`);
     setOpen(false);
   };
 

@@ -16,22 +16,22 @@ const filters = [
   {
     label: 'Quốc gia',
     key: 'country',
-    options: [{ label: 'Tất cả', value: 'all' }, ...countryOptions]
+    options: [{ label: 'Tất cả', value: '' }, ...countryOptions]
   },
   {
     label: 'Loại phim',
     key: 'type',
-    options: [{ label: 'Tất cả', value: 'all' }, ...movieTypeOptions]
+    options: [{ label: 'Tất cả', value: '' }, ...movieTypeOptions]
   },
   {
     label: 'Xếp hạng',
     key: 'age',
-    options: [{ label: 'Tất cả', value: 'all' }, ...ageRatingOptions]
+    options: [{ label: 'Tất cả', value: '' }, ...ageRatingOptions]
   },
   {
     label: 'Thể loại',
     key: 'genre',
-    options: [{ label: 'Tất cả', value: 'all' }, ...genreOptions]
+    options: [{ label: 'Tất cả', value: '' }, ...genreOptions]
   },
   {
     label: 'Sắp xếp',

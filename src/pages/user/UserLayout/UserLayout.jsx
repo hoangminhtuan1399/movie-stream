@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Header from '../../../components/Header/Header';
 import Footer from '../../../components/Footer/Footer';
 import { Outlet } from 'react-router-dom';
 import { PageContext } from "../../../contexts/PageContext.jsx";
 import { LoadingPage } from "../LoadingPage/LoadingPage.jsx";
+import Header from '../../../components/Header/Header.jsx';
 
 const UserLayout = () => {
   const [pageLoading, setPageLoading] = useState(false)

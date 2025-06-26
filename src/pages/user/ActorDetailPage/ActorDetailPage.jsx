@@ -1,79 +1,120 @@
-import React from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import CardCommon from '../../../components/CardMovie/CardCommon';
-import MovieGrid from '../../../components/MovieGrid/MovieGrid';
-import './ActorDetailPage.css';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import CardCommon from "../../../components/CardMovie/CardCommon";
+import MovieGrid from "../../../components/MovieGrid/MovieGrid";
+import "./ActorDetailPage.css";
+import { actorService } from "../../../services/actorService";
 
-const actor = {
-  name: 'Tamlyn Tomita',
-  avatar: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Tamlyn_Tomita_2013.jpg',
-  gender: 'Nữ',
-  birthday: '',
-  aka: '',
-  bio: '',
+const DEFAULT_AVATAR = "https://via.placeholder.com/120x120?text=No+Image";
+
+const ActorDetailPage = () => {
+  const { id } = useParams();
+  const [actor, setActor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    actorService.getActorDetail(id)
+      .then((data) => {
+        setActor(data.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Không thể tải dữ liệu diễn viên");
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading)
+    return (
+      <div className="text-white text-center py-5">
+        <Spinner
+          animation="border"
+          variant="light"
+          size="md"
+          className="me-2"
+        />
+        Đang tải dữ liệu phim...
+      </div>
+    );
+  if (error) return <div className="text-danger text-center py-5">{error}</div>;
+  if (!actor) return null;
+
+  // Map các trường có sẵn trên UI
+  const avatar = actor.avatarUrl || DEFAULT_AVATAR;
+  const name = actor.name || "Đang cập nhật";
+  const gender = actor.gender || "Đang cập nhật";
+  const birthday = actor.dob ? actor.dob.join("-") : "Đang cập nhật";
+  const aka = actor.aka || "Đang cập nhật";
+  const bio = actor.bio || "Đang cập nhật";
+  const movies = actor.movies || [];
+
+  return (
+    <div className="actor-detail-page bg-dark text-white min-vh-100 py-4">
+      <Container>
+        <Row>
+          {/* Left: Actor Info */}
+          <Col md={3} className="mb-4 mb-md-0">
+            <div className="actor-avatar-wrapper mb-3">
+              <img src={avatar} alt={name} className="actor-avatar" />
+            </div>
+            <h3 className="mb-3">{name}</h3>
+            <div className="d-flex gap-2 mb-3">
+              <Button variant="outline-light" className="rounded-pill px-3">
+                <span role="img" aria-label="heart">
+                  ♥
+                </span>{" "}
+                Yêu thích
+              </Button>
+              <Button variant="outline-light" className="rounded-pill px-3">
+                <span role="img" aria-label="share">
+                  ✈
+                </span>{" "}
+                Chia sẻ
+              </Button>
+            </div>
+            <div className="actor-info-list">
+              <div>
+                <span className="text-secondary">Tên gọi khác:</span>{" "}
+                <span>{aka}</span>
+              </div>
+              <div>
+                <span className="text-secondary">Giới thiệu:</span>{" "}
+                <span>{bio}</span>
+              </div>
+              <div>
+                <span className="text-secondary">Giới tính:</span>{" "}
+                <span>{gender}</span>
+              </div>
+              <div>
+                <span className="text-secondary">Ngày sinh:</span>{" "}
+                <span>{birthday}</span>
+              </div>
+            </div>
+          </Col>
+          {/* Right: Movies */}
+          <Col md={9} className="actor-movie-col">
+            <h4 className="mb-4">Các phim đã tham gia</h4>
+            <MovieGrid
+              items={movies}
+              columns={5}
+              renderItem={(movie) => (
+                <CardCommon
+                  poster={movie.img || movie.poster || ""}
+                  title={movie.title}
+                  subtitle={movie.originalTitle || movie.subtitle}
+                  badges={movie.badges || []}
+                />
+              )}
+            />
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
 };
 
-const movies = [
-  {
-    title: 'Ultraman: Trỗi dậy',
-    originalTitle: 'Ultraman: Rising',
-    img: 'https://static.nutscdn.com/vimg/1920-0/8075260038eecb4c9684956a174180a5.jpg',
-    badges: ['P.Đề', 'L.Tiếng'],
-  },
-  {
-    title: 'Hàng xóm tốt',
-    originalTitle: 'The Good Neighbor',
-    img: 'https://m.media-amazon.com/images/I/81n6YQpQ1lL._AC_UF894,1000_QL80_.jpg',
-    badges: ['P.Đề'],
-  },
-  {
-    title: 'Siêu Nhí Karate 2',
-    originalTitle: 'The Karate Kid Part II',
-    img: 'https://m.media-amazon.com/images/I/81n6YQpQ1lL._AC_UF894,1000_QL80_.jpg',
-    badges: ['P.Đề'],
-  },
-];
-
-const ActorDetailPage = () => (
-  <div className="actor-detail-page bg-dark text-white min-vh-100 py-4">
-    <Container>
-      <Row>
-        {/* Left: Actor Info */}
-        <Col md={3} className="mb-4 mb-md-0">
-          <div className="actor-avatar-wrapper mb-3">
-            <img src={actor.avatar} alt={actor.name} className="actor-avatar" />
-          </div>
-          <h3 className="mb-3">{actor.name}</h3>
-          <div className="d-flex gap-2 mb-3">
-            <Button variant="outline-light" className="rounded-pill px-3"><span role="img" aria-label="heart">♥</span> Yêu thích</Button>
-            <Button variant="outline-light" className="rounded-pill px-3"><span role="img" aria-label="share">✈</span> Chia sẻ</Button>
-          </div>
-          <div className="actor-info-list">
-            <div><span className="text-secondary">Tên gọi khác:</span> <span>Đang cập nhật</span></div>
-            <div><span className="text-secondary">Giới thiệu:</span> <span>Đang cập nhật</span></div>
-            <div><span className="text-secondary">Giới tính:</span> <span>{actor.gender}</span></div>
-            <div><span className="text-secondary">Ngày sinh:</span> <span>Đang cập nhật</span></div>
-          </div>
-        </Col>
-        {/* Right: Movies */}
-        <Col md={9} className="actor-movie-col">
-          <h4 className="mb-4">Các phim đã tham gia</h4>
-          <MovieGrid
-            items={movies}
-            columns={5}
-            renderItem={(movie, idx) => (
-              <CardCommon
-                poster={movie.img}
-                title={movie.title}
-                subtitle={movie.originalTitle}
-                badges={movie.badges}
-              />
-            )}
-          />
-        </Col>
-      </Row>
-    </Container>
-  </div>
-);
-
-export default ActorDetailPage; 
+export default ActorDetailPage;
