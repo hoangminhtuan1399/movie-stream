@@ -5,6 +5,7 @@ import CardCommon from "../../../components/CardMovie/CardCommon";
 import MovieGrid from "../../../components/MovieGrid/MovieGrid";
 import "./ActorDetailPage.css";
 import { actorService } from "../../../services/actorService";
+import { HeaderBack } from '../../../components/Header/Header';
 
 const DEFAULT_AVATAR = "https://via.placeholder.com/120x120?text=No+Image";
 
@@ -18,7 +19,8 @@ const ActorDetailPage = () => {
     if (!id) return;
     setLoading(true);
     actorService.getActorDetail(id)
-      .then((data) => {
+      .then(({data}) => {
+        console.log(data);
         setActor(data.data);
         setLoading(false);
       })
@@ -50,10 +52,34 @@ const ActorDetailPage = () => {
   const birthday = actor.dob ? actor.dob.join("-") : "Đang cập nhật";
   const aka = actor.aka || "Đang cập nhật";
   const bio = actor.bio || "Đang cập nhật";
-  const movies = actor.movies || [];
+  // Map lại dữ liệu phim cho đúng với data.json
+  const movies = (actor.movies || []).map((movie) => {
+    // Lấy poster ưu tiên smallBanner, bigBanner, hoặc null
+    const poster = movie.smallBanner || movie.bigBanner || "";
+    // Subtitle lấy subtitle hoặc null
+    const subtitle = movie.subtitle || null;
+    // Badge: năm, loại phim, số season/tập
+    const badges = [];
+    if (movie.year) badges.push(movie.year);
+    if (movie.type) badges.push(movie.type);
+    if (movie.seasons && movie.seasons.length > 0) {
+      badges.push(`Phần ${movie.seasons.length}`);
+      // Đếm tổng số tập
+      const totalEpisodes = movie.seasons.reduce((sum, s) => sum + (s.episodes?.length || 0), 0);
+      if (totalEpisodes > 0) badges.push(`Tập ${totalEpisodes}`);
+    }
+    return {
+      id: movie.id,
+      poster,
+      title: movie.title,
+      subtitle,
+      badges,
+    };
+  });
 
   return (
     <div className="actor-detail-page bg-dark text-white min-vh-100 py-4">
+      <HeaderBack title="Thông tin diễn viên" paddingContainer={false} />
       <Container>
         <Row>
           {/* Left: Actor Info */}
@@ -100,13 +126,14 @@ const ActorDetailPage = () => {
             <h4 className="mb-4">Các phim đã tham gia</h4>
             <MovieGrid
               items={movies}
-              columns={5}
+              columns={4}
               renderItem={(movie) => (
                 <CardCommon
-                  poster={movie.img || movie.poster || ""}
+                  poster={movie.poster}
                   title={movie.title}
-                  subtitle={movie.originalTitle || movie.subtitle}
-                  badges={movie.badges || []}
+                  subtitle={movie.subtitle}
+                  badges={movie.badges}
+                  id={movie.id}
                 />
               )}
             />

@@ -3,6 +3,7 @@ import './ActorPage.css';
 import PaginationCommon from '../../../components/Pagination/PaginationCommon';
 import { actorService } from '../../../services/actorService';
 import { useNavigate } from 'react-router-dom';
+import { HeaderBack } from '../../../components/Header/Header';
 
 const ACTORS_PER_PAGE = 8;
 
@@ -29,7 +30,7 @@ const UserActorPage = () => {
 
   return (
     <div className="actor-page">
-      <h2 className="actor-title">Diễn viên</h2>
+      <HeaderBack title="Diễn viên" />
       <div className="actor-grid">
         {actors.map((actor) => (
           <div className="actor-card" key={actor.id} onClick={() => navigate(`/actor/${actor.id}`)}>

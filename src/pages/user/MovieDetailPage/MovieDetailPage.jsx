@@ -8,6 +8,7 @@ import './MovieDetailPage.css';
 import { getMovieDetail } from '../../../services/movieService';
 import { Spinner, Toast, ToastContainer } from 'react-bootstrap';
 import { addFavoriteMovie } from '../../../services/userService';
+import { HeaderBack } from '../../../components/Header/Header';
 
 const similarMovies = [
   {
@@ -90,6 +91,7 @@ const MovieDetailPage = () => {
 
   return (
     <div className="movie-detail" style={{backgroundImage: `url("${bigBanner}")`}}>
+      <HeaderBack title="Chi tiết phim" />
       <div className="movie-detail__container">
         <div className="movie-detail__poster">
           <img src={poster} alt={title} style={{width: '100%', height: '100%', objectFit: 'cover'}} />

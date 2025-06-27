@@ -41,4 +41,11 @@ export const addFavoriteMovie = async (movieId) => {
     console.error('Error add favorite movie', error);
     throw error;
   }
+};
+
+export const getFavoriteMovies = (page = 0, size = 10) => {
+  return userService.get(
+    '/user/favorites',
+    { params: { page, size } }
+  );
 }; 
