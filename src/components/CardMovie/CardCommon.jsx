@@ -55,6 +55,9 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
       <div className="card-common-content">
         <div
           className="card-common-title truncate cursor-pointer hover:text-yellow-300"
+          style={{
+            cursor: 'pointer'
+          }}
           onClick={handleTitleClick}
         >
           {title}

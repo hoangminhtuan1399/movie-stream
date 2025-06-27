@@ -6,6 +6,7 @@ import MovieGrid from '../../../components/MovieGrid/MovieGrid';
 import PaginationCommon from '../../../components/Pagination/PaginationCommon';
 import movieApi from '../../../services/movieService';
 import './SearchPage.css';
+import { HeaderBack } from '../../../components/Header/Header';
 
 function useQuery() {
   const { search } = useLocation();
@@ -104,6 +105,7 @@ const SearchPage = () => {
 
   return (
     <div className="search-page bg-dark text-white min-vh-100 py-4">
+      <HeaderBack title="Tìm kiếm" />
       <div className="container">
         <div className="search-header d-flex align-items-center mb-4">
           <span className="me-2">🔍</span>

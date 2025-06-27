@@ -9,6 +9,7 @@ import PaginationCommon from "../../../components/Pagination/PaginationCommon.js
 import SortCommon from "../../../components/SortCommon/SortCommon.jsx";
 import MovieGrid from "../../../components/MovieGrid/MovieGrid";
 import "./CategoryPage.css";
+import { HeaderBack } from "../../../components/Header/Header";
 
 const CategoryPage = () => {
   const location = useLocation();
@@ -43,7 +44,7 @@ const CategoryPage = () => {
         searchParams.set(key, value);
       }
     });
-    navigate({ pathname: '/search', search: searchParams.toString() });
+    navigate({ pathname: "/search", search: searchParams.toString() });
   };
 
   useEffect(() => {
@@ -65,16 +66,19 @@ const CategoryPage = () => {
   const getLabel = (options, value) => {
     if (!value) return null;
     // Hỗ trợ nhiều giá trị (dạng chuỗi cách nhau bởi dấu phẩy)
-    const values = value.split(',');
+    const values = value.split(",");
     return options
-      .filter(opt => values.includes(opt.value))
-      .map(opt => opt.label)
-      .join(', ');
+      .filter((opt) => values.includes(opt.value))
+      .map((opt) => opt.label)
+      .join(", ");
   };
 
   // Lấy tiêu đề động
   const typeLabel = getLabel(movieTypeOptions, query.type);
-  const countryLabel = getLabel(countryOptions, query.countries || query.country);
+  const countryLabel = getLabel(
+    countryOptions,
+    query.countries || query.country
+  );
   const genreLabel = getLabel(genreOptions, query.genres || query.genre);
 
   let dynamicTitle = "Danh mục phim";
@@ -85,31 +89,38 @@ const CategoryPage = () => {
   if (titleParts.length > 0) dynamicTitle = "Phim " + titleParts.join(" • ");
 
   return (
-    <div className="category-container">
-      <div className="category-header">
-        <span className="category-header-icon">🎬</span>
-        <h2 className="category-title">{dynamicTitle}</h2>
+    <div style={{ width: "100%", height: "100%", background: "#191b24" }}>
+      <div className="category-container">
+        <HeaderBack title="Danh mục phim" style={{ padding: 0 }} />
+        <div className="category-header">
+          <span className="category-header-icon">🎬</span>
+          <h2 className="category-title">{dynamicTitle}</h2>
+        </div>
+        <SortCommon
+          selected={selectedFilter}
+          onSelect={handleSelectFilter}
+          onApply={handleApplyFilter}
+        />
+        <MovieGrid
+          items={movies}
+          columns={6}
+          renderItem={(movie) => (
+            <CardCommon
+              key={movie.id}
+              poster={movie.smallBanner}
+              title={movie.title}
+              subtitle={movie.subtitle}
+              badge={movie.badge}
+              id={movie.id}
+            />
+          )}
+        />
+        <PaginationCommon
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
-      <SortCommon selected={selectedFilter} onSelect={handleSelectFilter} onApply={handleApplyFilter} />
-      <MovieGrid
-        items={movies}
-        columns={6}
-        renderItem={(movie) => (
-          <CardCommon
-            key={movie.id}
-            poster={movie.smallBanner}
-            title={movie.title}
-            subtitle={movie.subtitle}
-            badge={movie.badge}
-            id={movie.id}
-          />
-        )}
-      />
-      <PaginationCommon
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
     </div>
   );
 };

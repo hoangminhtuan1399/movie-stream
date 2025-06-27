@@ -1,17 +1,16 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container, Row, Col, Nav, Image, Form, Button, Tab, Tabs, Toast, ToastContainer } from 'react-bootstrap';
 import { FaHeart, FaUser, FaSignOutAlt, FaPlus, FaHistory } from 'react-icons/fa';
 import './ProfilePage.css';
 import { AuthContext } from '../../../contexts/AuthContext';
 import { changePassword, updateUser } from '../../../services/userService';
 import { useForm } from 'react-hook-form';
-import { fileService } from '../../../services/fileService';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const { user, logout } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [toastInfo, setToastInfo] = useState({ show: false, message: '', type: 'success' });
-  const [uploading, setUploading] = useState(false);
   // React Hook Form setup cho đổi mật khẩu
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
   // React Hook Form cho cập nhật thông tin user
@@ -24,7 +23,7 @@ const ProfilePage = () => {
     }
   });
   const [loadingUpdate, setLoadingUpdate] = useState(false);
-  const fileInputRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -74,27 +73,6 @@ const ProfilePage = () => {
     setLoadingUpdate(false);
   };
 
-  // Xử lý upload ảnh đại diện
-  const handleUploadAvatar = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const res = await fileService.uploadFile(file);
-      console.log(res);
-      const url = res.url || (res.data && res.data.url) || res.data;
-      if (url) {
-        resetInfo({ ...watchInfo(), avatar: url });
-        setToastInfo({ show: true, message: 'Tải ảnh thành công!', type: 'success' });
-      } else {
-        setToastInfo({ show: true, message: 'Không lấy được link ảnh!', type: 'danger' });
-      }
-    } catch {
-      setToastInfo({ show: true, message: 'Tải ảnh thất bại!', type: 'danger' });
-    }
-    setUploading(false);
-  };
-
   return (
     <div className="profile-page-wrapper">
       <Container fluid="lg" className="profile-page-container">
@@ -104,7 +82,7 @@ const ProfilePage = () => {
             <aside className="profile-sidebar">
               <h4 className="mb-4">Quản lý tài khoản</h4>
               <Nav className="flex-column profile-nav flex-grow-1">
-                <Nav.Link href="#favorites" className="d-flex align-items-center">
+                <Nav.Link onClick={() => navigate('/user/favorites')} className="d-flex align-items-center">
                   <FaHeart className="me-3" /> Yêu thích
                 </Nav.Link>
                 <Nav.Link href="/user/profile" active className="d-flex align-items-center">
@@ -154,30 +132,6 @@ const ProfilePage = () => {
                             <Form.Check type="radio" label="Không xác định" value="OTHER" {...registerInfo('gender')} checked={!watchInfo('gender') || watchInfo('gender') === 'OTHER'} />
                           </Col>
                         </Form.Group>
-                        {/* <Form.Group as={Row} className="mb-4" controlId="formAvatar">
-                          <Form.Label column sm={3} className="text-sm-end">Ảnh đại diện</Form.Label>
-                          <Col sm={9}>
-                            <div className="mt-2 d-flex align-items-center gap-2">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                style={{ display: 'none' }}
-                                onChange={handleUploadAvatar}
-                                disabled={uploading}
-                              />
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                disabled={uploading}
-                                onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                              >
-                                {uploading ? <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> : null}
-                                Upload ảnh
-                              </Button>
-                            </div>
-                          </Col>
-                        </Form.Group> */}
                         <Row className="mb-4">
                           <Col sm={{ span: 9, offset: 3 }}>
                             <Button variant="warning" type="submit" className="update-btn" disabled={loadingUpdate}>
