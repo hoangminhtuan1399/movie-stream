@@ -33,16 +33,17 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
     fetchData();
   }, [searchTerm, currentPage]);
 
-  const handleMovieToggle = (movieId) => {
-    const newSelected = selectedMovies.includes(movieId)
-      ? selectedMovies.filter(id => id !== movieId)
-      : [...selectedMovies, movieId];
+  const handleMovieToggle = (movie) => {
+    const newSelected = selectedMovies.find(selectedMovie => selectedMovie.id === movie.id)
+      ? selectedMovies.filter(selectedMovie => selectedMovie.id !== movie.id)
+      : [...selectedMovies, movie];
     onSelect(newSelected);
   };
 
-  const removeMovie = (movieId) => {
-    onSelect(selectedMovies.filter(id => id !== movieId));
+  const removeMovie = (movie) => {
+    onSelect(selectedMovies.filter(selectedMovie => selectedMovie.id !== movie.id));
   };
+
   return (
     <Row className="g-3">
       <Col md={8}>
@@ -72,8 +73,8 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
                   type="checkbox"
                   id={`movie-${movie.id}`}
                   label={movie.title}
-                  checked={selectedMovies.includes(movie.id)}
-                  onChange={() => handleMovieToggle(movie.id)}
+                  checked={!!selectedMovies.find(selectedMovie => selectedMovie.id === movie.id)}
+                  onChange={() => handleMovieToggle(movie)}
                   className="mb-2"
                 />
               ))
@@ -111,16 +112,16 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
           <h5>Đã chọn</h5>
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {selectedMovies.length > 0 ? (
-              selectedMovies.map(movieId => {
-                const movie = movies.find(m => m.id === movieId);
+              selectedMovies.map(selectedMovie => {
+                const movie = movies.find(m => m.id === selectedMovie.id);
                 return movie ? (
-                  <div key={movieId} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                  <div key={selectedMovie.id} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
                     <span>{movie.title}</span>
                     <Button
                       variant="link"
                       size="sm"
                       className="text-danger p-0"
-                      onClick={() => removeMovie(movieId)}
+                      onClick={() => removeMovie(movie)}
                     >
                       <FaTimes />
                     </Button>

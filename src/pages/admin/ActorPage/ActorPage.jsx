@@ -168,7 +168,7 @@ export const ActorPage = () => {
                 <td>{actor.name}</td>
                 <td>{actor.gender.toLowerCase() === 'male' ? 'Nam' : actor.gender.toLowerCase() === 'female' ? 'Nữ' : 'Khác'}</td>
                 <td>{Array.isArray(actor.dob) ? actor.dob.join('-') : actor.dob}</td>
-                <td>{actor.movieIds ? actor.movieIds.length : 0}</td>
+                <td>{actor.movies ? actor.movies.length : 0}</td>
                 <td className="text-center p-1">
                   <div className="d-flex justify-content-center gap-2">
                     <Button

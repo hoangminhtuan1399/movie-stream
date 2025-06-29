@@ -5,7 +5,6 @@ import CollectionFormModal from '../../../components/CollectionFormModal/Collect
 import { createEmptyCollection } from "../../../utils/createEmptyCollection.js";
 import { collectionService } from "../../../services/collectionService.js";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal.jsx";
-import movieServiceApi from '../../../services/movieService';
 
 export const CollectionPage = () => {
   const [collections, setCollections] = useState([]);
@@ -59,7 +58,7 @@ export const CollectionPage = () => {
   };
 
   const handleEditClick = async (collection) => {
-    let movies = collection.movieIDs.map(id => id);
+    let movies = collection.movies.map(id => id);
     setSelectedCollection({ ...collection, movies });
     setShowCollectionFormModal(true);
   };
@@ -152,7 +151,7 @@ export const CollectionPage = () => {
             <tr key={'collection-' + collection.id}>
               <td>{collection.id}</td>
               <td>{collection.name}</td>
-              <td>{collection.movieIDs ? collection.movieIDs.length : 0}</td>
+              <td>{collection.movies ? collection.movies.length : 0}</td>
               <td>{collection.featured ? 'Hiện' : 'Ẩn'}</td>
               <td>{collection.index}</td>
               <td className="text-center p-1">

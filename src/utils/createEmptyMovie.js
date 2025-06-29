@@ -1,5 +1,6 @@
 import { createEmptySeason } from "./createEmptySeason.js";
-import { MOVIE_TYPES, MOVIE_VALUES } from "./movieTypeOptions.js";
+import { MOVIE_VALUES } from "./movieTypeOptions.js";
+import { COUNTRIES } from "./countryOptions.js";
 
 const createEmptyStream = () => ({
   fileUrl: '',
@@ -11,8 +12,8 @@ export const createEmptyMovie = () => ({
     title: '',
     subtitle: '',
     description: '',
-  releaseYear: new Date().getFullYear(),
-  country: 'US',
+  year: new Date().getFullYear(),
+  countries: COUNTRIES.EUROPE,
   genres: [],
   ageRating: '13+',
   thumbnail: '',

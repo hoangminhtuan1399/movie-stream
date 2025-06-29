@@ -65,7 +65,6 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onErro
             formatted.seasons.push(createEmptySeason());
           }
         }
-        console.log(formatted);
         movieForForm = formatted;
       } else {
         // Creating a new movie
@@ -137,10 +136,10 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onErro
       movieErrors.title = 'Vui lòng nhập tên phim';
     }
 
-    if (isNaN(movieToValidate.releaseYear)) {
-      movieErrors.releaseYear = 'Năm phát hành phải là số';
-    } else if (movieToValidate.releaseYear > new Date().getFullYear()) {
-      movieErrors.releaseYear = `Năm phát hành không hợp lệ`;
+    if (isNaN(movieToValidate.year)) {
+      movieErrors.year = 'Năm phát hành phải là số';
+    } else if (movieToValidate.year > new Date().getFullYear()) {
+      movieErrors.year = `Năm phát hành không hợp lệ`;
     }
 
     if (isNaN(movieToValidate.views)) {
@@ -272,8 +271,8 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onErro
         title: movie.title,
         subtitle: movie.subtitle,
         intro: movie.description,
-        year: Number(movie.releaseYear),
-        countryName: movie.country,
+        year: Number(movie.year),
+        countryName: movie.countries,
         genreNames: movie.genres, // mảng string
         ageRating: movie.ageRating,
         smallBanner: movie.thumbnail,
@@ -332,7 +331,7 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onErro
 
   const handleCancel = () => {
     if (movie.title ||
-      movie.releaseYear ||
+      movie.year ||
       movie.views ||
       movie.genres.length > 0 ||
       movie.thumbnail ||
@@ -386,20 +385,20 @@ const MovieFormModal = ({show, onHide, initialMovie = createEmptyMovie(), onErro
                       type="number"
                       min="1900"
                       max={new Date().getFullYear() + 5}
-                      value={movie.releaseYear}
-                      onChange={(e) => handleChange('releaseYear', e.target.value)}
-                      onBlur={() => handleBlur('releaseYear')}
-                      isInvalid={(touched.releaseYear || submitAttempted) && !!errors.releaseYear}
+                      value={movie.year}
+                      onChange={(e) => handleChange('year', e.target.value)}
+                      onBlur={() => handleBlur('year')}
+                      isInvalid={(touched.year || submitAttempted) && !!errors.year}
                     />
                     <Form.Control.Feedback type="invalid">
-                      {errors.releaseYear}
+                      {errors.year}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group as={Col} md={3}>
                     <Form.Label>Quốc gia</Form.Label>
                     <Form.Select
-                      value={movie.country}
-                      onChange={(e) => handleChange('country', e.target.value)}
+                      value={movie.countries}
+                      onChange={(e) => handleChange('countries', e.target.value)}
                     >
                       {generateOptions(countryOptions)}
                     </Form.Select>

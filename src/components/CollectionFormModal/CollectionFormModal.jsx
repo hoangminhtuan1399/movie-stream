@@ -50,7 +50,7 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
       const payload = {
         name: collection.name,
         featured: collection.featured,
-        movieIds: collection.movies.map(movie => movie),
+        movieIds: collection.movies.map(movie => movie.id),
       };
       try {
         let response;
