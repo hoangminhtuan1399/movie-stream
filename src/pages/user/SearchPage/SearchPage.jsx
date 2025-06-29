@@ -7,6 +7,8 @@ import PaginationCommon from '../../../components/Pagination/PaginationCommon';
 import movieApi from '../../../services/movieService';
 import './SearchPage.css';
 import { HeaderBack } from '../../../components/Header/Header';
+import CardSkeleton from '../../../components/Loading/CardSkeleton';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 function useQuery() {
   const { search } = useLocation();
@@ -24,6 +26,7 @@ const SearchPage = () => {
 
   const query = useQuery();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // Lấy params từ query
   useEffect(() => {
@@ -43,6 +46,8 @@ const SearchPage = () => {
 
   // Gọi API khi query thay đổi
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     const params = {};
     for (const [key, value] of query.entries()) {
       if (value.includes(',')) {
@@ -53,23 +58,19 @@ const SearchPage = () => {
         params[key] = value;
       }
     }
-    setLoading(true);
-    setError(null);
-    movieApi.getMovies({
-      ...params,
-      page: (params.page || 1) - 1, // backend page bắt đầu từ 0
-      size: params.size || 10,
-    })
+    movieApi.getMovies(params)
       .then(res => {
         setMovies(res.data.data.content || []);
         setTotalPages(res.data.data.totalPages || 1);
         setLoading(false);
       })
       .catch(() => {
-        setError('Không thể tải kết quả tìm kiếm');
+        setMovies([]);
+        setTotalPages(1);
         setLoading(false);
+        showToast('Lỗi tìm kiếm phim!', 'danger');
       });
-  }, [window.location.search]);
+  }, [query, page]);
 
   const handleSelectFilter = (key, value) => {
     setSelectedFilter(prev => ({ ...prev, [key]: value }));
@@ -104,9 +105,9 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="search-page bg-dark text-white min-vh-100 py-4">
-      <HeaderBack title="Tìm kiếm" />
-      <div className="container">
+    <div className="search-page text-white min-vh-100 py-4" style={{ backgroundColor: '#191b24' }}>
+      <div className="search-container">
+        <HeaderBack title="Tìm kiếm" style={{ paddingLeft: '0px' }} />
         <div className="search-header d-flex align-items-center mb-4">
           <span className="me-2">🔍</span>
           {selectedFilter?.keyword && <h2 className="mb-0">Kết quả tìm kiếm "{selectedFilter.keyword || ''}"</h2>}
@@ -117,7 +118,11 @@ const SearchPage = () => {
         </div>
         <SortCommon selected={selectedFilter} onSelect={handleSelectFilter} onApply={handleApplyFilter} />
         {loading ? (
-          <div className="text-center py-5">Đang tìm kiếm...</div>
+          <MovieGrid
+            items={Array(12).fill({})}
+            columns={6}
+            renderItem={() => <CardSkeleton />}
+          />
         ) : error ? (
           <div className="text-danger text-center py-5">{error}</div>
         ) : (

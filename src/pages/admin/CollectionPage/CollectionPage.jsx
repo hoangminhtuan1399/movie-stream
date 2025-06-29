@@ -5,6 +5,7 @@ import CollectionFormModal from '../../../components/CollectionFormModal/Collect
 import { createEmptyCollection } from "../../../utils/createEmptyCollection.js";
 import { collectionService } from "../../../services/collectionService.js";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal.jsx";
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 export const CollectionPage = () => {
   const [collections, setCollections] = useState([]);
@@ -18,6 +19,7 @@ export const CollectionPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [submittedQuery, setSubmittedQuery] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const { showToast } = useToast();
 
   const itemsPerPage = 10
 
@@ -36,6 +38,7 @@ export const CollectionPage = () => {
       console.error("Failed to fetch collections:", error);
       setCollections([]);
       setTotalPages(1);
+      showToast('Lỗi tải danh sách bộ sưu tập!', 'danger');
     } finally {
       setLoading(false);
     }
@@ -71,6 +74,7 @@ export const CollectionPage = () => {
         fetchCollections();
       } catch (error) {
         console.error("Failed to delete collection:", error);
+        showToast('Lỗi xóa bộ sưu tập!', 'danger');
       } finally {
         setIsDeleting(false);
         setShowDeleteConfirm(false);

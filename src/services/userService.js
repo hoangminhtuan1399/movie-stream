@@ -48,4 +48,24 @@ export const getFavoriteMovies = (page = 0, size = 10) => {
     '/user/favorites',
     { params: { page, size } }
   );
+};
+
+export const checkFavoriteMovie = async (movieId) => {
+  try {
+    const response = await userService.get(`/user/favorites/check/${movieId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking favorite movie', error);
+    throw error;
+  }
+};
+
+export const removeFavoriteMovie = async (movieId) => {
+  try {
+    const response = await userService.delete(`/user/favorites/${movieId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error removing favorite movie', error);
+    throw error;
+  }
 }; 

@@ -5,6 +5,8 @@ import "./MovieWatchPage.css";
 import ReactPlayer from "react-player";
 import ActorCard from "../../../components/ActorCard/ActorCard.jsx";
 import { HeaderBack } from '../../../components/Header/Header';
+import CardSkeleton from '../../../components/Loading/CardSkeleton';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 const MovieWatchPage = () => {
   const { id } = useParams();
@@ -14,6 +16,8 @@ const MovieWatchPage = () => {
   const [currentSeasonIdx, setCurrentSeasonIdx] = useState(0);
   const [currentEpisodeIdx, setCurrentEpisodeIdx] = useState(0);
   const [lang, setLang] = useState("sub"); // 'sub' hoặc 'dub'
+  const [videoLoading, setVideoLoading] = useState(false); // loading riêng cho video
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!id) return;
@@ -29,13 +33,20 @@ const MovieWatchPage = () => {
       .catch(() => {
         setError("Không thể tải dữ liệu phim");
         setLoading(false);
+        showToast('Lỗi tải dữ liệu phim!', 'danger');
       });
   }, [id]);
 
   if (loading)
     return (
       <div className="text-white text-center py-5">
-        Đang tải dữ liệu phim...
+        <div style={{maxWidth:900,margin:'0 auto'}}>
+          <div className="row g-3">
+            {Array(8).fill(0).map((_,i) => (
+              <div className="col-6 col-md-4 col-lg-3" key={i}><CardSkeleton /></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   if (error) return <div className="text-danger text-center py-5">{error}</div>;
@@ -69,151 +80,38 @@ const MovieWatchPage = () => {
     }
   };
 
+  // Hàm xử lý khi đổi video (tập, mùa, sub/dub)
+  const handleChangeVideo = (cb) => {
+    setVideoLoading(true);
+    cb();
+    scrollToPlayer();
+    setTimeout(() => setVideoLoading(false), 2000);
+  };
+
   return (
     <div className="movie-page">
       <HeaderBack title="Xem phim" marginBottom={false} style={{ paddingLeft: "60px", paddingRight: "60px", background: 'black' }} />
-      <div className="video-container !p-[20px] !pb-0">
-        <iframe
-          width="100%"
-          height="800"
-          id="embed-player"
-          allow="autoplay; encrypted-media; picture-in-picture;"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen=""
-          webkitallowfullscreen="true"
-          mozallowfullscreen="true"
-          src={videoUrl}
-        ></iframe>
-        {/* {isMp4 ? (
-          <video
+      <div className="video-container pro-video-container !p-[20px] !pb-0">
+        <div className="video-wrapper">
+          {videoLoading && (
+            <div className="video-loading-overlay">
+              <div className="video-spinner"></div>
+              <div className="video-loading-text">Đang tải video...</div>
+            </div>
+          )}
+          <iframe
+            width="100%"
+            height="600"
+            id="embed-player"
+            allow="autoplay; encrypted-media; picture-in-picture;"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            webkitallowfullscreen="true"
+            mozallowfullscreen="true"
             src={videoUrl}
-            className="react-player"
-            width="100%"
-            height="100%"
-            controls
-            style={{ aspectRatio: '16/9', background: '#000' }}
-            crossOrigin="anonymous"
-            controlsList="nodownload"
-            disablePictureInPicture
-            playsInline
-          >
-            Trình duyệt của bạn không hỗ trợ video.
-          </video>
-        ) : (
-          <ReactPlayer
-            ref={playerRef}
-            url={videoUrl}
-            className="react-player"
-            width="100%"
-            height="100%"
-            playing={playing}
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-            onEnded={() => setPlaying(false)}
-            onError={(e) => console.log('onError', e)}
-            onBuffer={() => console.log('onBuffer')}
-            onBufferEnd={() => console.log('onBufferEnd')}
-            onReady={() => console.log('onReady')}
-            onStart={() => console.log('onStart')}
-            onSeek={(e) => console.log('onSeek', e)}
-            onDuration={(duration) => console.log('onDuration', duration)}
-            config={{
-              file: {
-                attributes: {
-                  crossOrigin: "anonymous",
-                  controlsList: "nodownload",
-                  disablePictureInPicture: true,
-                },
-                forceVideo: true,
-                forceHLS: true,
-                forceDASH: true,
-                hlsOptions: {
-                  enableWorker: true,
-                  lowLatencyMode: true,
-                  backBufferLength: 90,
-                },
-                dashOptions: {
-                  streaming: {
-                    buffer: {
-                      bufferTimeAtTopQuality: 60,
-                      fastSwitchEnabled: true,
-                    },
-                  },
-                },
-              },
-              youtube: {
-                playerVars: {
-                  modestbranding: 1,
-                  rel: 0,
-                  showinfo: 0,
-                  iv_load_policy: 3,
-                  fs: 1,
-                  cc_load_policy: 0,
-                  origin: window.location.origin,
-                },
-              },
-              vimeo: {
-                playerOptions: {
-                  byline: false,
-                  portrait: false,
-                  title: false,
-                  transparent: false,
-                },
-              },
-              facebook: {
-                appId: 'YOUR_FACEBOOK_APP_ID',
-              },
-              soundcloud: {
-                options: {
-                  show_artwork: false,
-                  show_comments: false,
-                  show_playcount: false,
-                  show_user: false,
-                  visual: false,
-                },
-              },
-              wistia: {
-                options: {
-                  videoFoam: true,
-                  playbar: true,
-                  fullscreenButton: true,
-                  playButton: true,
-                  volumeControl: true,
-                  controlsVisibleOnLoad: false,
-                },
-              },
-              mixcloud: {
-                options: {
-                  light: false,
-                  hide_cover: true,
-                  hide_artwork: true,
-                },
-              },
-              dailymotion: {
-                params: {
-                  'ui-highlight': '000000',
-                  'ui-logo': false,
-                  'ui-start-screen-info': false,
-                },
-              },
-              twitch: {
-                options: {
-                  channel: 'YOUR_TWITCH_CHANNEL',
-                  parent: window.location.hostname,
-                },
-              },
-            }}
-            controls={true}
-            light={false}
-            pip={false}
-            stopOnUnmount={true}
-            playsinline={true}
-            previewTabIndex={0}
-            fallback={<div>Loading...</div>}
-            wrapper="div"
-            style={{ aspectRatio: '16/9' }}
-          />
-        )} */}
+            style={{ borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', minHeight: 400, background: '#111', display: videoLoading ? 'none' : 'block', transition: 'all 0.3s' }}
+          ></iframe>
+        </div>
       </div>
 
       <div className="movie-info-container">
@@ -261,22 +159,14 @@ const MovieWatchPage = () => {
         <div className="episode-section">
           <div className="mb-3 d-flex gap-2 align-items-center flex-wrap">
             <button
-              className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${
-                lang === "sub"
-                  ? "btn-warning text-dark shadow"
-                  : "btn-outline-warning"
-              }`}
-              onClick={() => setLang("sub")}
+              className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${lang === "sub" ? "btn-warning text-dark shadow" : "btn-outline-warning"}`}
+              onClick={() => handleChangeVideo(() => { setLang("sub"); })}
             >
               Vietsub
             </button>
             <button
-              className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${
-                lang === "dub"
-                  ? "btn-warning text-dark shadow"
-                  : "btn-outline-warning"
-              }`}
-              onClick={() => setLang("dub")}
+              className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${lang === "dub" ? "btn-warning text-dark shadow" : "btn-outline-warning"}`}
+              onClick={() => handleChangeVideo(() => { setLang("dub"); })}
             >
               Lồng tiếng
             </button>
@@ -286,17 +176,9 @@ const MovieWatchPage = () => {
             {seasonList.map((season, idx) => (
               <button
                 key={season.id}
-                className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${
-                  idx === currentSeasonIdx
-                    ? "btn-primary text-white shadow"
-                    : "btn-outline-primary"
-                }`}
+                className={`btn btn-sm rounded-pill fw-bold px-4 py-2 ${idx === currentSeasonIdx ? "btn-primary text-white shadow" : "btn-outline-primary"}`}
                 style={{ minWidth: 100, fontSize: 16, borderWidth: 2 }}
-                onClick={() => {
-                  setCurrentSeasonIdx(idx);
-                  setCurrentEpisodeIdx(0);
-                  scrollToPlayer();
-                }}
+                onClick={() => handleChangeVideo(() => { setCurrentSeasonIdx(idx); setCurrentEpisodeIdx(0); })}
               >
                 {season.name || `Mùa ${season.seasonNumber}`}
               </button>
@@ -307,13 +189,8 @@ const MovieWatchPage = () => {
             {episodeList.map((ep, i) => (
               <button
                 key={ep.id}
-                className={`episode-btn ${
-                  i === currentEpisodeIdx ? "active" : ""
-                }`}
-                onClick={() => {
-                  setCurrentEpisodeIdx(i);
-                  scrollToPlayer();
-                }}
+                className={`episode-btn ${i === currentEpisodeIdx ? "active" : ""}`}
+                onClick={() => handleChangeVideo(() => { setCurrentEpisodeIdx(i); })}
               >
                 Tập {ep.episodeNumber}
               </button>

@@ -2,12 +2,14 @@ import { streamService } from "./axios";
 
 export const fileService = {
   // Search files with keyword and type
-  searchFiles: async (keyword, type) => {
+  searchFiles: async (keyword, type, page = 1, size = 16) => {
     try {
       const response = await streamService.get("/upload/files/search", {
         params: {
           keyword,
           type,
+          page: page - 1, // backend thường bắt đầu từ 0
+          size,
         },
       });
       return response.data;

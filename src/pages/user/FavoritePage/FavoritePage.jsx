@@ -5,7 +5,9 @@ import { AuthContext } from '../../../contexts/AuthContext';
 import { getFavoriteMovies } from '../../../services/userService';
 import CardCommon from '../../../components/CardMovie/CardCommon';
 import PaginationCommon from '../../../components/Pagination/PaginationCommon';
+import CardSkeleton from '../../../components/Loading/CardSkeleton';
 import '../ProfilePage/ProfilePage.css';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 const FavoritePage = () => {
   const { user, logout } = useContext(AuthContext);
@@ -13,6 +15,7 @@ const FavoritePage = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { showToast } = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -26,6 +29,7 @@ const FavoritePage = () => {
         setFavorites([]);
         setTotalPages(1);
         setLoading(false);
+        showToast('Lỗi tải danh sách phim yêu thích!', 'danger');
       });
   }, [page]);
 
@@ -34,8 +38,8 @@ const FavoritePage = () => {
   }
 
   return (
-    <div className="profile-page-wrapper">
-      <Container fluid="lg" className="profile-page-container">
+    <div className="profile-page-wrapper" style={{background:'#191b24',minHeight:'100vh',padding:'48px 0 60px 0',borderRadius:18}}>
+      <Container fluid="lg" className="profile-page-container" style={{maxWidth:1400}}>
         <Row>
           {/* Sidebar */}
           <Col md={4} lg={3}>
@@ -65,8 +69,12 @@ const FavoritePage = () => {
             <main className="profile-main-content">
               <h2 className="mb-4">Danh sách phim yêu thích</h2>
               {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="warning" />
+                <div className="favorite-movie-grid row">
+                  {Array(8).fill(0).map((_,i) => (
+                    <div className="col-6 col-md-4 col-lg-3 mb-4" key={i}>
+                      <CardSkeleton />
+                    </div>
+                  ))}
                 </div>
               ) : favorites.length === 0 ? (
                 <div className="text-secondary text-center py-5">Bạn chưa có phim yêu thích nào.</div>
