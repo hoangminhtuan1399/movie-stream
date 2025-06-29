@@ -1,76 +1,73 @@
 .category-container {
-    max-width: 1536px;
+    max-width: 1600px;
     margin: 0 auto;
-    padding-inline: 20px;
-    padding-top: 60px;
-    padding-bottom: 40px;
-    background: var(--color-background);
-
-    @media (max-width: 1199px) {
-        padding-top: 40px;
-    }
+    padding: 48px 32px 48px 32px;
+    background: #191b24;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .category-header {
     display: flex;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
+    gap: 12px;
+    padding: 0;
+    border: none;
 }
 
 .category-header-icon {
-    font-size: var(--font-size-4xl);
-    margin-right: 12px;
+    font-size: 2.2rem;
+    margin-right: 10px;
 }
 
 .category-title {
     margin-bottom: 0;
-    color: var(--color-text);
+    color: #fff;
     font-weight: bold;
+    font-size: 2.1rem;
+    letter-spacing: 0.5px;
 }
 
 .category-filter {
-    margin-bottom: 0.75rem;
-    color: var(--color-primary);
-    font-weight: 600;
-    cursor: pointer;
-    font-size: var(--font-size-base);
+    margin-bottom: 1.5rem;
+    margin-left: 2px;
 }
 
 .category-grid {
     display: grid;
-    gap: 10px;
+    gap: 32px 18px;
     width: 100%;
+    margin-top: 18px;
+    grid-template-columns: repeat(6, 1fr);
 }
 
-
-/* Mobile first approach */
-
-.category-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 1400px) {
+    .category-container {
+        padding: 32px 16px 32px 16px;
+    }
+    .category-grid {
+        gap: 24px 12px;
+    }
 }
 
-/* Tablets and small desktops */
-
-@media (min-width: 768px) {
+@media (max-width: 1200px) {
     .category-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-
-/* Medium desktops */
-
-@media (min-width: 1024px) {
+@media (max-width: 900px) {
     .category-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-
-/* Large desktops */
-
-@media (min-width: 1280px) {
+@media (max-width: 600px) {
+    .category-container {
+        padding: 16px 4px 16px 4px;
+    }
     .category-grid {
-        grid-template-columns: repeat(8, 1fr);
+        gap: 12px 6px;
     }
 }

@@ -6,6 +6,8 @@ import MovieGrid from "../../../components/MovieGrid/MovieGrid";
 import "./ActorDetailPage.css";
 import { actorService } from "../../../services/actorService";
 import { HeaderBack } from '../../../components/Header/Header';
+import CardSkeleton from '../../../components/Loading/CardSkeleton';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 const DEFAULT_AVATAR = "https://via.placeholder.com/120x120?text=No+Image";
 
@@ -14,6 +16,7 @@ const ActorDetailPage = () => {
   const [actor, setActor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!id) return;
@@ -27,19 +30,20 @@ const ActorDetailPage = () => {
       .catch(() => {
         setError("Không thể tải dữ liệu diễn viên");
         setLoading(false);
+        showToast('Lỗi tải dữ liệu diễn viên!', 'danger');
       });
   }, [id]);
 
   if (loading)
     return (
       <div className="text-white text-center py-5">
-        <Spinner
-          animation="border"
-          variant="light"
-          size="md"
-          className="me-2"
-        />
-        Đang tải dữ liệu phim...
+        <div style={{maxWidth:900,margin:'0 auto'}}>
+          <div className="row g-3">
+            {Array(8).fill(0).map((_,i) => (
+              <div className="col-6 col-md-4 col-lg-3" key={i}><CardSkeleton /></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   if (error) return <div className="text-danger text-center py-5">{error}</div>;

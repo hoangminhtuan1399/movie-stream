@@ -10,6 +10,8 @@ import SortCommon from "../../../components/SortCommon/SortCommon.jsx";
 import MovieGrid from "../../../components/MovieGrid/MovieGrid";
 import "./CategoryPage.css";
 import { HeaderBack } from "../../../components/Header/Header";
+import CardSkeleton from "../../../components/Loading/CardSkeleton";
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 const CategoryPage = () => {
   const location = useLocation();
@@ -17,6 +19,8 @@ const CategoryPage = () => {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
   // Parse query string
   const query = React.useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -49,6 +53,7 @@ const CategoryPage = () => {
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true);
       try {
         const params = { ...query, page: page - 1, size: 12 };
         const { data } = await movieServiceApi.getMovies(params);
@@ -57,6 +62,9 @@ const CategoryPage = () => {
       } catch {
         setMovies([]);
         setTotalPages(1);
+        showToast('Lỗi tải danh sách phim!', 'danger');
+      } finally {
+        setLoading(false);
       }
     };
     fetchMovies();
@@ -102,9 +110,9 @@ const CategoryPage = () => {
           onApply={handleApplyFilter}
         />
         <MovieGrid
-          items={movies}
+          items={loading ? Array(12).fill({}) : movies}
           columns={6}
-          renderItem={(movie) => (
+          renderItem={loading ? () => <CardSkeleton /> : (movie) => (
             <CardCommon
               key={movie.id}
               poster={movie.smallBanner}

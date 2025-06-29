@@ -39,7 +39,6 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
               <span>▶</span> Xem ngay
             </button>
             <div className="card-popover-actions">
-              <button className="card-popover-btn like">♥ Thích</button>
               <button className="card-popover-btn detail" onClick={handleTitleClick}>Chi tiết</button>
             </div>
             <div className="card-popover-badges">
