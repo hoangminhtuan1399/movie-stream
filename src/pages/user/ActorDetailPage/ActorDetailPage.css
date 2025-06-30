@@ -1,5 +1,8 @@
 .actor-detail-page {
-    background: #181922;
+    background: #191b24;
+    min-height: 100vh;
+    padding: 48px 0 60px 0;
+    border-radius: 18px;
 }
 
 
@@ -18,20 +21,33 @@
         border-left: none;
         padding-left: 0;
     }
+    .actor-detail-page {
+        padding: 32px 0 40px 0;
+    }
+    .actor-avatar {
+        width: 100px;
+        height: 100px;
+    }
+    .actor-info-list {
+        padding: 12px 8px 8px 8px;
+    }
 }
 
 .actor-avatar-wrapper {
     display: flex;
-    justify-content: start;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .actor-avatar {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     border-radius: 20px;
     object-fit: cover;
     box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.18);
     background: #23242b;
+    border: 3px solid #23242b;
 }
 
 .actor-name {
@@ -41,9 +57,13 @@
 }
 
 .actor-info-list {
-    margin-top: 24px;
-    font-size: 1rem;
-    line-height: 2;
+    margin-top: 32px;
+    font-size: 1.08rem;
+    line-height: 2.1;
+    background: #23242b;
+    border-radius: 12px;
+    padding: 18px 18px 10px 18px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
 }
 
 .movie-card {

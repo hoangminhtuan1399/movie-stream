@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table, Spinner, ToastContainer, Toast } from 'react-bootstrap'
+import { Breadcrumb, Button, Col, Container, Form, InputGroup, Pagination, Row, Table, Spinner } from 'react-bootstrap'
 import { FaEdit, FaFilter, FaHome, FaPlus, FaSearch, FaTrash } from 'react-icons/fa'
 import './MoviePage.css'
 import MovieFormModal from "../../../components/MovieFormModal/MovieFormModal.jsx";
 import { createEmptyMovie } from "../../../utils/createEmptyMovie.js";
 import { movieServiceApi } from '../../../services/movieService.js';
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal.jsx';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 export const MoviePage = () => {
   const [movies, setMovies] = useState([]);
@@ -18,7 +19,7 @@ export const MoviePage = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(createEmptyMovie());
-  const [toastInfo, setToastInfo] = useState({ show: false, message: '', type: 'danger' });
+  const { showToast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [movieToDelete, setMovieToDelete] = useState(null);
 
@@ -59,7 +60,7 @@ export const MoviePage = () => {
   };
 
   const handleApiError = (message) => {
-    setToastInfo({ show: true, message, type: 'danger' });
+    showToast(message, 'danger');
   };
   
   const handleDeleteClick = (movie) => {
@@ -227,21 +228,6 @@ export const MoviePage = () => {
         title="Xác nhận xoá"
         message={`Bạn có chắc chắn muốn xoá phim "${movieToDelete?.title}"?`}
       />
-
-      <ToastContainer position="top-center" className="p-3" style={{ zIndex: 9999 }}>
-        <Toast
-          onClose={() => setToastInfo({ ...toastInfo, show: false })}
-          show={toastInfo.show}
-          delay={5000}
-          autohide
-          bg={toastInfo.type}
-        >
-          <Toast.Header closeButton>
-            <strong className="me-auto">Thông báo</strong>
-          </Toast.Header>
-          <Toast.Body className="text-white">{toastInfo.message}</Toast.Body>
-        </Toast>
-      </ToastContainer>
     </Container>
   )
 }

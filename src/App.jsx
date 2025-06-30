@@ -20,34 +20,37 @@ import LoginAdmin from "./pages/admin/LoginAdmin/LoginAdmin.jsx";
 import FilesWithModal from './pages/FilesWithModal.jsx';
 import ProfilePage from './pages/user/ProfilePage/ProfilePage.jsx';
 import FavoritePage from './pages/user/FavoritePage/FavoritePage.jsx';
+import { ToastProvider } from './contexts/ToastContext';
 
 function App() {
   useScrollToTop();
 
   return (
-    <Routes>
-      <Route path={'/admin'} element={<AdminLayout />}>
-        <Route index element={<MoviePage />} />
-        <Route path={'login'} element={<LoginAdmin />} />
-        <Route path={'movie'} element={<MoviePage />} />
-        <Route path={'collection'} element={<CollectionPage />} />
-        <Route path={'feature'} element={<FeaturePage />} />
-        <Route path={'actor'} element={<ActorPage />} />
-        <Route path={'report'} element={<ReportPage />} />
-        <Route path={'files'} element={<FilesWithModal />} />
-      </Route>
-      <Route path={'/'} element={<UserLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path={'category'} element={<CategoryPage />} />
-        <Route path={'movie/:id'} element={<MovieDetailPage />} />
-        <Route path="watch/:id" element={<MovieWatchPage />} />
-        <Route path={'actor'} element={<UserActorPage />} />
-        <Route path={'actor/:id'} element={<ActorDetailPage />} />
-        <Route path={'search'} element={<SearchPage />} />
-        <Route path={'user/profile'} element={<ProfilePage />} />
-        <Route path={'user/favorites'} element={<FavoritePage />} />
-      </Route>
-    </Routes>
+    <ToastProvider>
+      <Routes>
+        <Route path={'/admin'} element={<AdminLayout />}>
+          <Route index element={<MoviePage />} />
+          <Route path={'login'} element={<LoginAdmin />} />
+          <Route path={'movie'} element={<MoviePage />} />
+          <Route path={'collection'} element={<CollectionPage />} />
+          <Route path={'feature'} element={<FeaturePage />} />
+          <Route path={'actor'} element={<ActorPage />} />
+          <Route path={'report'} element={<ReportPage />} />
+          <Route path={'files'} element={<FilesWithModal />} />
+        </Route>
+        <Route path={'/'} element={<UserLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path={'category'} element={<CategoryPage />} />
+          <Route path={'movie/:id'} element={<MovieDetailPage />} />
+          <Route path="watch/:id" element={<MovieWatchPage />} />
+          <Route path={'actor'} element={<UserActorPage />} />
+          <Route path={'actor/:id'} element={<ActorDetailPage />} />
+          <Route path={'search'} element={<SearchPage />} />
+          <Route path={'user/profile'} element={<ProfilePage />} />
+          <Route path={'user/favorites'} element={<FavoritePage />} />
+        </Route>
+      </Routes>
+    </ToastProvider>
   )
 }
 

@@ -4,6 +4,7 @@ import PaginationCommon from '../../../components/Pagination/PaginationCommon';
 import { actorService } from '../../../services/actorService';
 import { useNavigate } from 'react-router-dom';
 import { HeaderBack } from '../../../components/Header/Header';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 
 const ACTORS_PER_PAGE = 8;
 
@@ -12,6 +13,7 @@ const UserActorPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [actors, setActors] = useState([]);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchActors = async () => {
@@ -23,6 +25,7 @@ const UserActorPage = () => {
       } catch {
         setActors([]);
         setTotalPages(1);
+        showToast('Lỗi tải danh sách diễn viên!', 'danger');
       }
     };
     fetchActors();

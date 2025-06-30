@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Toast, ToastContainer } from 'react-bootstrap';
+import { useToast } from '../../../contexts/ToastContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthContext.jsx';
 
@@ -19,9 +19,9 @@ const LoginAdmin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const { showToast } = useToast();
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -44,25 +44,17 @@ const LoginAdmin = () => {
         }
       } else {
         setError(res.data.message || 'Login failed.');
-        setShowToast(true);
+        showToast(error, 'danger');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');
-      setShowToast(true);
+      showToast(error, 'danger');
     }
     setLoading(false);
   };
 
   return (
     <div className="login-admin-bg d-flex align-items-center justify-content-center min-vh-100">
-      <ToastContainer position="top-center" className="mt-4">
-        <Toast bg="danger" show={showToast} onClose={() => setShowToast(false)} delay={3500} autohide>
-          <Toast.Header>
-            <strong className="me-auto">Đăng nhập thất bại</strong>
-          </Toast.Header>
-          <Toast.Body className="text-white">{error}</Toast.Body>
-        </Toast>
-      </ToastContainer>
       <div className="login-admin-card p-5 rounded shadow-lg position-relative">
         <div className="text-center mb-4">
           <div className="login-admin-logo mb-2">

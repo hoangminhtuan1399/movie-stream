@@ -80,6 +80,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSearch = useCallback(async (value) => {
     if (!value) {
@@ -121,6 +122,11 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <>
@@ -220,7 +226,7 @@ const Header = () => {
                 >
                   <FaBell size={18} />
                 </Button>
-                <UserMenu user={user} logout={logout} />
+                <UserMenu user={user} logout={handleLogout} />
               </div>
             ) : (
               <Button
@@ -405,7 +411,7 @@ const Header = () => {
                       <FaTachometerAlt className="me-2" /> Trang quản trị
                     </Nav.Link>
                   )}
-                  <Nav.Link onClick={logout} className="text-white ps-3">
+                  <Nav.Link onClick={handleLogout} className="text-white ps-3">
                     <FaSignOutAlt className="me-2" /> Thoát
                   </Nav.Link>
                 </Nav>

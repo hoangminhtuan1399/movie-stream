@@ -1,16 +1,17 @@
 import { useContext, useState } from 'react';
-import { Button, Form, Modal, Spinner, Toast, ToastContainer } from 'react-bootstrap';
+import { Button, Form, Modal, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import './AuthUser.css';
 import { loginService } from '../../services/loginService.js';
 import Cookies from 'js-cookie';
 import { AuthContext } from '../../contexts/AuthContext.jsx';
+import { useToast } from '../../contexts/ToastContext';
 
 const AuthUser = ({ show, onHide }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [toastInfo, setToastInfo] = useState({ show: false, message: '', type: 'danger' });
   const { login } = useContext(AuthContext);
+  const { showToast } = useToast();
 
   const { register, handleSubmit, formState: { errors }, watch, reset } = useForm({
     mode: 'onChange'
@@ -20,7 +21,6 @@ const AuthUser = ({ show, onHide }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    setToastInfo({ show: false, message: '', type: 'danger' });
     try {
       if (isLoginView) {
         const res = await loginService.login(data.username, data.password);
@@ -30,17 +30,17 @@ const AuthUser = ({ show, onHide }) => {
           login(userData);
           onHide();
         } else {
-          setToastInfo({ show: true, message: res.data.message || 'Đăng nhập thất bại.', type: 'danger' });
+          showToast(res.data.message || 'Đăng nhập thất bại.', 'danger');
         }
       } else {
         const { username, password, name, email } = data;
         const _res = await loginService.register(username, password, email, name);
-        setToastInfo({ show: true, message: 'Đăng ký thành công! Vui lòng đăng nhập.', type: 'success' });
+        showToast('Đăng ký thành công! Vui lòng đăng nhập.', 'success');
         setIsLoginView(true);
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Đã có lỗi xảy ra.';
-      setToastInfo({ show: true, message: errorMessage, type: 'danger' });
+      showToast(errorMessage, 'danger');
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,6 @@ const AuthUser = ({ show, onHide }) => {
   const handleSwitchView = () => {
     setIsLoginView(!isLoginView);
     reset();
-    setToastInfo({ show: false, message: '', type: 'danger' });
   };
 
   return (
@@ -149,17 +148,6 @@ const AuthUser = ({ show, onHide }) => {
           </div>
         </div>
       </Modal.Body>
-      <ToastContainer position="top-center" className="p-3" style={{ zIndex: 9999 }}>
-        <Toast
-          onClose={() => setToastInfo({ ...toastInfo, show: false })}
-          show={toastInfo.show}
-          delay={5000}
-          autohide
-          bg={toastInfo.type}
-        >
-          <Toast.Body className="text-white">{toastInfo.message}</Toast.Body>
-        </Toast>
-      </ToastContainer>
     </Modal>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './FileManager.css';
 import fileService from '../../services/fileService';
+import { useToast } from '../../contexts/ToastContext';
 
 const FILE_TYPES = [
     { label: 'Tất cả', value: 'all' },
@@ -25,15 +26,16 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
     const [deleting, setDeleting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [dragActive, setDragActive] = useState(false);
+    const { showToast } = useToast();
+    const [totalPages, setTotalPages] = useState(1);
 
-    const filesPerPage = 16;
+    const filesPerPage = 12;
 
     // Function to fetch files
     const fetchFiles = async () => {
         try {
             setLoading(true);
-            const response = await fileService.searchFiles(search, type === 'all' ? '' : type);
-            console.log(response);
+            const response = await fileService.searchFiles(search, type === 'all' ? '' : type, page, filesPerPage);
             const mappedFiles = response.content.map(file => ({
                 id: file.id,
                 name: file.fileName,
@@ -42,7 +44,9 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
                 size: 0
             }));
             setFileList(mappedFiles);
+            setTotalPages(response.totalPages || 1);
         } catch (error) {
+            showToast('Lỗi tải danh sách file!', 'danger');
             console.error('Error fetching files:', error);
         } finally {
             setLoading(false);
@@ -52,10 +56,9 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
     // Fetch files when component mounts or search/type changes
     useEffect(() => {
         fetchFiles();
-    }, [search, type]);
+    }, [search, type, page]);
 
-    const totalPages = Math.ceil(fileList.length / filesPerPage);
-    const pageFiles = fileList.slice((page - 1) * filesPerPage, page * filesPerPage);
+    const pageFiles = fileList;
 
     const handleDelete = (file) => {
         setDeleteFile(file);
@@ -70,6 +73,7 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
             setDeleteFile(null);
             await fetchFiles();
         } catch (error) {
+            showToast('Lỗi xóa file!', 'danger');
             console.error('Error deleting file:', error);
         } finally {
             setDeleting(false);
@@ -116,10 +120,26 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
             // upload logic ở đây nếu cần
         }
     };
-    const handleUploadZoneFile = (e) => {
-        // const file = e.target.files[0];
-        // upload logic ở đây nếu cần
-        e.target.value = '';
+    const handleUploadZoneFile = async (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        setLoading(true);
+        try {
+            if (multiple) {
+                for (let i = 0; i < files.length; i++) {
+                    await fileService.uploadFile(files[i]);
+                }
+            } else {
+                await fileService.uploadFile(files[0]);
+            }
+            await fetchFiles();
+        } catch (error) {
+            showToast('Lỗi upload file!', 'danger');
+            console.error('Lỗi upload file:', error);
+        } finally {
+            setLoading(false);
+            e.target.value = '';
+        }
     };
 
     return (
@@ -247,7 +267,7 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
             <nav className="mt-3">
                 <ul className="pagination pagination-sm justify-content-center">
                     <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(page - 1)}>&laquo;</button>
+                        <button className="page-link" onClick={() => setPage(page - 1)} disabled={page === 1}>&laquo;</button>
                     </li>
                     {Array.from({ length: totalPages }, (_, i) => (
                         <li className={`page-item${page === i + 1 ? ' active' : ''}`} key={i}>
@@ -255,7 +275,7 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
                         </li>
                     ))}
                     <li className={`page-item${page === totalPages ? ' disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(page + 1)}>&raquo;</button>
+                        <button className="page-link" onClick={() => setPage(page + 1)} disabled={page === totalPages}>&raquo;</button>
                     </li>
                 </ul>
             </nav>
