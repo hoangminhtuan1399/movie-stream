@@ -257,13 +257,7 @@ const MovieDetailPage = () => {
                   : (movie, idx) => (
                       <CardCommon
                         key={movie.id || idx}
-                        poster={
-                          movie.smallBanner || movie.bigBanner || movie.poster
-                        }
-                        title={movie.title}
-                        subtitle={movie.subtitle}
-                        badge={movie.badge}
-                        id={movie.id}
+                        data={movie}
                       />
                     )
               }

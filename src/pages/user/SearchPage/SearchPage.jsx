@@ -133,11 +133,7 @@ const SearchPage = () => {
               renderItem={movie => (
                 <CardCommon
                   key={movie.id}
-                  poster={movie.bigBanner || movie.smallBanner || 'https://via.placeholder.com/80x120?text=No+Image'}
-                  title={movie.title}
-                  subtitle={movie.subtitle}
-                  id={movie.id}
-                  badges={[]}
+                  data={movie}
                 />
               )}
             />

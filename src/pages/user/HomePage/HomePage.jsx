@@ -1,5 +1,6 @@
 import TopSlide from "../../../components/MovieSlider/TopSlide"
 import TopicCard from "../../../components/TopicCard/TopicCard"
+import { collectionService } from "../../../services/collectionService";
 import { dummyCollections, topicList } from "./dummyData"
 import { useContext, useEffect, useMemo, useState } from "react";
 import { PageContext } from "../../../contexts/PageContext.jsx";
@@ -18,14 +19,12 @@ export const HomePage = () => {
 
   const collectionListSliders = useMemo(() => {
     if (!collections.length) return null;
-    const collectionList = collections.slice(1);
-    if (!collectionList.length) return null;
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches
 
     return (
       <div className={'container-fluid mt-4'}>
-        {collectionList.map((collection, index) => {
+        {collections?.map((collection, index) => {
           return (
             <div key={`collection-slider-${index}`} className={'collection-slider mt-4'}>
               <Stack direction={'horizontal'} gap={3}>
@@ -34,7 +33,7 @@ export const HomePage = () => {
                   <FaAngleRight/>
                 </Button>
               </Stack>
-              <Swiper
+              {collection.movies.length > 0 ? <Swiper
                 modules={[Navigation]}
                 spaceBetween={12}
                 slidesPerView={isMobile ? 3 : 6}
@@ -46,14 +45,12 @@ export const HomePage = () => {
                   return (
                     <SwiperSlide key={movie.id}>
                       <CardCommon
-                        poster={movie.thumbnail}
-                        title={movie.title}
-                        badge={movie.ageRating}
+                        data={movie}
                       />
                     </SwiperSlide>
                   )
                 })}
-              </Swiper>
+              </Swiper> : <div className="text-white" style={{marginTop: 16, paddingBottom: 140}}>Không có phim nào</div>}
             </div>
           )
         })}
@@ -64,9 +61,13 @@ export const HomePage = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       setPageLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      try {
+        const {data} = await collectionService.getAllCollections();
+        setCollections(data?.data?.content || []);
+      } catch {
+        setCollections([]);
+      }
       setPageLoading(false)
-      setCollections(dummyCollections)
     }
 
     fetchCollections()

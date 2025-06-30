@@ -133,11 +133,7 @@ const ActorDetailPage = () => {
               columns={4}
               renderItem={(movie) => (
                 <CardCommon
-                  poster={movie.poster}
-                  title={movie.title}
-                  subtitle={movie.subtitle}
-                  badges={movie.badges}
-                  id={movie.id}
+                  data={movie}
                 />
               )}
             />
