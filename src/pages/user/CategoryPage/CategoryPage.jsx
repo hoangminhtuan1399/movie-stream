@@ -114,12 +114,7 @@ const CategoryPage = () => {
           columns={6}
           renderItem={loading ? () => <CardSkeleton /> : (movie) => (
             <CardCommon
-              key={movie.id}
-              poster={movie.smallBanner}
-              title={movie.title}
-              subtitle={movie.subtitle}
-              badge={movie.badge}
-              id={movie.id}
+              data={movie}
             />
           )}
         />

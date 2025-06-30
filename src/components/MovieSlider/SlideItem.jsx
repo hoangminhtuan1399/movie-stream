@@ -10,7 +10,7 @@ const SlideItem = ({data}) => {
       <a className="slide-url" href={url}></a>
       <div
         className="slide-elements__background background-fade"
-        style={{backgroundImage: `url(${data.poster})`}}
+        style={{backgroundImage: `url(${data?.bigBanner})`}}
       ></div>
       <div className="safe-area">
         <div className="slide-content">
@@ -27,8 +27,8 @@ const SlideItem = ({data}) => {
               <div className="tag-classic"><span>{data.releaseYear}</span></div>
             </div>
             <div className="hl-tags mb-4">
-              {data.genres.map((genre, index) => (
-                <a key={index} className="tag-topic" href={'#'}>{genre}</a>
+              {data.genreNames?.map((genre, index) => (
+                <a key={index} className="tag-topic" href={'#'}>{genre?.name}</a>
               ))}
             </div>
             <div className={'text-white'}>

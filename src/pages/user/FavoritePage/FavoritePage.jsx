@@ -84,11 +84,7 @@ const FavoritePage = () => {
                     {favorites.map((movie) => (
                       <div className="col-6 col-md-4 col-lg-3 mb-4" key={movie.id}>
                         <CardCommon
-                          poster={movie.smallBanner || movie.bigBanner || ''}
-                          title={movie.title}
-                          subtitle={movie.subtitle}
-                          id={movie.id}
-                          badges={[]}
+                          data={movie}
                         />
                       </div>
                     ))}

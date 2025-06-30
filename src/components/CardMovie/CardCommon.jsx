@@ -4,17 +4,17 @@ import './CardCommon.css';
 
 const ANIMATION_DURATION = 400; // ms, should match CSS
 
-const CardCommon = ({poster, title, subtitle, badge, id}) => {
+const CardCommon = ({data}) => {
   const navigate = useNavigate();
 
   const handleTitleClick = (e) => {
     e.stopPropagation();
-    navigate(`/movie/${id ?? 1}`);
+    navigate(`/movie/${data?.id ?? 1}`);
   };
 
   const handleWatchClick = (e) => {
     e.stopPropagation();
-    navigate(`/watch/${id ?? 1}`);
+    navigate(`/watch/${data?.id ?? 1}`);
   };
 
   return (
@@ -23,8 +23,8 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
         className="card-common-img-wrapper position-relative overflow-hidden"
       >
         <img
-          src={poster}
-          alt={title}
+          src={data?.smallBanner || data?.bigBanner || ''}
+          alt={data?.title}
           className="card-common-img"
           style={{
             cursor: 'pointer'
@@ -34,7 +34,7 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
           className={`card-popover`}
         >
           <div className="card-popover-content">
-            <div className="card-popover-title">{title}</div>
+            <div className="card-popover-title">{data?.title}</div>
             <button className="card-popover-btn play w-100" onClick={handleWatchClick}>
               <span>▶</span> Xem ngay
             </button>
@@ -42,12 +42,16 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
               <button className="card-popover-btn detail" onClick={handleTitleClick}>Chi tiết</button>
             </div>
             <div className="card-popover-badges">
-              <span className="card-popover-badge">T13</span>
-              <span className="card-popover-badge">2025</span>
-              <span className="card-popover-badge">Phần 1</span>
-              <span className="card-popover-badge">Tập 6</span>
+              {data?.ageRating && <span className="card-popover-badge">{data?.ageRating}</span>}
+              {data?.releaseYear && <span className="card-popover-badge">{data?.releaseYear}</span>}
+              {data?.episodeCount && <span className="card-popover-badge">{data?.episodeCount}</span>}
+              {data?.episodeNumber && <span className="card-popover-badge">{data?.episodeNumber}</span>}
             </div>
-            <div className="card-popover-meta">Anime • Hài • Hoạt Hình</div>
+            <div className="card-popover-meta">
+              {data?.genreNames?.map((genre, index) => (
+                <a key={index} className="tag-topic" href={'#'}>{genre?.name}</a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -59,7 +63,7 @@ const CardCommon = ({poster, title, subtitle, badge, id}) => {
           }}
           onClick={handleTitleClick}
         >
-          {title}
+          {data?.title}
         </div>
       </div>
     </div>
