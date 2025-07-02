@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import './FileManager.css';
 import fileService from '../../services/fileService';
 import { useToast } from '../../contexts/ToastContext';
+import Pagination from 'react-bootstrap/Pagination';
 
 const FILE_TYPES = [
     { label: 'Tất cả', value: 'all' },
@@ -14,7 +15,7 @@ function formatSize(size) {
     return (size / 1024).toFixed(2) + ' KB';
 }
 
-const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone = false, multiple = false }) => {
+const FileManager = forwardRef(({ files = [], onSelect, selectable = false, showUploadZone = false, multiple = false, onUploadSuccess }, ref) => {
     const [search, setSearch] = useState('');
     const [type, setType] = useState('all');
     const [showDelete, setShowDelete] = useState(null);
@@ -29,7 +30,15 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
     const { showToast } = useToast();
     const [totalPages, setTotalPages] = useState(1);
 
-    const filesPerPage = 12;
+    const filesPerPage = 16;
+
+    useImperativeHandle(ref, () => {
+        return {
+            refreshFiles: async () => {
+                await fetchFiles();
+            }
+        }
+    });
 
     // Function to fetch files
     const fetchFiles = async () => {
@@ -133,6 +142,7 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
                 await fileService.uploadFile(files[0]);
             }
             await fetchFiles();
+            onUploadSuccess?.();
         } catch (error) {
             showToast('Lỗi upload file!', 'danger');
             console.error('Lỗi upload file:', error);
@@ -256,7 +266,7 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
                                     </div>
                                 )}
                             </div>
-                            <div className="small text-truncate" title={file.name}>{file.name}</div>
+                            <div className="small text-truncate" style={{color: '#333'}} title={file.name}>{file.name}</div>
                             <div className="text-muted small">{formatSize(file.size)}</div>
                         </div>
                     );
@@ -264,21 +274,27 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
             </div>
 
             {/* Pagination */}
-            <nav className="mt-3">
-                <ul className="pagination pagination-sm justify-content-center">
-                    <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(page - 1)} disabled={page === 1}>&laquo;</button>
-                    </li>
+            <div className="d-flex justify-content-center mt-3">
+                <Pagination className="mb-0">
+                    <Pagination.Prev
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                    />
                     {Array.from({ length: totalPages }, (_, i) => (
-                        <li className={`page-item${page === i + 1 ? ' active' : ''}`} key={i}>
-                            <button className="page-link" onClick={() => setPage(i + 1)}>{i + 1}</button>
-                        </li>
+                        <Pagination.Item
+                            key={i + 1}
+                            active={page === i + 1}
+                            onClick={() => setPage(i + 1)}
+                        >
+                            {i + 1}
+                        </Pagination.Item>
                     ))}
-                    <li className={`page-item${page === totalPages ? ' disabled' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(page + 1)} disabled={page === totalPages}>&raquo;</button>
-                    </li>
-                </ul>
-            </nav>
+                    <Pagination.Next
+                        disabled={page === totalPages}
+                        onClick={() => setPage(page + 1)}
+                    />
+                </Pagination>
+            </div>
 
             {/* Delete confirm modal */}
             <div className={`modal fade${showModal ? ' show' : ''}`} tabIndex="-1" style={showModal ? { display: 'block', background: 'rgba(0,0,0,0.3)' } : {}} aria-modal={showModal} role="dialog">
@@ -312,6 +328,6 @@ const FileManager = ({ files = [], onSelect, selectable = false, showUploadZone 
             {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
-};
+});
 
 export default FileManager;
