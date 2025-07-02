@@ -49,7 +49,7 @@ const AdminLayout = () => {
     {name: 'Bộ sưu tập', path: 'collection', key: 'collection', icon: <FaBoxOpen className="me-2"/>},
     {name: 'Diễn viên', path: 'actor', key: 'actor', icon: <FaUsers className="me-2"/>},
     {name: 'Báo cáo', path: 'report', key: 'report', icon: <FaChartBar className="me-2"/>},
-    {name: 'Upload File', path: 'files', key: 'files', icon: <FaUpload className="me-2"/>},
+    {name: 'Quản lý file', path: 'files', key: 'files', icon: <FaUpload className="me-2"/>},
   ]
 
   // Nếu là route auth thì chỉ render nội dung con (login)

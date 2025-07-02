@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import FileManager from './FileManager';
 
 // Modal for selecting a file (image/video) from FileManager
-const FileSelectModal = ({ show, onClose, onSelect, selectable = true, fileType = 'all' }) => {
+const FileSelectModal = ({ show, onClose, onSelect, selectable = true, fileType = 'all', onUploadSuccess }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleSelectionChange = (files) => {
@@ -29,6 +29,7 @@ const FileSelectModal = ({ show, onClose, onSelect, selectable = true, fileType 
               onSelect={handleSelectionChange}
               selectable={selectable} 
               type={fileType}
+              onUploadSuccess={onUploadSuccess}
             />
           </div>
           <div className="modal-footer">

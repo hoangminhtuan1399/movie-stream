@@ -109,18 +109,6 @@ const CollectionFormModal = ({ show, onHide, initialCollection = createEmptyColl
                     {errors.name}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md={6}>
-                  <Form.Label>Thứ tự</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min="0"
-                    value={collection.index}
-                    onChange={(e) => handleChange('index', e.target.value)}
-                  />
-                  <Form.Text className="text-muted">
-                    Bỏ trống để đặt thứ tự ưu tiên thấp nhất
-                  </Form.Text>
-                </Form.Group>
               </Row>
 
               <Row className="mb-3">

@@ -137,7 +137,6 @@ export const CollectionPage = () => {
             <th>Tiêu đề</th>
             <th>Số lượng phim</th>
             <th>Trạng thái</th>
-            <th>Thứ tự</th>
             <th style={{width: '120px'}}>Hành động</th>
           </tr>
           </thead>
@@ -157,7 +156,6 @@ export const CollectionPage = () => {
               <td>{collection.name}</td>
               <td>{collection.movies ? collection.movies.length : 0}</td>
               <td>{collection.featured ? 'Hiện' : 'Ẩn'}</td>
-              <td>{collection.index}</td>
               <td className="text-center p-1">
                 <div className="d-flex justify-content-center gap-2">
                   <Button
