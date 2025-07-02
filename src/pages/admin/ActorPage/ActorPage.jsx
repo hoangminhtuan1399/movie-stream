@@ -12,7 +12,6 @@ export const ActorPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
-  const [showFilter, setShowFilter] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const itemsPerPage = 10
@@ -113,16 +112,6 @@ export const ActorPage = () => {
 
         <Col xs="auto" className="d-flex gap-2">
           <Button
-            variant="outline-secondary"
-            className="icon-button square-button"
-            onClick={() => setShowFilter(!showFilter)}
-            aria-label="Bộ lọc"
-          >
-            <FaFilter/>
-            <span className="button-tooltip">Bộ lọc</span>
-          </Button>
-
-          <Button
             variant="primary"
             className="icon-button square-button"
             aria-label="Thêm diễn viên"
@@ -164,7 +153,7 @@ export const ActorPage = () => {
               <tr key={'actor-' + actor.id}>
                 <td>{actor.id}</td>
                 <td>
-                  <img src={actor.avatarUrl} alt={actor.name} width="50" height="50" className="rounded-circle" style={{objectFit: 'cover'}}/>
+                  <img src={actor.avatarUrl ? actor.avatarUrl : '/public/default-avatar.jpg'} alt={actor.name} width="50" height="50" className="rounded-circle" style={{objectFit: 'cover'}}/>
                 </td>
                 <td>{actor.name}</td>
                 <td>{actor.gender.toLowerCase() === 'male' ? 'Nam' : actor.gender.toLowerCase() === 'female' ? 'Nữ' : 'Khác'}</td>

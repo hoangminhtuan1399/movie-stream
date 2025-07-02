@@ -7,6 +7,7 @@ const ITEMS_PER_PAGE = 5;
 
 const MoviePicker = ({ selectedMovies = [], onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [submittedSearch, setSubmittedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [movies, setMovies] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -19,7 +20,7 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
           const { data } = await movieServiceApi.getMovies({
             page: currentPage - 1,
             size: ITEMS_PER_PAGE,
-            keyword: searchTerm,
+            keyword: submittedSearch,
           });
             setMovies(data.data.content);
             setTotalPages(data.data.totalPages);
@@ -31,7 +32,7 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
       }
     };
     fetchData();
-  }, [searchTerm, currentPage]);
+  }, [submittedSearch, currentPage]);
 
   const handleMovieToggle = (movie) => {
     const newSelected = selectedMovies.find(selectedMovie => selectedMovie.id === movie.id)
@@ -56,8 +57,14 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
                 placeholder="Tìm kiếm phim..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyUp={e => {
+                  if (e.key === 'Enter') {
+                    setSubmittedSearch(searchTerm);
+                    setCurrentPage(1);
+                  }
+                }}
               />
-              <Button variant="outline-secondary">
+              <Button variant="outline-secondary" onClick={() => { setSubmittedSearch(searchTerm); setCurrentPage(1); }}>
                 <FaSearch />
               </Button>
             </InputGroup>
@@ -112,22 +119,19 @@ const MoviePicker = ({ selectedMovies = [], onSelect }) => {
           <h5>Đã chọn</h5>
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {selectedMovies.length > 0 ? (
-              selectedMovies.map(selectedMovie => {
-                const movie = movies.find(m => m.id === selectedMovie.id);
-                return movie ? (
-                  <div key={selectedMovie.id} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
-                    <span>{movie.title}</span>
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="text-danger p-0"
-                      onClick={() => removeMovie(movie)}
-                    >
-                      <FaTimes />
-                    </Button>
-                  </div>
-                ) : null;
-              })
+              selectedMovies.map(selectedMovie => (
+                <div key={selectedMovie.id} className="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                  <span>{selectedMovie.title}</span>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-danger p-0"
+                    onClick={() => removeMovie(selectedMovie)}
+                  >
+                    <FaTimes />
+                  </Button>
+                </div>
+              ))
             ) : (
               <div className="text-muted">Chưa chọn phim nào</div>
             )}
