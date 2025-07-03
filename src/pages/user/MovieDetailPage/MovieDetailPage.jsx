@@ -192,7 +192,7 @@ const MovieDetailPage = () => {
                 <div className="btn-add">
                   <FacebookShareButton
                     url={window.location.href}
-                    quote="Xem phim này cực hay!"
+                    quote={`Xem phim ${title} cực hay!`}
                     className="btn-facebook d-flex align-items-center"
                   >
                     <FacebookIcon size={20} round />
@@ -228,10 +228,9 @@ const MovieDetailPage = () => {
                   <strong>Giới thiệu:</strong> {intro}
                 </div>
               </div>
-              <p className="movie-description">{intro}</p>
               <div className="movie-tags">
                 {movie?.genreNames?.map((genre) => (
-                  <button key={genre.id}>{genre.name}</button>
+                  <button key={genre.id}>{genre.name || genre}</button>
                 ))}
               </div>
             </div>
