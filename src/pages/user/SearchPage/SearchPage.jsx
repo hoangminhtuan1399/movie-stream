@@ -48,7 +48,9 @@ const SearchPage = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const params = {};
+    const params = {
+      size: 10,
+    };
     for (const [key, value] of query.entries()) {
       if (value.includes(',')) {
         params[key] = value.split(',');

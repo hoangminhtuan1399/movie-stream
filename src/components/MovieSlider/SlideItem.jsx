@@ -1,16 +1,18 @@
 import { FaHeart, FaInfoCircle } from "react-icons/fa";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import "./TopSlide.css";
+import { useNavigate } from "react-router-dom";
 
 const SlideItem = ({data}) => {
+  const navigate = useNavigate()
   const url = `/movies/${data.id}`
-
+  console.log(data)
   return (
     <div className="slide-elements">
       <a className="slide-url" href={url}></a>
       <div
         className="slide-elements__background background-fade"
-        style={{backgroundImage: `url(${data?.bigBanner})`}}
+        style={{backgroundImage: `url('${data?.bigBanner}')`}}
       ></div>
       <div className="safe-area">
         <div className="slide-content">
@@ -28,18 +30,17 @@ const SlideItem = ({data}) => {
             </div>
             <div className="hl-tags mb-4">
               {data.genreNames?.map((genre, index) => (
-                <a key={index} className="tag-topic" href={'#'}>{genre?.name}</a>
+                <a key={index} className="tag-topic" href={'#'}>{genre}</a>
               ))}
             </div>
             <div className={'text-white'}>
-              Dựa trên webtoon cùng tên, kể về câu chuyện của một học sinh gương mẫu từng dành toàn bộ sự chú ý của mình
-              cho việc học nhưng bị vướng vào bạo lực gia đình và bắt nạt ở trường, buộc anh phải đưa ra quyết định mang
-              tính thay đổi. One: High School Heroes kể về hành trình nhóm học sinh dũng cảm chống bạo lực học đường,
-              kết hợp hành động mãn nhãn và drama sâu sắc, truyền tải thông điệp đoàn kết.
+              {data?.intro}
             </div>
-            <div className="description lim-3">{data.description}</div>
+            <div className="description lim-3">{data?.description}</div>
             <div className="touch">
-              <a className="button-play" href={data.watchUrl}>
+              <a className="button-play" onClick={() => {
+                navigate(`/watch/${data.id}`)
+              }}>
                 <i className="fa-solid fa-play"></i>
               </a>
               <div className="touch-group">

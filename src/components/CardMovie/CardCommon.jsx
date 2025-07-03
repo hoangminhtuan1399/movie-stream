@@ -16,7 +16,7 @@ const CardCommon = ({data}) => {
     e.stopPropagation();
     navigate(`/watch/${data?.id ?? 1}`);
   };
-
+  console.log(data)
   return (
     <div className="card-common">
       <div
@@ -49,7 +49,7 @@ const CardCommon = ({data}) => {
             </div>
             <div className="card-popover-meta">
               {data?.genreNames?.map((genre, index) => (
-                <a key={index} className="tag-topic" href={'#'}>{genre?.name}</a>
+                <a key={index} className="tag-topic" href={'#'}>{genre?.name || genre}</a>
               ))}
             </div>
           </div>

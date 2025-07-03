@@ -56,30 +56,6 @@ const ActorDetailPage = () => {
   const birthday = actor.dob ? actor.dob.join("-") : "Đang cập nhật";
   const aka = actor.aka || "Đang cập nhật";
   const bio = actor.bio || "Đang cập nhật";
-  // Map lại dữ liệu phim cho đúng với data.json
-  const movies = (actor.movies || []).map((movie) => {
-    // Lấy poster ưu tiên smallBanner, bigBanner, hoặc null
-    const poster = movie.smallBanner || movie.bigBanner || "";
-    // Subtitle lấy subtitle hoặc null
-    const subtitle = movie.subtitle || null;
-    // Badge: năm, loại phim, số season/tập
-    const badges = [];
-    if (movie.year) badges.push(movie.year);
-    if (movie.type) badges.push(movie.type);
-    if (movie.seasons && movie.seasons.length > 0) {
-      badges.push(`Phần ${movie.seasons.length}`);
-      // Đếm tổng số tập
-      const totalEpisodes = movie.seasons.reduce((sum, s) => sum + (s.episodes?.length || 0), 0);
-      if (totalEpisodes > 0) badges.push(`Tập ${totalEpisodes}`);
-    }
-    return {
-      id: movie.id,
-      poster,
-      title: movie.title,
-      subtitle,
-      badges,
-    };
-  });
 
   return (
     <div className="actor-detail-page bg-dark text-white min-vh-100 py-4">
@@ -92,20 +68,6 @@ const ActorDetailPage = () => {
               <img src={avatar} alt={name} className="actor-avatar" />
             </div>
             <h3 className="mb-3">{name}</h3>
-            <div className="d-flex gap-2 mb-3">
-              <Button variant="outline-light" className="rounded-pill px-3">
-                <span role="img" aria-label="heart">
-                  ♥
-                </span>{" "}
-                Yêu thích
-              </Button>
-              <Button variant="outline-light" className="rounded-pill px-3">
-                <span role="img" aria-label="share">
-                  ✈
-                </span>{" "}
-                Chia sẻ
-              </Button>
-            </div>
             <div className="actor-info-list">
               <div>
                 <span className="text-secondary">Tên gọi khác:</span>{" "}
@@ -129,7 +91,7 @@ const ActorDetailPage = () => {
           <Col md={9} className="actor-movie-col">
             <h4 className="mb-4">Các phim đã tham gia</h4>
             <MovieGrid
-              items={movies}
+              items={actor.movies}
               columns={4}
               renderItem={(movie) => (
                 <CardCommon
