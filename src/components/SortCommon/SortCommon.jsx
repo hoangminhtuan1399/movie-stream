@@ -8,7 +8,7 @@ import { Button } from "react-bootstrap";
 
 
 const sortOptions = [
-  { label: 'Mới nhất', value: 'newest' },
+  { label: 'Mới nhất', value: 'year' },
   { label: 'Lượt xem', value: 'views' }
 ];
 

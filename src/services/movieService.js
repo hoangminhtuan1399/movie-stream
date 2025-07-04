@@ -5,6 +5,9 @@ export const movieServiceApi = {
     getMovies: (params) => {
         return movieService.get('/movies', { params });
     },
+    searchMovies: (params) => {
+        return movieService.post('/movies/filter', { ...params });
+    },
     createMovie: (movieData) => {
         return movieService.post('/movies', movieData);
     },

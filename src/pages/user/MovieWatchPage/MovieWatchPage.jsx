@@ -64,7 +64,7 @@ const MovieWatchPage = () => {
     // Phim lẻ: chỉ có 1 season, 1 tập
     const season = movie.seasons && movie.seasons[0];
     const episode = season && season.episodes && season.episodes[0];
-    videoUrl = lang === "sub" ? episode?.subtitleUrl : episode?.dubbedUrl;
+    videoUrl = lang === "sub" ? episode?.subtitleUrl ||  episode?.dubbedUrl : episode?.dubbedUrl ||  episode?.subtitleUrl;
     episodeList = [episode];
     seasonList = [season];
   } else {
@@ -73,9 +73,8 @@ const MovieWatchPage = () => {
     const season = seasonList[currentSeasonIdx] || {};
     episodeList = season.episodes || [];
     const episode = episodeList[currentEpisodeIdx] || {};
-    videoUrl = lang === "sub" ? episode.subtitleUrl : episode.dubbedUrl;
+    videoUrl = lang === "sub" ? episode?.subtitleUrl ||  episode?.dubbedUrl : episode?.dubbedUrl ||  episode?.subtitleUrl;
   }
-
   // Hàm scroll lên đầu player
   const scrollToPlayer = () => {
     const player = document.getElementById("embed-player");

@@ -60,7 +60,19 @@ const SearchPage = () => {
         params[key] = value;
       }
     }
-    movieApi.getMovies(params)
+    const convertedParams = {
+      "genres": params.genre ? [params.genre] : [],
+      "countries": params.country ? [params.country] : [],
+      "years": [],
+      "type": params.type || '',
+      "versions": [],
+      "rating": params.age || '',
+      "sort": params.sort || '',
+      "page": 0,
+      "size": 10,
+      "keyword": params.keyword || ''
+    }
+    movieApi.searchMovies(convertedParams)
       .then(res => {
         setMovies(res.data.data.content || []);
         setTotalPages(res.data.data.totalPages || 1);
@@ -110,14 +122,6 @@ const SearchPage = () => {
     <div className="search-page text-white min-vh-100 py-4" style={{ backgroundColor: '#191b24' }}>
       <div className="search-container">
         <HeaderBack title="Tìm kiếm" style={{ paddingLeft: '0px' }} />
-        <div className="search-header d-flex align-items-center mb-4">
-          <span className="me-2">🔍</span>
-          {selectedFilter?.keyword && <h2 className="mb-0">Kết quả tìm kiếm "{selectedFilter.keyword || ''}"</h2>}
-        </div>
-        <div className="search-tabs mb-3">
-          <button className={`search-tab ${tab === 'movie' ? 'active' : ''}`} onClick={() => setTab('movie')}>Phim</button>
-          <button className={`search-tab ${tab === 'actor' ? 'active' : ''}`} onClick={() => setTab('actor')}>Diễn viên</button>
-        </div>
         <SortCommon selected={selectedFilter} onSelect={handleSelectFilter} onApply={handleApplyFilter} />
         {loading ? (
           <MovieGrid

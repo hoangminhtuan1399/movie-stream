@@ -27,7 +27,7 @@ export const HomePage = () => {
         {collections?.map((collection, index) => {
           return (
             <div key={`collection-slider-${index}`} className={'collection-slider mt-4'}>
-              <Stack direction={'horizontal'} gap={3}>
+              <Stack direction={'horizontal'} gap={3} className={'mb-3'}>
                 <h1 className={'h1'}>{collection.name}</h1>
                 <Button className={'rounded-circle collection-slider__view-more'} variant={'outline-primary'}>
                   <FaAngleRight/>
@@ -62,7 +62,7 @@ export const HomePage = () => {
     const fetchCollections = async () => {
       setPageLoading(true)
       try {
-        const {data} = await collectionService.getAllCollections();
+        const {data} = await collectionService.getFeaturedCollections();
         setCollections(data?.data?.content || []);
       } catch {
         setCollections([]);

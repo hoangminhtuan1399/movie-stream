@@ -54,6 +54,7 @@
     position: absolute;
     inset: 0;
     z-index: 2;
+    cursor: pointer;
 }
 
 .background-fade {
@@ -84,6 +85,7 @@
     padding: 4rem;
     max-width: 50%;
     padding-top: 40px;
+    transform: translateY(80px);
 }
 
 .slide-content {

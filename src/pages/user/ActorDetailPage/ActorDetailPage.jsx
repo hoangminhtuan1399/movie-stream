@@ -64,10 +64,10 @@ const ActorDetailPage = () => {
         <Row>
           {/* Left: Actor Info */}
           <Col md={3} className="mb-4 mb-md-0">
-            <div className="actor-avatar-wrapper mb-3">
+            <div className="actor-avatar-wrapper mb-3 text-center">
               <img src={avatar} alt={name} className="actor-avatar" />
             </div>
-            <h3 className="mb-3">{name}</h3>
+            <h3 className="mb-3 text-center">{name}</h3>
             <div className="actor-info-list">
               <div>
                 <span className="text-secondary">Tên gọi khác:</span>{" "}

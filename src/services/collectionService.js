@@ -7,6 +7,9 @@ const collectionService = {
   getAllCollections: (params) => {
     return movieService.get('/collections', { params });
   },
+  getFeaturedCollections: (params) => {
+    return movieService.get('/collections/featured', { params });
+  },
   deleteCollection: (id) => {
     return movieService.delete(`/collections/${id}`);
   },

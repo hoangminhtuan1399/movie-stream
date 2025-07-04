@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ActorPage.css';
 import PaginationCommon from '../../../components/Pagination/PaginationCommon';
 import { actorService } from '../../../services/actorService';
@@ -33,17 +33,19 @@ const UserActorPage = () => {
 
   return (
     <div className="actor-page">
-      <HeaderBack title="Diễn viên" />
-      <div className="actor-grid">
-        {actors.map((actor) => (
-          <div className="actor-card" key={actor.id} onClick={() => navigate(`/actor/${actor.id}`)}>
-            <img className="actor-img" src={actor.avatarUrl || actor.img} alt={actor.name} />
-            <div className="actor-name">{actor.name}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 32 }}>
-        <PaginationCommon page={page} totalPages={totalPages} onPageChange={setPage} />
+      <div className={'category-container'}>
+        <HeaderBack style={{ padding: 0}} title="Diễn viên"/>
+        <div className="actor-grid">
+          {actors.map((actor) => (
+            <div className="actor-card" key={actor.id} onClick={() => navigate(`/actor/${actor.id}`)}>
+              <img className="actor-img" src={actor.avatarUrl || actor.img} alt={actor.name}/>
+              <div className="actor-name">{actor.name}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 32 }}>
+          <PaginationCommon page={page} totalPages={totalPages} onPageChange={setPage}/>
+        </div>
       </div>
     </div>
   );

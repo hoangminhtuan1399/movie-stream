@@ -161,12 +161,16 @@ const Header = () => {
                 <Form
                   className="d-flex me-3 flex-grow-1"
                   style={{ maxWidth: "400px" }}
+                  action={'/search'}
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                  }}
                 >
                   <div className="search-input-wrapper position-relative">
                     <FaSearch className="search-icon" />
                     <FormControl
                       type="search"
-                      placeholder="Tìm kiếm phim, diễn viên"
+                      placeholder="Tìm kiếm phim"
                       className="me-2 search-input"
                       aria-label="Search"
                       value={searchValue}
@@ -197,7 +201,7 @@ const Header = () => {
                 title="Thể loại"
                 itemsMenu={genreOptions}
                 columns={2}
-                path="/category?genres="
+                path="/category?genre="
               />
               <Nav.Link href="/category?type=LE" className="text-white fs-6">
                 Phim Lẻ
@@ -209,7 +213,7 @@ const Header = () => {
                 title="Quốc gia"
                 itemsMenu={countryOptions}
                 columns={1}
-                path="/category?countries="
+                path="/category?country="
               />
               <Nav.Link href="/actor" className="text-white fs-6">
                 Diễn Viên
@@ -220,12 +224,6 @@ const Header = () => {
           <div className="ms-3">
             {isAuthenticated && user ? (
               <div className="d-flex align-items-center">
-                <Button
-                  variant="link"
-                  className="text-white me-3 notification-bell"
-                >
-                  <FaBell size={18} />
-                </Button>
                 <UserMenu user={user} logout={handleLogout} />
               </div>
             ) : (
@@ -277,7 +275,7 @@ const Header = () => {
           <Form className="d-flex mx-3 flex-grow-1 position-relative">
             <FormControl
               type="search"
-              placeholder="Tìm kiếm phim, diễn viên"
+              placeholder="Tìm kiếm phim"
               className="me-2"
               aria-label="Search"
               value={searchValue}
@@ -451,7 +449,7 @@ export const HeaderBack = ({
       style={{
         minHeight: 56,
         paddingTop: "40px",
-        marginBottom: marginBottom ? "60px" : "0px",
+        marginBottom: marginBottom ? "40px" : "0px",
         zIndex: 2,
         position: "relative",
         paddingLeft: "40px",

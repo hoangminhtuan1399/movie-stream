@@ -5,14 +5,15 @@ import { useNavigate } from "react-router-dom";
 
 const SlideItem = ({data}) => {
   const navigate = useNavigate()
-  const url = `/movies/${data.id}`
+  const url = `/movie/${data.id}`
   console.log(data)
+
   return (
     <div className="slide-elements">
       <a className="slide-url" href={url}></a>
       <div
         className="slide-elements__background background-fade"
-        style={{backgroundImage: `url('${data?.bigBanner}')`}}
+        style={{backgroundImage: `url("${data?.bigBanner}")`}}
       ></div>
       <div className="safe-area">
         <div className="slide-content">
@@ -26,7 +27,7 @@ const SlideItem = ({data}) => {
             </h3>
             <div className="hl-tags">
               <div className="tag-model"><span className="last">{data.ageRating}</span></div>
-              <div className="tag-classic"><span>{data.releaseYear}</span></div>
+              <div className="tag-classic"><span>{data.year}</span></div>
             </div>
             <div className="hl-tags mb-4">
               {data.genreNames?.map((genre, index) => (
@@ -44,9 +45,6 @@ const SlideItem = ({data}) => {
                 <i className="fa-solid fa-play"></i>
               </a>
               <div className="touch-group">
-                <a className="item">
-                  <div className="inc-icon icon-20"><FaHeart/></div>
-                </a>
                 <a className="item" href={url}>
                   <div className="inc-icon icon-20"><FaInfoCircle/></div>
                 </a>

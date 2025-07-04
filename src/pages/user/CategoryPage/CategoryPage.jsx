@@ -56,7 +56,20 @@ const CategoryPage = () => {
       setLoading(true);
       try {
         const params = { ...query, page: page - 1, size: 12 };
-        const { data } = await movieServiceApi.getMovies(params);
+        const convertedParams = {
+          "genres": params.genre ? [params.genre] : [],
+          "countries": params.country ? [params.country] : [],
+          "years": [],
+          "type": params.type || '',
+          "versions": [],
+          "rating": params.age || '',
+          "sort": params.sort || '',
+          "page": 0,
+          "size": 10,
+          "keyword": params.keyword || ''
+        }
+
+        const { data } = await movieServiceApi.searchMovies(convertedParams);
         setMovies(data?.data?.content || []);
         setTotalPages(data?.data?.totalPages || 1);
       } catch {
@@ -83,10 +96,7 @@ const CategoryPage = () => {
 
   // Lấy tiêu đề động
   const typeLabel = getLabel(movieTypeOptions, query.type);
-  const countryLabel = getLabel(
-    countryOptions,
-    query.countries || query.country
-  );
+  const countryLabel = getLabel(countryOptions, query.countries || query.country);
   const genreLabel = getLabel(genreOptions, query.genres || query.genre);
 
   let dynamicTitle = "Danh mục phim";
@@ -96,10 +106,9 @@ const CategoryPage = () => {
   if (genreLabel) titleParts.push(genreLabel);
   if (titleParts.length > 0) dynamicTitle = "Phim " + titleParts.join(" • ");
 
-  return (
-    <div style={{ width: "100%", height: "100%", background: "#191b24" }}>
+  return (<div style={{ width: "100%", height: "100%", background: "#191b24" }}>
       <div className="category-container">
-        <HeaderBack title="Danh mục phim" style={{ padding: 0 }} />
+        <HeaderBack title="Danh mục phim" style={{ padding: 0 }}/>
         <div className="category-header">
           <span className="category-header-icon">🎬</span>
           <h2 className="category-title">{dynamicTitle}</h2>
@@ -112,11 +121,9 @@ const CategoryPage = () => {
         <MovieGrid
           items={loading ? Array(12).fill({}) : movies}
           columns={6}
-          renderItem={loading ? () => <CardSkeleton /> : (movie) => (
-            <CardCommon
+          renderItem={loading ? () => <CardSkeleton/> : (movie) => (<CardCommon
               data={movie}
-            />
-          )}
+            />)}
         />
         <PaginationCommon
           page={page}
@@ -124,8 +131,7 @@ const CategoryPage = () => {
           onPageChange={setPage}
         />
       </div>
-    </div>
-  );
+    </div>);
 };
 
 export default CategoryPage;
